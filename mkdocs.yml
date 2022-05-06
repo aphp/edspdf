@@ -15,7 +15,7 @@ theme:
         icon: material/brightness-7
         name: Switch to light mode
   logo: assets/logo/aphp-white.svg
-  favicon: assets/logo/aphp-blue.svg
+  favicon: assets/logo/edspdf-red.svg
   features:
     - navigation.tracking
     - navigation.instant
