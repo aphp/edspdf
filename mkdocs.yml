@@ -1,0 +1,84 @@
+site_name: EDS-PDF
+
+repo_url: https://gitlab.eds.aphp.fr/datasciencetools/edspdf
+# repo_name: algorithms/pseudonymisation
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-4
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-7
+        name: Switch to light mode
+  logo: assets/logo/aphp-white.svg
+  favicon: assets/logo/aphp-blue.svg
+  features:
+    - navigation.tracking
+    - navigation.instant
+    - content.code.annotate
+
+nav:
+  - index.md
+  - User Guide:
+    - user-guide/index.md
+    - Classification:
+      - user-guide/classification/index.md
+      - user-guide/classification/mask.md
+  - Code Reference: reference/
+  - alternatives.md
+  - contributing.md
+  - roadmap.md
+  - changelog.md
+
+extra_css:
+  - assets/stylesheets/extra.css
+  - assets/termynal/termynal.css
+
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/vega@5
+  - https://cdn.jsdelivr.net/npm/vega-lite@5
+  - https://cdn.jsdelivr.net/npm/vega-embed@6
+  - assets/termynal/termynal.js
+
+plugins:
+  - search
+  - bibtex:
+      bib_file: "docs/references.bib"
+  - gen-files:
+      scripts:
+        - docs/scripts/generate_reference.py
+        - docs/scripts/generate_development.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - mkdocstrings:
+      handlers:
+        python:
+          selection:
+            docstring_style: numpy
+          rendering:
+            docstring_section_style: spacy
+            heading_level: 2
+            members_order: source
+            show_root_toc_entry: false
+
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - footnotes
+  - md_in_html
+  - attr_list
+  - pymdownx.details
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
