@@ -5,6 +5,8 @@ from pydantic import BaseModel, Field, confloat, parse_obj_as, validator
 
 from edspdf.utils.registry import registry
 
+from .align import align_labels
+
 
 class Mask(BaseModel):
 
@@ -73,28 +75,6 @@ class MaskClassifier(object):
 
     def predict(self, lines: pd.DataFrame) -> pd.Series:
 
-        df = lines[["x0", "y0", "x1", "y1"]].copy()
-
-        df["uid"] = range(len(df))
-
-        df = df.merge(self.comparison, how="cross")
-
-        df["dx"] = df[["x1", "X1"]].min(axis=1) - df[["x0", "X0"]].max(axis=1)
-        df["dy"] = df[["y1", "Y1"]].min(axis=1) - df[["y0", "Y0"]].max(axis=1)
-
-        df["overlap"] = (df.dx > 0) * (df.dy > 0) * df.dx * df.dy
-
-        df["area"] = (df.x1 - df.x0) * (df.y1 - df.y0)
-        df["ratio"] = df.overlap / df.area
-
-        df["area_mask"] = (df.X1 - df.X0) * (df.Y1 - df.Y0)
-        df["ratio_mask"] = df.overlap / df.area_mask
-
-        df["thresholded"] = df.ratio >= df.threshold
-
-        df = df.sort_values(["thresholded", "ratio_mask"], ascending=False)
-
-        df = df.groupby(["uid"], as_index=False).first()
-        df = df.sort_values("uid").reset_index(drop=True)
+        df = align_labels(lines, self.comparison)
 
         return df.label
