@@ -15,5 +15,3 @@ color:green Installation successful
 ```
 
 </div>
-
-
