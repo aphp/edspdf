@@ -14,4 +14,4 @@ $ pip install edspdf
 
 </div>
 
-Visit the documentation for more information!
+Visit the [documentation](https://datasciencetools-pages.eds.aphp.fr/edspdf/) for more information!
