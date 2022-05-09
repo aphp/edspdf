@@ -4,6 +4,10 @@ version = "0.1.0"
 description = "Smart text extraction from PDF documents"
 authors = ["Basile Dura <basile.dura-ext@aphp.fr>"]
 license = "BSD-3"
+readme = "README.md"
+homepage = "https://datasciencetools-pages.eds.aphp.fr/edspdf/"
+repository = "https://gitlab.eds.aphp.fr/datasciencetools/edspdf"
+documentation = "https://datasciencetools-pages.eds.aphp.fr/edspdf/"
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -12,7 +16,6 @@ pandas = "^1.4.2"
 scikit-learn = "^1.0.2"
 "pdfminer.six" = "^20220319"
 pydantic = "^1.2"
-typer = "^0.4.1"
 catalogue = "^2.0.7"
 thinc = "^8.0.15"
 networkx = "^2.8"
