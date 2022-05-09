@@ -32,6 +32,7 @@ Running Pytest:
         - .venv
   before_script:
     - pip install poetry
+    - poetry config virtualenvs.in-project true
     - poetry install
   script:
     - poetry run pytest tests --cov edspdf --junitxml=report.xml
@@ -73,6 +74,7 @@ Build documentation:
         - .venv
   before_script:
     - pip install poetry
+    - poetry config virtualenvs.in-project true
     - poetry install
   script:
     - poetry run mkdocs build --site-dir documentation
