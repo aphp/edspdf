@@ -1,7 +1,6 @@
 from thinc.config import Config
 
 from edspdf import registry
-from edspdf.models.config import ConfigSchema
 
 configuration = """
 [reader]
