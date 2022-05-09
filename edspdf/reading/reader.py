@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 import pandas as pd
 
@@ -16,6 +16,7 @@ class PdfReader:
         extractor: BaseExtractor,
         classifier: BaseClassifier,
         aggregator: BaseAggregator,
+        meta_labels: Dict[str, str] = dict(),
         transform: Optional[BaseTransform] = None,
     ) -> None:
 
@@ -24,6 +25,7 @@ class PdfReader:
         self.aggregator = aggregator
 
         self.transform = transform
+        self.meta_labels = meta_labels
 
     def predict(self, lines: pd.DataFrame, copy: bool = True) -> pd.DataFrame:
 
@@ -31,13 +33,11 @@ class PdfReader:
             lines = lines.copy()
 
         lines["label"] = self.classifier.predict(lines)
-        lines["meta_label"] = lines.label.replace(
-            {"section_title": "body", "table": "body"}
-        )
+        lines["meta_label"] = lines.label.replace(self.meta_labels)
 
         return lines
 
-    def process(self, pdf: bytes, **context: Any) -> Optional[str]:
+    def prepare_data(self, pdf: bytes, **context: Any) -> Optional[str]:
 
         lines = self.extractor(pdf)
 
@@ -48,11 +48,10 @@ class PdfReader:
         if self.transform is not None:
             lines = self.transform(lines)
 
+        return lines
+
+    def __call__(self, pdf: bytes, **context: Any) -> Dict[str, str]:
+        lines = self.prepare_data(pdf, **context)
         lines = self.predict(lines)
-
         result = self.aggregator(lines)
-
         return result
-
-    def __call__(self, pdf: bytes, **context: Any) -> str:
-        return self.process(pdf, **context)

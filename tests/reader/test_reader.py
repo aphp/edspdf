@@ -38,4 +38,4 @@ def test_reader(pdf):
 
     reader = resolved["reader"]
 
-    reader(pdf)
+    reader(pdf, orbis=True)
