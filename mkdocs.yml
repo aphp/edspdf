@@ -27,6 +27,7 @@ nav:
     - user-guide/index.md
     - Classification:
       - user-guide/classification/index.md
+      - user-guide/classification/sklearn.md
       - user-guide/classification/mask.md
   - Code Reference: reference/
   - alternatives.md

@@ -19,14 +19,26 @@ from .functional import (
 @registry.extractors.register("pdfminer-extractor.v1")
 class PdfMinerExtractor(BaseExtractor):
     """
-    Extractor object. Given a PDF byte stream, produces a list of boxes.
+    Extractor object. Given a PDF byte stream, produces a list of blocs.
 
     Parameters
     ----------
-    laparams : LAParams, optional
-        PDFMiner LAParams object.
-    style : bool, default: False
-        Whether to extract style.
+    line_overlap : float
+        See PDFMiner documentation
+    char_margin : float
+        See PDFMiner documentation
+    line_margin : float
+        See PDFMiner documentation
+    word_margin : float
+        See PDFMiner documentation
+    boxes_flow : Optional[float]
+        See PDFMiner documentation
+    detect_vertical : bool
+        See PDFMiner documentation
+    all_texts : bool
+        See PDFMiner documentation
+    style : bool
+        Whether to export style (experimental)
     """
 
     def __init__(
