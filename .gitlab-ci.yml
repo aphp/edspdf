@@ -100,13 +100,9 @@ Package:
   stage: package
   before_script:
     - pip install poetry
-  variables:
-    TWINE_USERNAME: gitlab-ci-token
-    TWINE_PASSWORD: ${CI_JOB_TOKEN}
+    - poetry config repositories.gitlab ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
+    - poetry config http-basic.gitlab gitlab-ci-token ${CI_JOB_TOKEN}
   script:
-    - poetry build
-    - pip install twine
-    - python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
-  when: manual
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - poetry publish --build -r gitlab
+  only:
+    - tags
