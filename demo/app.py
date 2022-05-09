@@ -34,28 +34,10 @@ CATEGORY20 = [
 CONFIG = """\
 [reader]
 @readers = "pdf-reader.v1"
-new_line_threshold = 0.2
-new_paragraph_threshold = 1.2
 
 [reader.extractor]
-@extractors = "line-extractor.v1"
+@extractors = "pdfminer-extractor.v1"
 style = true
-laparams = { "@params": "laparams.v1" }
-
-[reader.transform]
-@transforms = "chain.v1"
-
-[reader.transform.*.dates]
-@transforms = "dates.v1"
-
-[reader.transform.*.orbis]
-@transforms = "orbis.v1"
-
-[reader.transform.*.telephone]
-@transforms = "telephone.v1"
-
-[reader.transform.*.dimensions]
-@transforms = "dimensions.v1"
 
 [reader.classifier]
 @classifiers = "mask.v1"
@@ -63,7 +45,10 @@ x0 = 0.1
 x1 = 0.9
 y0 = 0.4
 y1 = 0.9
-threshold = 0.1\
+threshold = 0.1
+
+[reader.aggregator]
+@aggregators = "simple.v1"\
 """
 
 
@@ -114,7 +99,7 @@ if upload:
 
     base64_pdf = base64.b64encode(pdf).decode("utf-8")
 
-    body = model(pdf, orbis=True)
+    body = model(pdf)["body"]
 
     pdf_display = f"""\
     <iframe
