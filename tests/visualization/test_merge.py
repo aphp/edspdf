@@ -32,7 +32,7 @@ def test_pipeline(pdf):
 
     extractor = PdfMinerExtractor()
     classifier = simple_mask_classifier_factory(
-        x0=0, y0=0.3, x1=0.6, y1=1, threshold=0.8
+        x0=0.1, y0=0.4, x1=0.5, y1=0.9, threshold=0.1
     )
 
     df = extractor(pdf)
