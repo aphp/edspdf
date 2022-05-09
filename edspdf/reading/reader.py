@@ -30,8 +30,8 @@ class PdfReader:
         if copy:
             lines = lines.copy()
 
-        lines["prediction"] = self.classifier.predict(lines)
-        lines["meta_prediction"] = lines.prediction.replace(
+        lines["label"] = self.classifier.predict(lines)
+        lines["meta_label"] = lines.label.replace(
             {"section_title": "body", "table": "body"}
         )
 

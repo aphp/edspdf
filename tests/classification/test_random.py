@@ -12,6 +12,6 @@ classes = [ "body", "header" ]
 def test_random_classifier(lines):
     classifier = registry.resolve(Config().from_str(configuration))["classifier"]
 
-    lines["prediction"] = classifier.predict(lines)
+    lines["label"] = classifier.predict(lines)
 
-    assert set(lines["prediction"]) == {"body", "header"}
+    assert set(lines["label"]) == {"body", "header"}

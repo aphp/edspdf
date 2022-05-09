@@ -34,9 +34,9 @@ def config(pipeline):
 def test_dummy(lines, config):
     classifier = registry.resolve(Config().from_str(config))["classifier"]
 
-    lines["prediction"] = classifier.predict(lines)
+    lines["label"] = classifier.predict(lines)
 
-    p1, p2, p3 = lines.prediction.values
+    p1, p2, p3 = lines.label.values
 
     assert p1 == "body"
     assert p2 == "body"

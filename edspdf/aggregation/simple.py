@@ -24,11 +24,11 @@ class SimpleAggregator(BaseAggregator):
         lines = lines.sort_values(["page", "y1", "x0"])
 
         # Get information
-        lines["next_y1"] = lines.groupby(["prediction"])["y1"].shift(-1)
-        lines["next_page"] = lines.groupby(["prediction"])["page"].shift(-1)
+        lines["next_y1"] = lines.groupby(["label"])["y1"].shift(-1)
+        lines["next_page"] = lines.groupby(["label"])["page"].shift(-1)
 
         lines["dy"] = (lines.next_y1 - lines.y1).where(lines.next_y1 > lines.y1)
-        lines["med_dy"] = lines.groupby(["prediction"])["dy"].transform("median")
+        lines["med_dy"] = lines.groupby(["label"])["dy"].transform("median")
 
         lines["newline"] = " "
 
@@ -54,6 +54,6 @@ class SimpleAggregator(BaseAggregator):
 
         lines = self.prepare_newlines(lines)
 
-        df = lines.groupby(["prediction"]).agg(text=("text_with_newline", "sum"))
+        df = lines.groupby(["label"]).agg(text=("text_with_newline", "sum"))
 
         return df.text.to_dict()
