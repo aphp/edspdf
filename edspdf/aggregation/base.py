@@ -6,7 +6,7 @@ import pandas as pd
 
 class BaseAggregator(ABC):
     @abstractmethod
-    def aggregate(self, lines) -> Dict[str, str]:
+    def aggregate(self, lines: pd.DataFrame, copy: bool) -> Dict[str, str]:
         pass
 
     def __call__(self, lines: pd.DataFrame) -> Dict[str, str]:

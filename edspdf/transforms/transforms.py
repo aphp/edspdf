@@ -2,37 +2,48 @@ import re
 
 import pandas as pd
 
+from edspdf.reg import registry
 
-class ChainTransform:
-    def __init__(self, *layers):
+from .base import BaseTransform
+
+
+@registry.transforms.register("chain.v1")
+class ChainTransform(BaseTransform):
+    def __init__(self, *layers: BaseTransform):
         self.layers = layers
 
-    def __call__(self, df: pd.DataFrame) -> pd.DataFrame:
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
         for layer in self.layers:
             df = layer(df)
         return df
 
 
-def add_telephone(df: pd.DataFrame) -> pd.DataFrame:
-    df["telephone"] = df.text.apply(
-        lambda t: len(list(re.finditer(r"\b(\d\d[\s\.]?){5}\b", t)))
-    )
-    return df
+@registry.transforms.register("telephone.v1")
+class AddPhone(BaseTransform):
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        df["telephone"] = df.text.apply(
+            lambda t: len(list(re.finditer(r"\b(\d\d[\s\.]?){5}\b", t)))
+        )
+        return df
 
 
-def add_dates(df: pd.DataFrame) -> pd.DataFrame:
+@registry.transforms.register("dates.v1")
+class AddDates(BaseTransform):
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
 
-    df["date"] = df.text.apply(
-        lambda t: len(list(re.finditer(r"\b\d\d\/\d\d\/?(\d{4})?\b", t)))
-    )
+        df["date"] = df.text.apply(
+            lambda t: len(list(re.finditer(r"\b\d\d\/\d\d\/?(\d{4})?\b", t)))
+        )
 
-    return df
+        return df
 
 
-def add_dimensions(df: pd.DataFrame) -> pd.DataFrame:
+@registry.transforms.register("dimensions.v1")
+class AddDimensions(BaseTransform):
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
 
-    df["width"] = df.x1 - df.x0
-    df["height"] = df.y1 - df.y0
-    df["area"] = df.width * df.height
+        df["width"] = df.x1 - df.x0
+        df["height"] = df.y1 - df.y0
+        df["area"] = df.width * df.height
 
-    return df
+        return df

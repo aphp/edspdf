@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional
+from typing import Any, Optional
 
 import pandas as pd
 from sklearn.pipeline import Pipeline
@@ -6,6 +6,7 @@ from sklearn.pipeline import Pipeline
 from edspdf.aggregation import BaseAggregator
 from edspdf.extraction.extractor import LineExtractor
 from edspdf.reg import registry
+from edspdf.transforms import BaseTransform
 
 Classifier = Pipeline
 
@@ -17,7 +18,7 @@ class PdfReader:
         extractor: LineExtractor,
         classifier: Pipeline,
         aggregator: BaseAggregator,
-        transform: Optional[Callable[[pd.DataFrame, bool], pd.DataFrame]] = None,
+        transform: Optional[BaseTransform] = None,
     ) -> None:
 
         self.extractor = extractor
