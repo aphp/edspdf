@@ -31,8 +31,8 @@ nav:
   - Code Reference: reference/
   - alternatives.md
   - contributing.md
-  - roadmap.md
   - changelog.md
+  - roadmap.md
 
 extra_css:
   - assets/stylesheets/extra.css
