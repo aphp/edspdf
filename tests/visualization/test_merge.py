@@ -1,5 +1,7 @@
 import pandas as pd
 
+from edspdf.classification.mask import simple_mask_classifier_factory
+from edspdf.extraction.pdfminer import PdfMinerExtractor
 from edspdf.visualization.merge import merge_lines
 
 lines = [
@@ -24,3 +26,16 @@ def test_merge():
     assert l1 == dict(page=0, x0=0, x1=0.4, y0=0.2, y1=0.3, label="body")
     assert l2 == dict(page=0, x0=0.6, x1=1, y0=0.2, y1=0.3, label="other")
     assert l3 == dict(page=1, x0=0.6, x1=1, y0=0.2, y1=0.3, label="body")
+
+
+def test_pipeline(pdf):
+
+    extractor = PdfMinerExtractor()
+    classifier = simple_mask_classifier_factory(
+        x0=0, y0=0.3, x1=0.6, y1=1, threshold=0.8
+    )
+
+    df = extractor(pdf)
+    df["label"] = classifier(df)
+
+    merge_lines(df)

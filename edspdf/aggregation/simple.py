@@ -50,10 +50,7 @@ class SimpleAggregator(BaseAggregator):
 
         return lines
 
-    def aggregate(self, lines: pd.DataFrame, copy: bool = False) -> Dict[str, str]:
-
-        if copy:
-            lines = lines.copy()
+    def aggregate(self, lines: pd.DataFrame) -> Dict[str, str]:
 
         lines = self.prepare_newlines(lines)
 

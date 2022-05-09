@@ -100,12 +100,12 @@ class PdfMinerExtractor(BaseExtractor):
         if lines is None:
             return None
 
-        lines = extract_text(lines, inplace=True)
+        lines = extract_text(lines)
 
         if self.style:
-            lines = extract_styled_text(lines, inplace=True)
+            lines = extract_styled_text(lines)
 
-        lines.drop(columns=["line"], inplace=True)
+        lines.drop(columns=["line"])
 
         # Remove empty lines
         lines = lines[lines.text.str.len() > 0]

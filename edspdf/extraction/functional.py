@@ -11,7 +11,7 @@ from .models import Line
 
 def get_blocs(
     layout: Iterator[LTPage],
-) -> Generator[Tuple[LTTextBoxHorizontal, int, float, float], None, None]:
+) -> Iterator[Tuple[LTTextBoxHorizontal, int, float, float]]:
     """
     Extract text blocs from a PDFMiner layout generator.
 
@@ -20,10 +20,10 @@ def get_blocs(
     layout:
         PDFMiner layout generator.
 
-    Returns
-    -------
-    blocs:
-        List of blocs.
+    Yields
+    ------
+    bloc :
+        Text bloc
     """
 
     for i, page in enumerate(layout):
@@ -67,7 +67,7 @@ def get_lines(layout: Iterator[LTPage]) -> Generator[Line, None, None]:
             )
 
 
-def extract_text(lines: pd.DataFrame, inplace=False) -> pd.DataFrame:
+def extract_text(lines: pd.DataFrame) -> pd.DataFrame:
     """
     Add a ``text`` column to a dataframe containing lines,
     using PDFMiner's ``get_text`` method.
@@ -76,16 +76,12 @@ def extract_text(lines: pd.DataFrame, inplace=False) -> pd.DataFrame:
     ----------
     lines : pd.DataFrame
         Dataframe containing extracted lines.
-    inplace : bool, optional
-        Whether to make the change in place, by default False
 
     Returns
     -------
     pd.DataFrame
         Dataframe with the ``text`` column added.
     """
-    if not inplace:
-        lines = lines.copy()
 
     text = lines.line.apply(lambda line: line.get_text())
     text = text.str.replace(r"\s+", " ", regex=True)
@@ -96,7 +92,7 @@ def extract_text(lines: pd.DataFrame, inplace=False) -> pd.DataFrame:
     return lines
 
 
-def extract_styled_text(lines: pd.DataFrame, inplace=False) -> pd.DataFrame:
+def extract_styled_text(lines: pd.DataFrame) -> pd.DataFrame:
     """
     Add a ``styled_text`` column to a dataframe of extracted lines.
 
@@ -104,16 +100,12 @@ def extract_styled_text(lines: pd.DataFrame, inplace=False) -> pd.DataFrame:
     ----------
     lines : pd.DataFrame
         Dataframe containing extracted lines.
-    inplace : bool, optional
-        Whether to make the change in place, by default False
 
     Returns
     -------
     pd.DataFrame
         Dataframe with the ``styled_text`` column added.
     """
-    if not inplace:
-        lines = lines.copy()
 
     styled_text = lines.line.apply(line2style)
     lines["styled_text"] = styled_text
@@ -152,7 +144,4 @@ def remove_outside_lines(
             (lines[["x0", "x1"]].max(axis=1) > 0)
             & (lines[["y0", "y1"]].max(axis=1) > 0)
         ]
-
-    if copy:
-        return lines.copy()
     return lines

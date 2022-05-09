@@ -34,6 +34,7 @@ def align_labels(
 
     if "threshold" not in labels.columns:
         labels["threshold"] = threshold
+
     labels.threshold = labels.threshold.fillna(threshold)
 
     df = df.merge(labels, how="cross")
