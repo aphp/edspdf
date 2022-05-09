@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Union
 import numpy as np
 import pandas as pd
 
-from edspdf.utils.registry import registry
+from edspdf.reg import registry
 
 
 @registry.classifiers.register("random.v1")

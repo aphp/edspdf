@@ -3,7 +3,7 @@ from typing import List
 import pandas as pd
 from pydantic import BaseModel, Field, confloat, parse_obj_as, validator
 
-from edspdf.utils.registry import registry
+from edspdf.reg import registry
 
 from .align import align_labels
 

@@ -3,7 +3,7 @@ from typing import Optional
 from pdfminer.layout import LAParams
 
 from edspdf.extraction.extractor import LineExtractor
-from edspdf.utils.registry import registry
+from edspdf.reg import registry
 
 
 @registry.params.register("laparams.v1")

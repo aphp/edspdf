@@ -2,7 +2,7 @@ from typing import List
 
 import pandas as pd
 
-from edspdf.utils.registry import registry
+from edspdf.reg import registry
 
 
 @registry.classifiers.register("dummy.v1")

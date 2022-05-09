@@ -2,7 +2,7 @@ from pathlib import Path
 
 from joblib import load
 
-from edspdf.utils.registry import registry
+from edspdf.reg import registry
 
 
 @registry.classifiers.register("sklearn-pipeline.v1")
