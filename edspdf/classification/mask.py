@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, confloat, parse_obj_as, validator
 from edspdf.reg import registry
 
 from .align import align_labels
+from .base import BaseClassifier
 
 
 class Mask(BaseModel):
@@ -57,7 +58,7 @@ def mask_classifier_factory(**masks):
     return MaskClassifier(*parse_obj_as(List[Mask], list(masks.values())))
 
 
-class MaskClassifier:
+class MaskClassifier(BaseClassifier):
     """
     Mask classifier, that reproduces the PdfBox behaviour.
     """

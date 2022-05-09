@@ -1,14 +1,12 @@
 from typing import Any, Optional
 
 import pandas as pd
-from sklearn.pipeline import Pipeline
 
 from edspdf.aggregation import BaseAggregator
+from edspdf.classification import BaseClassifier
 from edspdf.extraction import BaseExtractor
 from edspdf.reg import registry
 from edspdf.transforms import BaseTransform
-
-Classifier = Pipeline
 
 
 @registry.readers.register("pdf-reader.v1")
@@ -16,7 +14,7 @@ class PdfReader:
     def __init__(
         self,
         extractor: BaseExtractor,
-        classifier: Pipeline,
+        classifier: BaseClassifier,
         aggregator: BaseAggregator,
         transform: Optional[BaseTransform] = None,
     ) -> None:

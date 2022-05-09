@@ -5,9 +5,11 @@ import pandas as pd
 
 from edspdf.reg import registry
 
+from .base import BaseClassifier
+
 
 @registry.classifiers.register("random.v1")
-class RandomClassifier:
+class RandomClassifier(BaseClassifier):
     """
     Random classifier, for chaos purposes. Classifies each line to a random element.
     """
