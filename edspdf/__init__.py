@@ -1,5 +1,6 @@
 import importlib.metadata
 
+import edspdf.aggregation.factory
 import edspdf.classification.factory
 import edspdf.extraction.factory
 import edspdf.reading.factory

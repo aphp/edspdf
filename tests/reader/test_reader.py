@@ -5,6 +5,9 @@ from edspdf import registry
 configuration = """
 [reader]
 @readers = "pdf-reader.v1"
+
+[reader.aggregator]
+@aggregators = "simple.v1"
 new_line_threshold = 0.2
 new_paragraph_threshold = 1.2
 
