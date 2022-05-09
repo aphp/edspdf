@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- `aggregation` submodule to handle the specifics of aggregating text blocs
+- Base classes for better-defined modules
+- Uniformise the columns to `labels`
+- Add arbitrary contextual information
+
+### Removed
+
+- `typer` legacy dependency
+- `models` submodule, which handled the configurations for Spark distribution (deferred to another package)
+- specific `orbis` context, which was APHP-specific
+
 ## v0.1.0 - 2022-05-06
 
 Inception ! :tada:
