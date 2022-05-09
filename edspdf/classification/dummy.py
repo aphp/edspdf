@@ -6,7 +6,7 @@ from edspdf.utils.registry import registry
 
 
 @registry.classifiers.register("dummy.v1")
-class DummyClassifier(object):
+class DummyClassifier:
     """
     "Dummy" classifier, for testing purposes. Classifies every line to ``body``.
     """

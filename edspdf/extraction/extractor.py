@@ -13,7 +13,7 @@ from .functional import (
 )
 
 
-class LineExtractor(object):
+class LineExtractor:
     """
     Extractor object. Given a PDF byte stream, produces a list of boxes.
 

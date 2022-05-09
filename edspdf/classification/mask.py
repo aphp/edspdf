@@ -57,7 +57,7 @@ def mask_classifier_factory(**masks):
     return MaskClassifier(*parse_obj_as(List[Mask], list(masks.values())))
 
 
-class MaskClassifier(object):
+class MaskClassifier:
     """
     Mask classifier, that reproduces the PdfBox behaviour.
     """

@@ -3,7 +3,7 @@ import re
 import pandas as pd
 
 
-class ChainTransform(object):
+class ChainTransform:
     def __init__(self, *layers):
         self.layers = layers
 

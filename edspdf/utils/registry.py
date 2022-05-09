@@ -3,7 +3,7 @@ from typing import Any, Dict
 import catalogue
 
 
-class Registry(object):
+class Registry:
 
     extractors = catalogue.create("edspdf", "extractors")
     params = catalogue.create("edspdf", "params")

@@ -8,7 +8,7 @@ from edspdf.extraction.extractor import LineExtractor
 Classifier = Pipeline
 
 
-class PdfReader(object):
+class PdfReader:
     def __init__(
         self,
         extractor: LineExtractor,

@@ -7,7 +7,7 @@ from edspdf.extraction import LineExtractor
 TEST_DIR = Path(__file__).parent
 
 
-class DummyClassifier(object):
+class DummyClassifier:
     def predict(self, X):
         return ["body" for _ in range(len(X))]
 

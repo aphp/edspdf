@@ -7,7 +7,7 @@ from edspdf.utils.registry import registry
 
 
 @registry.classifiers.register("random.v1")
-class RandomClassifier(object):
+class RandomClassifier:
     """
     Random classifier, for chaos purposes. Classifies each line to a random element.
     """
