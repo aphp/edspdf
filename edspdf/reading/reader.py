@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.pipeline import Pipeline
 
 from edspdf.aggregation import BaseAggregator
-from edspdf.extraction.extractor import LineExtractor
+from edspdf.extraction import BaseExtractor
 from edspdf.reg import registry
 from edspdf.transforms import BaseTransform
 
@@ -15,7 +15,7 @@ Classifier = Pipeline
 class PdfReader:
     def __init__(
         self,
-        extractor: LineExtractor,
+        extractor: BaseExtractor,
         classifier: Pipeline,
         aggregator: BaseAggregator,
         transform: Optional[BaseTransform] = None,

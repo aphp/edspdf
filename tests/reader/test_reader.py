@@ -12,9 +12,8 @@ new_line_threshold = 0.2
 new_paragraph_threshold = 1.2
 
 [reader.extractor]
-@extractors = "line-extractor.v1"
+@extractors = "pdfminer-extractor.v1"
 style = true
-laparams = { "@params": "laparams.v1" }
 
 [reader.classifier]
 @classifiers = "dummy.v1"

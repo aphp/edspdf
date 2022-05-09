@@ -1,1 +1,1 @@
-from .extractor import LineExtractor
+from .base import BaseExtractor

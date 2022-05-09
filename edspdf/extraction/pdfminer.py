@@ -5,6 +5,9 @@ import pandas as pd
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LAParams
 
+from edspdf.reg import registry
+
+from .base import BaseExtractor
 from .functional import (
     extract_styled_text,
     extract_text,
@@ -13,7 +16,8 @@ from .functional import (
 )
 
 
-class LineExtractor:
+@registry.extractors.register("pdfminer-extractor.v1")
+class PdfMinerExtractor(BaseExtractor):
     """
     Extractor object. Given a PDF byte stream, produces a list of boxes.
 
@@ -27,11 +31,26 @@ class LineExtractor:
 
     def __init__(
         self,
-        laparams: Optional[LAParams] = None,
+        line_overlap: float = 0.5,
+        char_margin: float = 2.0,
+        line_margin: float = 0.5,
+        word_margin: float = 0.1,
+        boxes_flow: Optional[float] = 0.5,
+        detect_vertical: bool = False,
+        all_texts: bool = False,
         style: bool = False,
     ):
 
-        self.laparams = laparams or LAParams()
+        self.laparams = LAParams(
+            line_overlap=line_overlap,
+            char_margin=char_margin,
+            line_margin=line_margin,
+            word_margin=word_margin,
+            boxes_flow=boxes_flow,
+            detect_vertical=detect_vertical,
+            all_texts=all_texts,
+        )
+
         self.style = style
 
     def generate_lines(self, pdf: bytes) -> Optional[pd.DataFrame]:
@@ -61,7 +80,7 @@ class LineExtractor:
 
         return df
 
-    def process(self, pdf: bytes) -> Optional[pd.DataFrame]:
+    def extract(self, pdf: bytes) -> Optional[pd.DataFrame]:
         """
         Process a single PDF document.
 
@@ -95,6 +114,3 @@ class LineExtractor:
         lines = remove_outside_lines(lines, strict_mode=True)
 
         return lines
-
-    def __call__(self, pdf: bytes) -> pd.DataFrame:
-        return self.process(pdf)

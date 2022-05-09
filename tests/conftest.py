@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pytest import fixture
 
-from edspdf.extraction import LineExtractor
+from edspdf.extraction.pdfminer import PdfMinerExtractor
 
 TEST_DIR = Path(__file__).parent
 
@@ -20,7 +20,7 @@ def pdf():
 
 @fixture
 def extractor():
-    return LineExtractor(style=True)
+    return PdfMinerExtractor(style=True)
 
 
 @fixture
