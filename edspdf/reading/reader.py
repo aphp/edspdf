@@ -14,11 +14,28 @@ class PdfReader:
     def __init__(
         self,
         extractor: BaseExtractor,
-        classifier: BaseClassifier,
-        aggregator: BaseAggregator,
-        meta_labels: Dict[str, str] = dict(),
         transform: Optional[BaseTransform] = None,
+        classifier: Optional[BaseClassifier] = None,
+        aggregator: Optional[BaseAggregator] = None,
+        meta_labels: Dict[str, str] = dict(),
     ) -> None:
+        """
+        Reads a text-based PDF document,
+
+        Parameters
+        ----------
+        extractor : BaseExtractor
+            Text bloc extractor.
+        transform : Optional[BaseTransform], optional
+            Transformation to apply before classification.
+        classifier : Optional[BaseClassifier], optional
+            Classifier model, to assign a section (eg `body`, `header`, etc).
+        aggregator : Optional[BaseAggregator], optional
+            Aggregator model, to compile labelled text blocs together.
+        meta_labels : Dict[str, str], optional
+            Dictionary of hierarchical labels
+            (eg `table` is probably within the `body`).
+        """
 
         self.extractor = extractor
         self.classifier = classifier
@@ -27,17 +44,41 @@ class PdfReader:
         self.transform = transform
         self.meta_labels = meta_labels
 
-    def predict(self, lines: pd.DataFrame, copy: bool = True) -> pd.DataFrame:
+    def predict(self, lines: pd.DataFrame) -> pd.DataFrame:
+        """
+        Predict the label of each text bloc.
 
-        if copy:
-            lines = lines.copy()
+        Parameters
+        ----------
+        lines : pd.DataFrame
+            Text blocs to label.
+
+        Returns
+        -------
+        pd.DataFrame
+            Labelled text blocs.
+        """
 
         lines["label"] = self.classifier.predict(lines)
         lines["meta_label"] = lines.label.replace(self.meta_labels)
 
         return lines
 
-    def prepare_data(self, pdf: bytes, **context: Any) -> Optional[str]:
+    def prepare_data(self, pdf: bytes, **context: Any) -> pd.DataFrame:
+        """
+        Prepare data before classification.
+        Can also be used to generate the training dataset for the classifier.
+
+        Parameters
+        ----------
+        pdf : bytes
+            PDF document, as bytes.
+
+        Returns
+        -------
+        pd.DataFrame
+            Text blocs as a pandas DataFrame.
+        """
 
         lines = self.extractor(pdf)
 
@@ -51,6 +92,23 @@ class PdfReader:
         return lines
 
     def __call__(self, pdf: bytes, **context: Any) -> Dict[str, str]:
+        """
+        Process the PDF document.
+
+        Parameters
+        ----------
+        pdf : bytes
+            Byte representation of the PDF document.
+
+        context : Any
+            Any contextual information that is used by the classifier
+            (eg document type or source).
+
+        Returns
+        -------
+        Dict[str, str]
+            Dictionary containing the aggregated text.
+        """
         lines = self.prepare_data(pdf, **context)
         lines = self.predict(lines)
         result = self.aggregator(lines)
