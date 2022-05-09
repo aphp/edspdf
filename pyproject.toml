@@ -20,6 +20,7 @@ catalogue = "^2.0.7"
 thinc = "^8.0.15"
 networkx = "^2.8"
 scipy = "^1.5.0"
+pdf2image = "^1.16.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"
