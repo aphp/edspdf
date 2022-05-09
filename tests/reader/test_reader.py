@@ -22,9 +22,6 @@ laparams = { "@params": "laparams.v1" }
 [reader.transform.*.dates]
 @transforms = "dates.v1"
 
-[reader.transform.*.orbis]
-@transforms = "orbis.v1"
-
 [reader.transform.*.telephone]
 @transforms = "telephone.v1"
 
@@ -39,4 +36,4 @@ def test_reader(pdf):
 
     reader = resolved["reader"]
 
-    reader(pdf, True)
+    reader(pdf)

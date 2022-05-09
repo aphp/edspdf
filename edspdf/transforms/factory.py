@@ -1,12 +1,6 @@
-from edspdf.utils.registry import registry
+from edspdf.reg import registry
 
-from .transforms import (
-    ChainTransform,
-    add_dates,
-    add_dimensions,
-    add_orbis,
-    add_telephone,
-)
+from .transforms import ChainTransform, add_dates, add_dimensions, add_telephone
 
 
 @registry.transforms.register("chain.v1")
@@ -25,11 +19,6 @@ def telephone_transform_factory():
 @registry.transforms.register("dates.v1")
 def dates_transform_factory():
     return add_dates
-
-
-@registry.transforms.register("orbis.v1")
-def orbis_transform_factory():
-    return add_orbis
 
 
 @registry.transforms.register("dimensions.v1")

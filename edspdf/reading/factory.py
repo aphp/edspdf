@@ -3,7 +3,7 @@ from typing import Callable, Optional
 import pandas as pd
 
 from edspdf.reading.reader import Classifier, LineExtractor, PdfReader
-from edspdf.utils.registry import registry
+from edspdf.reg import registry
 
 
 @registry.readers.register("pdf-reader.v1")

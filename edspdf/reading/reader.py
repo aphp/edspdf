@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
 import pandas as pd
 from sklearn.pipeline import Pipeline
@@ -90,13 +90,16 @@ class PdfReader:
 
         return df
 
-    def process(self, pdf: bytes, orbis: bool) -> Optional[str]:
+    def process(self, pdf: bytes, **context: Any) -> Optional[str]:
 
         lines = self.extractor(pdf)
 
+        for key, value in context.items():
+            lines[key] = value
+
         # Apply transformation
         if self.transform is not None:
-            lines = self.transform(lines, orbis=orbis)
+            lines = self.transform(lines)
 
         lines = self.predict(lines)
 
@@ -109,5 +112,5 @@ class PdfReader:
 
         return body
 
-    def __call__(self, pdf: bytes, orbis: bool) -> str:
-        return self.process(pdf, orbis)
+    def __call__(self, pdf: bytes, **context: Any) -> str:
+        return self.process(pdf, **context)

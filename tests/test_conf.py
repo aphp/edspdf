@@ -23,9 +23,6 @@ laparams = { "@params": "laparams.v1" }
 [reader.transform.*.dates]
 @transforms = "dates.v1"
 
-[reader.transform.*.orbis]
-@transforms = "orbis.v1"
-
 [reader.transform.*.telephone]
 @transforms = "telephone.v1"
 
