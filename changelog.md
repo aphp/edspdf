@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.1 - 2022-05-09
+
+### Changed
+
+- The extractor **always** returns a pandas DataFrame, be it empty. It enhances robustness and stability.
+
 ## v0.2.0 - 2022-05-09
 
 ### Added
