@@ -31,6 +31,8 @@ Running Pytest:
       paths:
         - .venv
   before_script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends poppler-utils
     - pip install poetry
     - poetry config virtualenvs.in-project true
     - poetry install
