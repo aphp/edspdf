@@ -1,35 +1,12 @@
 import base64
 
-import pdf2image
 import streamlit as st
 from thinc.config import Config
 
 from edspdf import registry
 from edspdf.reading.reader import PdfReader
+from edspdf.visualization.annotations import show_annotations
 from edspdf.visualization.merge import merge_lines
-
-CATEGORY20 = [
-    "#1f77b4",
-    # "#aec7e8",
-    "#ff7f0e",
-    # "#ffbb78",
-    "#2ca02c",
-    "#98df8a",
-    "#d62728",
-    "#ff9896",
-    "#9467bd",
-    "#c5b0d5",
-    "#8c564b",
-    "#c49c94",
-    "#e377c2",
-    "#f7b6d2",
-    "#7f7f7f",
-    "#c7c7c7",
-    "#bcbd22",
-    "#dbdb8d",
-    "#17becf",
-    "#9edae5",
-]
 
 CONFIG = """\
 [reader]
@@ -112,29 +89,16 @@ if upload:
     st.subheader("Output")
 
     with st.expander("Visualisation"):
-        from PIL import ImageDraw
 
         lines = model.extractor(pdf)
         lines["label"] = model.classifier.predict(lines)  # noqa
         merged = merge_lines(lines)
 
-        colors = {
-            label: f"{color}01"
-            for label, color in zip(lines.label.unique(), CATEGORY20)
-        }
+        imgs = show_annotations(pdf=pdf, annotations=merged)
 
         page = st.selectbox("Pages", options=list(merged.page.unique() + 1)) - 1
 
-        img = pdf2image.convert_from_bytes(pdf)[page]
-        w, h = img.size
-        draw = ImageDraw.Draw(img)
-        for _, bloc in merged.query("page == @page").iterrows():
-            draw.rectangle(
-                [(bloc.x0 * w, bloc.y0 * h), (bloc.x1 * w, bloc.y1 * h)],
-                outline=colors[bloc.label],
-                width=4,
-            )
-        st.image(img)
+        st.image(imgs[page])
 
     with st.expander("PDF"):
         st.markdown(pdf_display, unsafe_allow_html=True)
