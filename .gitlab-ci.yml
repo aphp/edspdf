@@ -21,6 +21,10 @@ Linting:
     - pip install pre-commit
   script:
     - pre-commit run --all-files
+  only:
+    refs:
+      - master
+      - merge_request
 
 Running Pytest:
   stage: test
@@ -49,22 +53,26 @@ Running Pytest:
     reports:
       junit: report.xml
       cobertura: coverage.xml
-  rules:
-    - changes:
-        - tests/**
-        - edspdf/**
-        - .gitlab-ci.yml
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  only:
+    refs:
+      - master
+      - merge_request
+    changes:
+      - tests/**
+      - edspdf/**
+      - .gitlab-ci.yml
 
 Installation:
   stage: test
   script:
     - pip install .
-  rules:
-    - changes:
-        - pyproject.toml
-        - edspdf/**
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  only:
+    refs:
+      - master
+      - merge_request
+    changes:
+      - pyproject.toml
+      - edspdf/**
 
 Build documentation:
   stage: documentation
@@ -83,12 +91,13 @@ Build documentation:
   artifacts:
     paths:
       - documentation
-  rules:
-    - changes:
-        - docs/**
-        - mkdocs.yml
-        - .gitlab-ci.yml
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  only:
+    refs:
+      - master
+      - merge_request
+    changes:
+      - docs/**
+      - mkdocs.yml
 
 pages:
   stage: pages
@@ -97,8 +106,8 @@ pages:
   artifacts:
     paths:
       - public
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  only:
+    - master
 
 Package:
   stage: package
