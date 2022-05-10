@@ -32,10 +32,11 @@ style = true
 """
 
 
-def test_reader(pdf):
+def test_reader(pdf, blank_pdf):
     cfg = Config().from_str(configuration)
     resolved = registry.resolve(cfg)
 
     reader = resolved["reader"]
 
     reader(pdf, orbis=True)
+    reader(blank_pdf, orbis=True)

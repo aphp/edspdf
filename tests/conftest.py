@@ -19,6 +19,12 @@ def pdf():
 
 
 @fixture
+def blank_pdf():
+    path = TEST_DIR / "resources" / "blank.pdf"
+    return path.read_bytes()
+
+
+@fixture
 def extractor():
     return PdfMinerExtractor(style=True)
 

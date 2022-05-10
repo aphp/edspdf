@@ -65,7 +65,7 @@ class PdfMinerExtractor(BaseExtractor):
 
         self.style = style
 
-    def generate_lines(self, pdf: bytes) -> Optional[pd.DataFrame]:
+    def generate_lines(self, pdf: bytes) -> pd.DataFrame:
         """
         Generates dataframe from all blocs in the PDF.
 
@@ -86,13 +86,25 @@ class PdfMinerExtractor(BaseExtractor):
         lines = list(get_lines(layout))
 
         if not lines:
-            return None
+            return pd.DataFrame(
+                columns=[
+                    "page",
+                    "bloc",
+                    "x0",
+                    "x1",
+                    "y0",
+                    "y1",
+                    "page_width",
+                    "page_height",
+                    "line",
+                ]
+            )
 
         df = pd.DataFrame.from_records([line.dict() for line in lines])
 
         return df
 
-    def extract(self, pdf: bytes) -> Optional[pd.DataFrame]:
+    def extract(self, pdf: bytes) -> pd.DataFrame:
         """
         Process a single PDF document.
 
@@ -103,14 +115,11 @@ class PdfMinerExtractor(BaseExtractor):
 
         Returns
         -------
-        Optional[pd.DataFrame]
+        pd.DataFrame
             Dataframe containing one row for each line extracted using PDFMiner.
         """
 
         lines = self.generate_lines(pdf)
-
-        if lines is None:
-            return None
 
         lines = extract_text(lines)
 
