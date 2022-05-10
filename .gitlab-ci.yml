@@ -2,10 +2,8 @@ image: harbor.eds.aphp.fr/public/python:3.8-slim
 
 stages:
   - test
-  - documentation
   - pages
   - package
-  - deploy
 
 Linting:
   stage: test
@@ -74,8 +72,8 @@ Installation:
       - pyproject.toml
       - edspdf/**
 
-Build documentation:
-  stage: documentation
+Test documentation:
+  stage: test
   cache:
     - key:
         files:
@@ -93,7 +91,6 @@ Build documentation:
       - documentation
   only:
     refs:
-      - master
       - merge_request
     changes:
       - docs/**
@@ -101,8 +98,18 @@ Build documentation:
 
 pages:
   stage: pages
+  cache:
+    - key:
+        files:
+          - poetry.lock
+      paths:
+        - .venv
+  before_script:
+    - pip install poetry
+    - poetry config virtualenvs.in-project true
+    - poetry install
   script:
-    - mv documentation public
+    - poetry run mkdocs build --site-dir public
   artifacts:
     paths:
       - public
