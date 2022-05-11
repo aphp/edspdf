@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Removed
+
+- Outdated `params` entry in the EDS-PDF registry.
+
 ## v0.2.1 - 2022-05-09
 
 ### Changed
