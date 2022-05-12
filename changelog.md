@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.2 - 2022-05-12
+
+### Changed
+
+- Fixed `merge_lines` bug when lines were empty
+- Modified the demo consequently
+
 ## v0.2.1 - 2022-05-09
 
 ### Changed
