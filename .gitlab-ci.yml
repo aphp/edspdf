@@ -55,10 +55,6 @@ Running Pytest:
     refs:
       - master
       - merge_request
-    changes:
-      - tests/**
-      - edspdf/**
-      - .gitlab-ci.yml
 
 Installation:
   stage: test
@@ -68,9 +64,6 @@ Installation:
     refs:
       - master
       - merge_request
-    changes:
-      - pyproject.toml
-      - edspdf/**
 
 Test documentation:
   stage: test
@@ -92,9 +85,6 @@ Test documentation:
   only:
     refs:
       - merge_request
-    changes:
-      - docs/**
-      - mkdocs.yml
 
 pages:
   stage: pages
