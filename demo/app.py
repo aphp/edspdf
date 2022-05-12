@@ -76,7 +76,7 @@ if upload:
 
     base64_pdf = base64.b64encode(pdf).decode("utf-8")
 
-    body = model(pdf)["body"]
+    body = model(pdf).get("body")
 
     pdf_display = f"""\
     <iframe
@@ -96,7 +96,7 @@ if upload:
 
         imgs = show_annotations(pdf=pdf, annotations=merged)
 
-        page = st.selectbox("Pages", options=list(merged.page.unique() + 1)) - 1
+        page = st.selectbox("Pages", options=[i + 1 for i in range(len(imgs))]) - 1
 
         st.image(imgs[page])
 
@@ -104,4 +104,10 @@ if upload:
         st.markdown(pdf_display, unsafe_allow_html=True)
 
     with st.expander("Text"):
-        st.markdown("```\n" + body + "\n```")
+        if body is None:
+            st.warning(
+                "No text detected... Are you sure this is a text-based PDF?\n\n"
+                "There is no support for OCR within EDSPDF (for now?)."
+            )
+        else:
+            st.markdown("```\n" + body + "\n```")
