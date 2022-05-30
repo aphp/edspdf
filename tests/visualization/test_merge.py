@@ -28,7 +28,7 @@ def test_merge():
     assert l3 == dict(page=1, x0=0.6, x1=1, y0=0.2, y1=0.3, label="body")
 
 
-def test_pipeline(pdf):
+def test_pipeline(pdf, blank_pdf):
 
     extractor = PdfMinerExtractor()
     classifier = simple_mask_classifier_factory(
@@ -36,6 +36,11 @@ def test_pipeline(pdf):
     )
 
     df = extractor(pdf)
+    df["label"] = classifier(df)
+
+    merge_lines(df)
+
+    df = extractor(blank_pdf)
     df["label"] = classifier(df)
 
     merge_lines(df)

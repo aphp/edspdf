@@ -14,8 +14,8 @@ theme:
       toggle:
         icon: material/brightness-7
         name: Switch to light mode
-  logo: assets/logo/aphp-white.svg
-  favicon: assets/logo/edspdf-red.svg
+  logo: assets/logo/edspdf-white.svg
+  favicon: assets/logo/edspdf-blue.svg
   features:
     - navigation.tracking
     - navigation.instant
@@ -24,11 +24,11 @@ theme:
 nav:
   - index.md
   - User Guide:
-    - user-guide/index.md
-    - Classification:
-      - user-guide/classification/index.md
-      - user-guide/classification/sklearn.md
-      - user-guide/classification/mask.md
+      - user-guide/index.md
+      - Classification:
+          - user-guide/classification/index.md
+          - user-guide/classification/sklearn.md
+          - user-guide/classification/mask.md
   - Code Reference: reference/
   - alternatives.md
   - contributing.md

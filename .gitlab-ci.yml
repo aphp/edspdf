@@ -50,15 +50,14 @@ Running Pytest:
       - report.xml
     reports:
       junit: report.xml
-      cobertura: coverage.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+
   only:
     refs:
       - master
       - merge_request
-    changes:
-      - tests/**
-      - edspdf/**
-      - .gitlab-ci.yml
 
 Installation:
   stage: test
@@ -68,9 +67,6 @@ Installation:
     refs:
       - master
       - merge_request
-    changes:
-      - pyproject.toml
-      - edspdf/**
 
 Test documentation:
   stage: test
@@ -92,9 +88,6 @@ Test documentation:
   only:
     refs:
       - merge_request
-    changes:
-      - docs/**
-      - mkdocs.yml
 
 pages:
   stage: pages

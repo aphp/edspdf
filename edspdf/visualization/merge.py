@@ -112,6 +112,9 @@ def process_cliques(
 
 def merge_lines(lines: pd.DataFrame) -> pd.DataFrame:
 
+    if len(lines) == 0:
+        return lines
+
     lines["lab"] = lines["label"]
 
     while True:
