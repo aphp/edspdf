@@ -1,19 +1,22 @@
 # Changelog
 
-## Unreleased
+## v0.3.0 - 2022-06-01
 
 ## Added
 
-- Styles management
+- Styles management within the extractor
+- `styled.v1` aggregator, to handle styles
+- `rescale.v1` transform, to go back to the original height and width
 
 ## Changed
 
 - Styles and text extraction is handled by the extractor directly
-- The PDFMiner `line` object is not carried around anymore
+- The PDFMiner `line` object is not carried around any more
 
 ### Removed
 
 - Outdated `params` entry in the EDS-PDF registry.
+
 ## v0.2.2 - 2022-05-12
 
 ### Changed
