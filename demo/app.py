@@ -1,5 +1,6 @@
 import base64
 
+import pandas as pd
 import streamlit as st
 from thinc.config import Config
 
@@ -14,7 +15,6 @@ CONFIG = """\
 
 [reader.extractor]
 @extractors = "pdfminer-extractor.v1"
-style = true
 
 [reader.classifier]
 @classifiers = "mask.v1"
@@ -25,7 +25,7 @@ y1 = 0.9
 threshold = 0.1
 
 [reader.aggregator]
-@aggregators = "simple.v1"\
+@aggregators = "styled.v1"\
 """
 
 
@@ -76,7 +76,10 @@ if upload:
 
     base64_pdf = base64.b64encode(pdf).decode("utf-8")
 
-    body = model(pdf).get("body")
+    text, styles = model(pdf)
+
+    body = text.get("body")
+    body_styles = styles.get("body")
 
     pdf_display = f"""\
     <iframe
@@ -111,3 +114,12 @@ if upload:
             )
         else:
             st.markdown("```\n" + body + "\n```")
+
+    with st.expander("Styles"):
+        if body_styles is None:
+            st.warning(
+                "No text detected... Are you sure this is a text-based PDF?\n\n"
+                "There is no support for OCR within EDSPDF (for now?)."
+            )
+        else:
+            st.dataframe(pd.DataFrame.from_records(body_styles))

@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## Added
+
+- Styles management
+
+## Changed
+
+- Styles and text extraction is handled by the extractor directly
+- The PDFMiner `line` object is not carried around anymore
+
 ### Removed
 
 - Outdated `params` entry in the EDS-PDF registry.
