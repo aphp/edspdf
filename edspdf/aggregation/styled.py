@@ -25,9 +25,10 @@ class StyledAggregator(SimpleAggregator):
             np_threshold=self.np_threshold,
         )
 
-        lines["offset"] = (
-            lines["text_with_newline"].str.len().cumsum().shift().fillna(0).astype(int)
-        )
+        lines["offset"] = lines["text_with_newline"].str.len()
+        lines["offset"] = lines.groupby(["label"])["offset"].transform("cumsum")
+        lines["offset"] = lines.groupby(["label"])["offset"].transform("shift")
+        lines["offset"] = lines["offset"].fillna(0).astype(int)
 
         styles = styles.merge(lines[["line_id", "offset", "label"]], on="line_id")
         styles["start"] += styles.offset
