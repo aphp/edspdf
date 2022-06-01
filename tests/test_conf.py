@@ -27,9 +27,11 @@ new_paragraph_threshold = 1.2
 [reader.transform.*.telephone]
 @transforms = "telephone.v1"
 
+[reader.transform.*.rescale]
+@transforms = "rescale.v1"
+
 [reader.transform.*.dimensions]
 @transforms = "dimensions.v1"
-
 """
 
 

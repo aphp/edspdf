@@ -47,3 +47,16 @@ class AddDimensions(BaseTransform):
         df["area"] = df.width * df.height
 
         return df
+
+
+@registry.transforms.register("rescale.v1")
+class Rescale(BaseTransform):
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+
+        df.x0 = df.x0 * df.page_width
+        df.x1 = df.x1 * df.page_width
+
+        df.y0 = (1 - df.y0) * df.page_height
+        df.y1 = (1 - df.y1) * df.page_height
+
+        return df
