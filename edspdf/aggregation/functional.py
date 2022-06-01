@@ -5,9 +5,6 @@ def prepare_newlines(
     lines: pd.DataFrame, nl_threshold: float, np_threshold
 ) -> pd.DataFrame:
 
-    # Sort values before grouping
-    lines = lines.sort_values(["page", "y1", "x0"])
-
     # Get information
     lines["next_y1"] = lines.groupby(["label"])["y1"].shift(-1)
     lines["next_page"] = lines.groupby(["label"])["page"].shift(-1)

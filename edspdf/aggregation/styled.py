@@ -12,6 +12,8 @@ from .simple import SimpleAggregator
 class StyledAggregator(SimpleAggregator):
     def aggregate(self, lines: pd.DataFrame) -> Dict[str, str]:
 
+        lines = lines.sort_values(["page", "y1", "x0"])
+
         lines["line_id"] = range(len(lines))
 
         styles = lines[["line_id", "styles"]].explode("styles").dropna().reset_index()

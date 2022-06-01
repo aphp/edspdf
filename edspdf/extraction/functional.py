@@ -38,13 +38,13 @@ def get_blocs(
                 yield bloc, i, width, height
 
 
-def extract_text(line: LTTextBoxHorizontal) -> str:
+# def extract_text(line: LTTextBoxHorizontal) -> str:
 
-    text = line.get_text()
-    text = MULTISPACE_PATTERN.sub(" ", text)
-    text = text.strip()
+#     text = line.get_text()
+#     text = MULTISPACE_PATTERN.sub(" ", text)
+#     text = text.strip()
 
-    return text
+#     return text
 
 
 def get_lines(layout: Iterator[LTPage]) -> Iterator[Line]:
@@ -104,7 +104,6 @@ def get_lines(layout: Iterator[LTPage]) -> Iterator[Line]:
 def remove_outside_lines(
     lines: pd.DataFrame,
     strict_mode: bool = False,
-    copy: bool = False,
 ) -> pd.DataFrame:
     """
     Filter out lines that are outside the canvas.
@@ -116,9 +115,6 @@ def remove_outside_lines(
     strict_mode : bool, optional
         Whether to remove the line if any part of it is outside the canvas,
         by default False
-    copy : bool, optional
-        Whether to copy the dataframe before filtering it,
-        by default False
 
     Returns
     -------
@@ -126,10 +122,11 @@ def remove_outside_lines(
         Filtered lines.
     """
     if strict_mode:
-        lines = lines[lines[["x0", "y0", "x1", "y1"]].min(axis=1) > 0]
+        lower = lines[["x0", "y0"]].min(axis=1) >= 0
+        upper = lines[["x1", "y1"]].max(axis=1) <= 1
+        lines = lines[lower & upper]
     else:
-        lines = lines[
-            (lines[["x0", "x1"]].max(axis=1) > 0)
-            & (lines[["y0", "y1"]].max(axis=1) > 0)
-        ]
+        below = lines[["x1", "y1"]].max(axis=1) < 0
+        above = lines[["x0", "y0"]].min(axis=1) > 0
+        lines = lines[~(below | above)]
     return lines

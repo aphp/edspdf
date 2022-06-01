@@ -103,13 +103,6 @@ class Style(BaseStyle):
             y1=1 - char.y0 / height,
         )
 
-    def __str__(self) -> str:
-        """Representation for the style"""
-        s = f"font={self.font} size={round(self.size, 2)} style={self.style}"
-        if not self.upright:
-            s += " italics"
-        return s
-
     def __eq__(self, other: "Style") -> bool:
         """
         Computes equality between two styles.
@@ -144,52 +137,11 @@ class Style(BaseStyle):
 
         return st
 
-    def decorate(self, text: str) -> str:
-        """
-        Decorates a string of text with the given style, in the form:
-        `<s font=Font size=10.0 style=Normal>text</s>`
-
-        Parameters
-        ----------
-        text : str
-            Text to decorate.
-
-        Returns
-        -------
-        str
-            Decorated string.
-        """
-        return f"<s {self}>{text}</s>"
-
-    def __call__(self, text: str) -> str:
-        """
-        "Alias" for the `decorate` method.
-
-        Parameters
-        ----------
-        text : str
-            Text to decorate.
-
-        Returns
-        -------
-        str
-            Decorated string.
-        """
-        return self.decorate(text)
-
 
 class SpannedStyle(BaseStyle):
 
     start: int
     end: int
-
-    def offset(self, offset: int) -> "SpannedStyle":
-        s = self.copy()
-
-        s.start += offset
-        s.end += offset
-
-        return s
 
 
 class StyledText(BaseModel):
@@ -218,14 +170,7 @@ class StyledText(BaseModel):
     def rstrip(self) -> None:
         self.text = self.text.rstrip()
 
-    def __len__(self) -> int:
-        """Return length of the text"""
-        return len(self.text)
-
     def __add__(self, other: "StyledText") -> "StyledText":
-
-        if self.style != other.style:
-            raise ValueError("You cannot add two different styles")
 
         st = StyledText(
             text=self.text + other.text,
@@ -236,18 +181,3 @@ class StyledText(BaseModel):
 
     def __iadd__(self, other: "StyledText") -> "StyledText":
         return self + other
-
-    def __truediv__(self, other: "StyledText") -> "StyledText":
-
-        if self.style != other.style:
-            raise ValueError("You cannot add two different styles")
-
-        st = StyledText(
-            text=f"{self.text} {other.text}",
-            style=self.style + other.style,
-        )
-
-        return st
-
-    def __itruediv__(self, other: "StyledText") -> "StyledText":
-        return self / other

@@ -8,7 +8,7 @@ from pdfminer.layout import LAParams
 from edspdf.reg import registry
 
 from .base import BaseExtractor
-from .functional import extract_text, get_lines, remove_outside_lines
+from .functional import get_lines, remove_outside_lines
 
 
 @registry.extractors.register("pdfminer-extractor.v1")
@@ -97,9 +97,6 @@ class PdfMinerExtractor(BaseExtractor):
         df["line_id"] = range(len(df))
 
         return df
-
-    def extract_text(self, lines: pd.DataFrame) -> pd.DataFrame:
-        return extract_text(lines)
 
     def extract(self, pdf: bytes) -> pd.DataFrame:
         """

@@ -22,17 +22,3 @@ def pdf():
 def blank_pdf():
     path = TEST_DIR / "resources" / "blank.pdf"
     return path.read_bytes()
-
-
-@fixture
-def extractor():
-    return PdfMinerExtractor(style=True)
-
-
-@fixture
-def date_text():
-    text = (
-        "Examen du 24/06/2014, 25 JUIN 2014, "
-        "imprimé le 2-9-2014 puis signé le 28.10.2014"
-    )
-    return text

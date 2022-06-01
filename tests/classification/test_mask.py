@@ -52,6 +52,8 @@ def test_create_mask():
 def test_simple_mask(lines):
     classifier = registry.resolve(Config().from_str(configuration))["classifier"]
 
+    del classifier.comparison["threshold"]
+
     lines["label"] = classifier.predict(lines)
 
     p1, p2, p3 = lines.label.values
