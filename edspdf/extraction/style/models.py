@@ -1,4 +1,5 @@
 import re
+from typing import Optional
 
 from pdfminer.layout import LTChar
 from pydantic import BaseModel
@@ -11,6 +12,8 @@ class BaseStyle(BaseModel):
     """
     Model acting as an abstraction for a style.
     """
+
+    fontname: Optional[str] = None
 
     font: str
     style: str
@@ -70,6 +73,7 @@ class Style(BaseStyle):
             style = "Normal"
 
         s = Style(
+            fontname=fontname,
             font=font,
             style=style,
             size=size,
@@ -83,15 +87,20 @@ class Style(BaseStyle):
         return s
 
     @classmethod
-    def from_char(cls, char: LTChar):
+    def from_char(
+        cls,
+        char: LTChar,
+        width: float,
+        height: float,
+    ):
         return cls.from_fontname(
             fontname=char.fontname,
             size=char.size,
             upright=char.upright,
-            x0=char.x0,
-            x1=char.x1,
-            y0=char.y0,
-            y1=char.y1,
+            x0=char.x0 / width,
+            x1=char.x1 / width,
+            y0=1 - char.y1 / height,
+            y1=1 - char.y0 / height,
         )
 
     def __str__(self) -> str:
@@ -126,16 +135,12 @@ class Style(BaseStyle):
         if self != other:
             raise ValueError("You cannot add two different styles")
 
-        st = Style(
-            font=self.font,
-            style=self.style,
-            size=self.size,
-            upright=self.upright,
-            x0=min(self.x0, other.x0),
-            x1=max(self.x1, other.x1),
-            y0=min(self.y0, other.y0),
-            y1=max(self.y1, other.y1),
-        )
+        st = self.copy()
+
+        st.x0 = min(self.x0, other.x0)
+        st.x1 = max(self.x1, other.x1)
+        st.y0 = min(self.y0, other.y0)
+        st.y1 = max(self.y1, other.y1)
 
         return st
 
@@ -178,6 +183,14 @@ class SpannedStyle(BaseStyle):
     start: int
     end: int
 
+    def offset(self, offset: int) -> "SpannedStyle":
+        s = self.copy()
+
+        s.start += offset
+        s.end += offset
+
+        return s
+
 
 class StyledText(BaseModel):
     """
@@ -188,16 +201,21 @@ class StyledText(BaseModel):
     style: Style
 
     @classmethod
-    def from_char(cls, char: LTChar):
+    def from_char(
+        cls,
+        char: LTChar,
+        width: float,
+        height: float,
+    ):
         return StyledText(
             text=SPACE_PATTERN.sub(" ", char._text),
-            style=Style.from_char(char),
+            style=Style.from_char(char, width=width, height=height),
         )
 
     def add_space(self) -> None:
         self.text = f"{self.text.rstrip()} "
 
-    def strip(self) -> None:
+    def rstrip(self) -> None:
         self.text = self.text.rstrip()
 
     def __len__(self) -> int:

@@ -14,7 +14,6 @@ new_paragraph_threshold = 1.2
 
 [reader.extractor]
 @extractors = "pdfminer-extractor.v1"
-style = true
 
 [reader.classifier]
 @classifiers = "dummy.v1"

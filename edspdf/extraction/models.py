@@ -1,5 +1,8 @@
-from pdfminer.layout import LTTextLineHorizontal
+from typing import List
+
 from pydantic import BaseModel
+
+from .style.models import SpannedStyle
 
 
 class Line(BaseModel):
@@ -15,7 +18,5 @@ class Line(BaseModel):
     page_width: float
     page_height: float
 
-    line: LTTextLineHorizontal
-
-    class Config:
-        arbitrary_types_allowed = True
+    text: str
+    styles: List[SpannedStyle]

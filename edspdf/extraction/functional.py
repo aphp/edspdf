@@ -1,12 +1,14 @@
-from typing import Generator, Iterator, Tuple
+import re
+from typing import Iterator, Tuple
 
 import pandas as pd
 from pdfminer.high_level import LTPage
 from pdfminer.layout import LTTextBoxHorizontal
 
-from edspdf.extraction.style import line2style
-
 from .models import Line
+from .style import extract_style
+
+MULTISPACE_PATTERN = re.compile(r"\s+")
 
 
 def get_blocs(
@@ -36,7 +38,16 @@ def get_blocs(
                 yield bloc, i, width, height
 
 
-def get_lines(layout: Iterator[LTPage]) -> Generator[Line, None, None]:
+def extract_text(line: LTTextBoxHorizontal) -> str:
+
+    text = line.get_text()
+    text = MULTISPACE_PATTERN.sub(" ", text)
+    text = text.strip()
+
+    return text
+
+
+def get_lines(layout: Iterator[LTPage]) -> Iterator[Line]:
     """
     Extract lines from a PDFMiner layout object.
 
@@ -49,68 +60,45 @@ def get_lines(layout: Iterator[LTPage]) -> Generator[Line, None, None]:
 
     Yields
     -------
-    Generator[Line, None, None]
+    Iterator[Line]
         Single line object.
     """
     for b, (bloc, p, w, h) in enumerate(get_blocs(layout)):
         for line in bloc:
+            text, styles = extract_style(line, width=w, height=h)
             yield Line(
                 page=p,
                 bloc=b,
-                line=line,
                 x0=line.x0 / w,
                 x1=line.x1 / w,
                 y0=1 - line.y1 / h,
                 y1=1 - line.y0 / h,
                 page_width=w,
                 page_height=h,
+                text=text,
+                styles=styles,
             )
 
 
-def extract_text(lines: pd.DataFrame) -> pd.DataFrame:
-    """
-    Add a `text` column to a dataframe containing lines,
-    using PDFMiner's `get_text` method.
+# def extract_styled_text(lines: pd.DataFrame) -> pd.DataFrame:
+#     """
+#     Add a `styled_text` column to a dataframe of extracted lines.
 
-    Parameters
-    ----------
-    lines : pd.DataFrame
-        Dataframe containing extracted lines.
+#     Parameters
+#     ----------
+#     lines : pd.DataFrame
+#         Dataframe containing extracted lines.
 
-    Returns
-    -------
-    pd.DataFrame
-        Dataframe with the `text` column added.
-    """
+#     Returns
+#     -------
+#     pd.DataFrame
+#         Dataframe with the `styled_text` column added.
+#     """
 
-    text = lines.line.apply(lambda line: line.get_text())
-    text = text.str.replace(r"\s+", " ", regex=True)
-    text = text.str.strip()
+#     styled_text = lines.line.apply(line2style)
+#     lines["styled_text"] = styled_text
 
-    lines["text"] = text
-
-    return lines
-
-
-def extract_styled_text(lines: pd.DataFrame) -> pd.DataFrame:
-    """
-    Add a `styled_text` column to a dataframe of extracted lines.
-
-    Parameters
-    ----------
-    lines : pd.DataFrame
-        Dataframe containing extracted lines.
-
-    Returns
-    -------
-    pd.DataFrame
-        Dataframe with the `styled_text` column added.
-    """
-
-    styled_text = lines.line.apply(line2style)
-    lines["styled_text"] = styled_text
-
-    return lines
+#     return lines
 
 
 def remove_outside_lines(

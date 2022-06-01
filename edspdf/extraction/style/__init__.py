@@ -1,1 +1,1 @@
-from .style import line2style
+from .style import extract_style

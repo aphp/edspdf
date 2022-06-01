@@ -8,12 +8,7 @@ from pdfminer.layout import LAParams
 from edspdf.reg import registry
 
 from .base import BaseExtractor
-from .functional import (
-    extract_styled_text,
-    extract_text,
-    get_lines,
-    remove_outside_lines,
-)
+from .functional import extract_text, get_lines, remove_outside_lines
 
 
 @registry.extractors.register("pdfminer-extractor.v1")
@@ -50,7 +45,6 @@ class PdfMinerExtractor(BaseExtractor):
         boxes_flow: Optional[float] = 0.5,
         detect_vertical: bool = False,
         all_texts: bool = False,
-        style: bool = False,
     ):
 
         self.laparams = LAParams(
@@ -62,8 +56,6 @@ class PdfMinerExtractor(BaseExtractor):
             detect_vertical=detect_vertical,
             all_texts=all_texts,
         )
-
-        self.style = style
 
     def generate_lines(self, pdf: bytes) -> pd.DataFrame:
         """
@@ -96,13 +88,18 @@ class PdfMinerExtractor(BaseExtractor):
                     "y1",
                     "page_width",
                     "page_height",
-                    "line",
+                    "text",
+                    "styles",
                 ]
             )
 
         df = pd.DataFrame.from_records([line.dict() for line in lines])
+        df["line_id"] = range(len(df))
 
         return df
+
+    def extract_text(self, lines: pd.DataFrame) -> pd.DataFrame:
+        return extract_text(lines)
 
     def extract(self, pdf: bytes) -> pd.DataFrame:
         """
@@ -116,17 +113,10 @@ class PdfMinerExtractor(BaseExtractor):
         Returns
         -------
         pd.DataFrame
-            Dataframe containing one row for each line extracted using PDFMiner.
+            DataFrame containing one row for each line extracted using PDFMiner.
         """
 
         lines = self.generate_lines(pdf)
-
-        lines = extract_text(lines)
-
-        if self.style:
-            lines = extract_styled_text(lines)
-
-        lines.drop(columns=["line"])
 
         # Remove empty lines
         lines = lines[lines.text.str.len() > 0]
