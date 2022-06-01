@@ -69,8 +69,8 @@ def get_lines(layout: Iterator[LTPage]) -> Generator[Line, None, None]:
 
 def extract_text(lines: pd.DataFrame) -> pd.DataFrame:
     """
-    Add a ``text`` column to a dataframe containing lines,
-    using PDFMiner's ``get_text`` method.
+    Add a `text` column to a dataframe containing lines,
+    using PDFMiner's `get_text` method.
 
     Parameters
     ----------
@@ -80,7 +80,7 @@ def extract_text(lines: pd.DataFrame) -> pd.DataFrame:
     Returns
     -------
     pd.DataFrame
-        Dataframe with the ``text`` column added.
+        Dataframe with the `text` column added.
     """
 
     text = lines.line.apply(lambda line: line.get_text())
@@ -94,7 +94,7 @@ def extract_text(lines: pd.DataFrame) -> pd.DataFrame:
 
 def extract_styled_text(lines: pd.DataFrame) -> pd.DataFrame:
     """
-    Add a ``styled_text`` column to a dataframe of extracted lines.
+    Add a `styled_text` column to a dataframe of extracted lines.
 
     Parameters
     ----------
@@ -104,7 +104,7 @@ def extract_styled_text(lines: pd.DataFrame) -> pd.DataFrame:
     Returns
     -------
     pd.DataFrame
-        Dataframe with the ``styled_text`` column added.
+        Dataframe with the `styled_text` column added.
     """
 
     styled_text = lines.line.apply(line2style)
