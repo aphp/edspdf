@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.1 - 2022-06-02
+
+## Fixed
+
+- Rescale transform now keeps origin on top-left corner
+
 ## v0.3.0 - 2022-06-01
 
 ## Added
