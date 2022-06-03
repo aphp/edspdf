@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.2 - 2022-06-03
+
+## Added
+
+- `compare_results` in visualisation
+
 ## v0.3.1 - 2022-06-02
 
 ## Fixed
