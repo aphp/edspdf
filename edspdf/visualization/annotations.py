@@ -1,8 +1,9 @@
-from typing import List
+from typing import Dict, List, Optional, Union
 
+import numpy as np
 import pandas as pd
 import pdf2image
-from PIL import ImageDraw
+from PIL import Image, ImageDraw
 from PIL.PpmImagePlugin import PpmImageFile
 
 CATEGORY20 = [
@@ -29,9 +30,20 @@ CATEGORY20 = [
 ]
 
 
-def show_annotations(pdf: bytes, annotations: pd.DataFrame) -> List[PpmImageFile]:
+def show_annotations(
+    pdf: bytes,
+    annotations: pd.DataFrame,
+    colors: Optional[Union[Dict[str, str], List[str]]] = None,
+) -> List[PpmImageFile]:
     pages = pdf2image.convert_from_bytes(pdf)
-    colors = {key: color for key, color in zip(annotations.label.unique(), CATEGORY20)}
+
+    if colors is None:
+        colors = {
+            key: color
+            for key, color in zip(sorted(annotations.label.unique()), CATEGORY20)
+        }
+    elif isinstance(colors, list):
+        colors = {label: color for label, color in zip(colors, CATEGORY20)}
 
     for page, img in enumerate(pages):
         anns = annotations[annotations.page == page]
@@ -45,5 +57,28 @@ def show_annotations(pdf: bytes, annotations: pd.DataFrame) -> List[PpmImageFile
                 outline=colors[bloc.label],
                 width=4,
             )
+
+    return pages
+
+
+def compare_results(
+    pdf: bytes,
+    predictions: pd.DataFrame,
+    labels: pd.DataFrame,
+    colors: Optional[Union[Dict[str, str], List[str]]] = None,
+) -> List[PpmImageFile]:
+
+    if colors is None:
+        colors = set(list(predictions.label.unique()) + list(labels.label.unique()))
+        colors = list(colors)
+
+    pages_preds = show_annotations(pdf, predictions, colors)
+    pages_labels = show_annotations(pdf, labels, colors)
+
+    pages = []
+
+    for pred, label in zip(pages_preds, pages_labels):
+        array = np.hstack((np.asarray(pred), np.asarray(label)))
+        pages.append(Image.fromarray(array))
 
     return pages

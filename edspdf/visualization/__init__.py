@@ -1,2 +1,2 @@
-from .annotations import show_annotations
+from .annotations import compare_results, show_annotations
 from .merge import merge_lines

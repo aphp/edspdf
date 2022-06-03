@@ -91,6 +91,11 @@ class PdfReader:
 
         return lines
 
+    def prepare_and_predict(self, pdf: bytes, **context: Any) -> pd.DataFrame:
+        lines = self.prepare_data(pdf, **context)
+        lines = self.predict(lines)
+        return lines
+
     def __call__(self, pdf: bytes, **context: Any) -> Dict[str, str]:
         """
         Process the PDF document.
