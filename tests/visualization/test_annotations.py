@@ -1,6 +1,6 @@
 from edspdf.classification.mask import simple_mask_classifier_factory
 from edspdf.extraction.pdfminer import PdfMinerExtractor
-from edspdf.visualization import merge_lines, show_annotations
+from edspdf.visualization import compare_results, merge_lines, show_annotations
 
 
 def test_pipeline(pdf):
@@ -16,3 +16,4 @@ def test_pipeline(pdf):
     merged = merge_lines(df)
 
     show_annotations(pdf, merged)
+    compare_results(pdf, merged, merged)

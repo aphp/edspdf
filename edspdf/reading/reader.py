@@ -114,7 +114,6 @@ class PdfReader:
         Dict[str, str]
             Dictionary containing the aggregated text.
         """
-        lines = self.prepare_data(pdf, **context)
-        lines = self.predict(lines)
+        lines = self.prepare_and_predict(pdf, **context)
         result = self.aggregator(lines)
         return result
