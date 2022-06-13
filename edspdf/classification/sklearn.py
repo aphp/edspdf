@@ -15,7 +15,8 @@ from .base import BaseClassifier
 def sklearn_factory(path: Path, package: Optional[Path] = None) -> "SklearnClassifier":
 
     if package is not None:
-        path = resources.path(package=package, resource=path)
+        with resources.path(package=package, resource="__init__.py") as p:
+            path = p.parent / path
 
     pipeline = load(path)
 
