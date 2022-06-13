@@ -1,5 +1,6 @@
+from importlib import resources
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 from joblib import load
@@ -11,8 +12,13 @@ from .base import BaseClassifier
 
 
 @registry.classifiers.register("sklearn-pipeline.v1")
-def sklearn_factory(path: Path) -> "SklearnClassifier":
+def sklearn_factory(path: Path, package: Optional[Path] = None) -> "SklearnClassifier":
+
+    if package is not None:
+        path = resources.path(package=package, path=path)
+
     pipeline = load(path)
+
     return SklearnClassifier(pipeline=pipeline)
 
 
