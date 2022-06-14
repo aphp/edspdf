@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.4.0 - 2022-06-14
+
+## Added
+
+- Python 3.7 support, by relaxing dependency constraints
+- Support for package-resource pipeline for `sklearn-pipeline.v1`
+
 ## v0.3.2 - 2022-06-03
 
 ## Added
