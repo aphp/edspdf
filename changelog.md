@@ -2,38 +2,38 @@
 
 ## v0.4.1 - 2022-06-14
 
-## Fixed
+### Fixed
 
 - Remove `importlib.metadata` dependency, which led to issues with Python 3.7
 
 ## v0.4.0 - 2022-06-14
 
-## Added
+### Added
 
 - Python 3.7 support, by relaxing dependency constraints
 - Support for package-resource pipeline for `sklearn-pipeline.v1`
 
 ## v0.3.2 - 2022-06-03
 
-## Added
+### Added
 
 - `compare_results` in visualisation
 
 ## v0.3.1 - 2022-06-02
 
-## Fixed
+### Fixed
 
 - Rescale transform now keeps origin on top-left corner
 
 ## v0.3.0 - 2022-06-01
 
-## Added
+### Added
 
 - Styles management within the extractor
 - `styled.v1` aggregator, to handle styles
 - `rescale.v1` transform, to go back to the original height and width
 
-## Changed
+### Changed
 
 - Styles and text extraction is handled by the extractor directly
 - The PDFMiner `line` object is not carried around any more
