@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.1 - 2022-06-14
+
+## Fixed
+
+- Remove `importlib.metadata` dependency, which led to issues with Python 3.7
+
 ## v0.4.0 - 2022-06-14
 
 ## Added
