@@ -10,6 +10,7 @@ class Registry:
     aggregators = catalogue.create("edspdf", "aggregators", entry_points=True)
     transforms = catalogue.create("edspdf", "transforms", entry_points=True)
     classifiers = catalogue.create("edspdf", "classifiers", entry_points=True)
+    misc = catalogue.create("edspdf", "misc", entry_points=True)
 
     _catalogue = dict(
         extractors=extractors,
@@ -17,6 +18,7 @@ class Registry:
         readers=readers,
         classifiers=classifiers,
         transforms=transforms,
+        misc=misc,
     )
 
     def resolve(
