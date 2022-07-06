@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.2 - 2022-07-06
+
+### Added
+
+- `package-resource.v1` in the misc registry
+
 ## v0.4.1 - 2022-06-14
 
 ### Fixed
