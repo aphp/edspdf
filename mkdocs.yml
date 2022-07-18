@@ -33,7 +33,7 @@ nav:
           - user-guide/classification/sklearn.md
           - user-guide/classification/mask.md
       - user-guide/aggregation.md
-      - user-guide/utilities.md
+  - utilities/visualisation.md
   - Code Reference: reference/
   - alternatives.md
   - contributing.md
@@ -70,6 +70,14 @@ plugins:
             heading_level: 2
             members_order: source
             show_root_toc_entry: false
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: none
+      width: 100%
+      height: auto
+      zoomable: true
+      draggable: true
 
 markdown_extensions:
   - admonition

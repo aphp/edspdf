@@ -43,6 +43,7 @@ mkdocstrings = "^0.18.1"
 mkdocstrings-python = "^0.6.6"
 streamlit = "^1.8.1"
 mypy = "^0.950"
+mkdocs-glightbox = "^0.1.6"
 
 [tool.interrogate]
 ignore-init-method = true

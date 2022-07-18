@@ -15,3 +15,7 @@ color:green Installation successful
 ```
 
 </div>
+
+## Acknowledgement
+
+We would like to thank [Assistance Publique – Hôpitaux de Paris](https://www.aphp.fr/) and [AP-HP Foundation](https://fondationrechercheaphp.fr/) for funding this project.
