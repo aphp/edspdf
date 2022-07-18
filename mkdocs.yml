@@ -19,16 +19,21 @@ theme:
   features:
     - navigation.tracking
     - navigation.instant
+    - navigation.indexes
     - content.code.annotate
 
 nav:
   - index.md
   - User Guide:
       - user-guide/index.md
+      - user-guide/extraction.md
+      - user-guide/transforms.md
       - Classification:
           - user-guide/classification/index.md
           - user-guide/classification/sklearn.md
           - user-guide/classification/mask.md
+      - user-guide/aggregation.md
+      - user-guide/utilities.md
   - Code Reference: reference/
   - alternatives.md
   - contributing.md

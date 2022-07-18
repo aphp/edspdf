@@ -32,8 +32,6 @@ class PdfMinerExtractor(BaseExtractor):
         See PDFMiner documentation
     all_texts : bool
         See PDFMiner documentation
-    style : bool
-        Whether to export style (experimental)
     """
 
     def __init__(

@@ -15,7 +15,7 @@ The simplest form. You define the mask, everything else is tagged as a pollution
 
 Example configuration :
 
-```conf
+```toml
 [classifier]
 @classifiers = "mask.v1"
 x0 = 0.1
@@ -31,7 +31,7 @@ A generalisation, wherein the user defines a number of regions.
 
 The following configuration produces _exactly_ the same classifier as `mask.v1` example above.
 
-```conf
+```toml
 [classifier]
 @classifiers = "custom_masks.v1"
 
@@ -46,7 +46,7 @@ threshold = 0.9
 
 The following configuration defines a `header` region.
 
-```conf
+```toml
 [classifier]
 @classifiers = "custom_masks.v1"
 

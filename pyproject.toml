@@ -2,11 +2,13 @@
 name = "edspdf"
 version = "0.4.2"
 description = "Smart text extraction from PDF documents"
-authors = ["Basile Dura <basile.dura-ext@aphp.fr>"]
+authors = [
+    "Basile Dura <basile.dura-ext@aphp.fr>"
+]
 license = "BSD-3"
 readme = "README.md"
 homepage = "https://datasciencetools-pages.eds.aphp.fr/edspdf/"
-repository = "https://gitlab.eds.aphp.fr/datasciencetools/edspdf"
+repository = "https://gitlab.eds.aphp.fr/datasciencetools/edspdf/"
 documentation = "https://datasciencetools-pages.eds.aphp.fr/edspdf/"
 
 [tool.poetry.dependencies]
@@ -30,7 +32,6 @@ jupytext = "^1.13.8"
 pre-commit = "^2.18.1"
 pytest = "^7.1.1"
 pytest-cov = "^3.0.0"
-pytest-html = "^3.1.1"
 griffe = "^0.19.0"
 Jinja2 = ">=2.10.2<=3.0.3"
 mike = "^1.1.2"

@@ -1,0 +1,35 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  EDS-PDF: Smart text extraction from PDF documents
+message: If you use EDS-PDF, please cite us as below.
+type: software
+authors:
+  - given-names: Basile
+    family-names: Dura
+    orcid: "https://orcid.org/0000-0002-8315-4050"
+    affiliation: Assistance Publique – Hôpitaux de Paris
+  - given-names: Alice
+    family-names: Calliger
+    affiliation: Assistance Publique – Hôpitaux de Paris
+  - given-names: Perceval
+    family-names: Wajsburt
+    affiliation: Assistance Publique – Hôpitaux de Paris
+  - given-names: Christel
+    family-names: Gérardin
+    affiliation: Assistance Publique – Hôpitaux de Paris
+  - given-names: Romain
+    family-names: Bey
+    affiliation: Assistance Publique – Hôpitaux de Paris
+repository-code: "https://gitlab.eds.aphp.fr/datasciencetools/eds-pseudonymisation"
+url: "https://gitlab.eds.aphp.fr/datasciencetools/eds-pseudonymisation"
+abstract: >-
+  EDS-PDF provides modular framework to extract text from PDF documents.
+keywords:
+  - PDF
+  - extraction
+  - NLP
+license: BSD-3-Clause
+year: 2022
