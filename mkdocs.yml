@@ -33,7 +33,10 @@ nav:
           - user-guide/classification/sklearn.md
           - user-guide/classification/mask.md
       - user-guide/aggregation.md
-  - utilities/visualisation.md
+  - Utilities:
+      - utilities/index.md
+      - utilities/visualisation.md
+      - utilities/alignment.md
   - Code Reference: reference/
   - alternatives.md
   - contributing.md
@@ -60,6 +63,7 @@ plugins:
         - docs/scripts/generate_development.py
   - literate-nav:
       nav_file: SUMMARY.md
+  - autorefs
   - mkdocstrings:
       handlers:
         python:

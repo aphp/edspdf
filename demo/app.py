@@ -14,7 +14,7 @@ CONFIG = """\
 @readers = "pdf-reader.v1"
 
 [reader.extractor]
-@extractors = "pdfminer-extractor.v1"
+@extractors = "pdfminer.v1"
 
 [reader.classifier]
 @classifiers = "mask.v1"
@@ -63,7 +63,7 @@ def load_model(cfg) -> PdfReader:
 
 model_load_state = st.info("Loading model...")
 
-model = load_model(config)
+reader = load_model(config)
 
 model_load_state.empty()
 
@@ -76,7 +76,7 @@ if upload:
 
     base64_pdf = base64.b64encode(pdf).decode("utf-8")
 
-    text, styles = model(pdf)
+    text, styles = reader(pdf)
 
     body = text.get("body")
     body_styles = styles.get("body")
@@ -93,8 +93,7 @@ if upload:
 
     with st.expander("Visualisation"):
 
-        lines = model.extractor(pdf)
-        lines["label"] = model.classifier.predict(lines)  # noqa
+        lines = reader.prepare_and_predict(pdf)  # noqa
         merged = merge_lines(lines)
 
         imgs = show_annotations(pdf=pdf, annotations=merged)
