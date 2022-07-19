@@ -13,9 +13,9 @@ from edspdf.transforms import BaseTransform
 class PdfReader:
     def __init__(
         self,
-        extractor: BaseExtractor,
-        classifier: BaseClassifier,
-        aggregator: BaseAggregator,
+        extractor: Optional[BaseExtractor] = None,
+        classifier: Optional[BaseClassifier] = None,
+        aggregator: Optional[BaseAggregator] = None,
         transform: Optional[BaseTransform] = None,
         meta_labels: Dict[str, str] = dict(),
     ) -> None:
