@@ -4,7 +4,7 @@ import pandas as pd
 def align_labels(
     lines: pd.DataFrame,
     labels: pd.DataFrame,
-    threshold: float = 1,
+    threshold: float = 0.0001,
 ) -> pd.DataFrame:
     """
     Align lines with possibly overlapping (and non-exhaustive) labels.
@@ -29,7 +29,9 @@ def align_labels(
 
     lines["uid"] = range(len(lines))
 
-    df = lines[["uid", "x0", "y0", "x1", "y1"]].copy()
+    df = lines[
+        sorted({"uid", "page", "x0", "y0", "x1", "y1"} & set(lines.columns))
+    ].copy()
     labels = labels.copy()
 
     if "threshold" not in labels.columns:
@@ -37,7 +39,9 @@ def align_labels(
 
     labels.threshold = labels.threshold.fillna(threshold)
 
-    df = df.merge(labels, how="cross")
+    df = df.merge(
+        labels, how="inner" if set(df.columns) & set(labels.columns) else "cross"
+    )
 
     df["dx"] = df[["x1", "X1"]].min(axis=1) - df[["x0", "X0"]].max(axis=1)
     df["dy"] = df[["y1", "Y1"]].min(axis=1) - df[["y0", "Y0"]].max(axis=1)

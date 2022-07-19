@@ -60,7 +60,7 @@ def test_simple_mask(lines):
 
     assert p1 == "pollution"
     assert p2 == "body"
-    assert p3 == "pollution"
+    assert p3 == "body"
 
 
 def test_custom_mask(lines):
