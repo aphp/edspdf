@@ -52,18 +52,30 @@ We can review the different stages of the pipeline:
 | Classification | DataFrame   | DataFrame | Categorises each bloc                             |
 | Aggregation    | DataFrame   | Dict      | Re-creates the original text                      |
 
-## Modularity
-
-EDS-PDF includes everything you need to get started on text extraction, and ships with a number
-of trainable classifiers. But it also makes it extremely easy to extend its functionalities by
-designing new pipelines.
+## Configuration
 
 Following the example of spaCy, EDS-PDF is organised around Explosion's
 [`catalogue` library](https://github.com/explosion/catalogue), enabling a powerful configuration
 system based on an extendable registry.
+
+The following catalogues are included within EDS-PDF:
+
+| Section       | Description                                                            |
+| ------------- | ---------------------------------------------------------------------- |
+| `readers`     | Top-level object, encapsulating a full EDS-PDF pipeline                |
+| `extractors`  | Text bloc extraction models                                            |
+| `transforms`  | Transformations that can be applied to each bloc before classification |
+| `classifiers` | Classification routines (eg rule- or ml-based)                         |
+| `misc`        | Some miscellaneous utility functions                                   |
 
 Much like spaCy pipelines, EDS-PDF pipelines are meant to be reproducible and serialisable,
 such that the primary way to define a pipeline is through the configuration system.
 
 For more information on the configuration system, refer to the documentations of
 [Thinc](https://thinc.ai/docs/usage-config) and [spaCy](https://spacy.io/usage/training#config).
+
+## Modularity and Extensibility
+
+EDS-PDF includes everything you need to get started on text extraction, and ships with a number
+of trainable classifiers. But it also makes it extremely easy to extend its functionalities by
+designing new pipelines.

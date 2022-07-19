@@ -25,10 +25,10 @@ theme:
 nav:
   - index.md
   - rationale.md
-  # - Recipes:
-  #     - recipes/index.md
-  #     - recipes/rules.md
-  #     - Simple Trained Pipeline: recipes/sklearn.md
+  - Recipes:
+      - recipes/index.md
+      - recipes/rules.md
+      - A First Trained Pipeline: recipes/sklearn.md
   - Modules:
       - modules/index.md
       - modules/extraction.md

@@ -63,6 +63,8 @@ texts["body"]
 
 1. The `reader` object is loaded from the configuration directly.
 
+See the [rule-based recipe](recipes/rules.md) for a step-by-step explanation of what is happening.
+
 ## Acknowledgement
 
 We would like to thank [Assistance Publique – Hôpitaux de Paris](https://www.aphp.fr/) and
