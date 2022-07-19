@@ -15,13 +15,14 @@ We use [Poetry](https://python-poetry.org) to manage dependencies. See the [inst
 <div class="termy">
 
 ```console
-# Clone the repository and change directory
-$ git clone ssh://git@gitlab.eds.aphp.fr:2224/datasciencetools/edspdf.git
+color:gray # Clone the repository and change directory
+$ git clone ssh://git@github.com/aphp/edspdf.git
 ---> 100%
+
 $ cd edspdf
 
-# Finally, install the package in editable mode
-$ pip install -e .
+color:gray # Install the dependencies
+$ poetry install
 ```
 
 </div>
@@ -91,7 +92,7 @@ We use `MkDocs` for EDS-Toolbox's documentation. You can checkout the changes yo
 <div class="termy">
 
 ```console
-# Run the documentation
+color:gray # Run the documentation
 $ mkdocs serve
 ```
 

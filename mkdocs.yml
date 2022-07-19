@@ -24,15 +24,20 @@ theme:
 
 nav:
   - index.md
-  - User Guide:
-      - user-guide/index.md
-      - user-guide/extraction.md
-      - user-guide/transforms.md
+  - rationale.md
+  # - Recipes:
+  #     - recipes/index.md
+  #     - recipes/rules.md
+  #     - Simple Trained Pipeline: recipes/sklearn.md
+  - Modules:
+      - modules/index.md
+      - modules/extraction.md
+      - modules/transforms.md
       - Classification:
-          - user-guide/classification/index.md
-          - user-guide/classification/sklearn.md
-          - user-guide/classification/mask.md
-      - user-guide/aggregation.md
+          - modules/classification/index.md
+          - modules/classification/sklearn.md
+          - modules/classification/mask.md
+      - modules/aggregation.md
   - Utilities:
       - utilities/index.md
       - utilities/visualisation.md
@@ -52,6 +57,11 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/vega-lite@5
   - https://cdn.jsdelivr.net/npm/vega-embed@6
   - assets/termynal/termynal.js
+
+watch:
+  - contributing.md
+  - roadmap.md
+  - changelog.md
 
 plugins:
   - search
