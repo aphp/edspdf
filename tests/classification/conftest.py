@@ -16,3 +16,22 @@ def lines() -> pd.DataFrame:
     df["page_height"] = 1
 
     return df
+
+
+@fixture
+def multipage_lines() -> pd.DataFrame:
+    df = pd.DataFrame.from_records(
+        [
+            dict(x0=0.1, y0=0.1, x1=0.9, y1=0.2, page=0),
+            dict(x0=0.1, y0=0.6, x1=0.4, y1=0.7, page=0),
+            dict(x0=0.1, y0=0.6, x1=0.9, y1=0.7, page=0),
+            dict(x0=0.1, y0=0.1, x1=0.9, y1=0.2, page=1),
+            dict(x0=0.1, y0=0.6, x1=0.4, y1=0.7, page=1),
+            dict(x0=0.1, y0=0.6, x1=0.9, y1=0.7, page=1),
+        ]
+    )
+
+    df["page_width"] = 1
+    df["page_height"] = 1
+
+    return df
