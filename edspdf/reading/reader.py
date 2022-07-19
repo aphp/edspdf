@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -14,9 +14,9 @@ class PdfReader:
     def __init__(
         self,
         extractor: BaseExtractor,
+        classifier: BaseClassifier,
+        aggregator: BaseAggregator,
         transform: Optional[BaseTransform] = None,
-        classifier: Optional[BaseClassifier] = None,
-        aggregator: Optional[BaseAggregator] = None,
         meta_labels: Dict[str, str] = dict(),
     ) -> None:
         """
@@ -26,12 +26,12 @@ class PdfReader:
         ----------
         extractor : BaseExtractor
             Text bloc extractor.
-        transform : Optional[BaseTransform], optional
-            Transformation to apply before classification.
-        classifier : Optional[BaseClassifier], optional
+        classifier : BaseClassifier
             Classifier model, to assign a section (eg `body`, `header`, etc).
-        aggregator : Optional[BaseAggregator], optional
+        aggregator : BaseAggregator
             Aggregator model, to compile labelled text blocs together.
+        transform : BaseTransform, optional
+            Transformation to apply before classification.
         meta_labels : Dict[str, str], optional
             Dictionary of hierarchical labels
             (eg `table` is probably within the `body`).
@@ -96,7 +96,9 @@ class PdfReader:
         lines = self.predict(lines)
         return lines
 
-    def __call__(self, pdf: bytes, **context: Any) -> Dict[str, str]:
+    def __call__(
+        self, pdf: bytes, **context: Any
+    ) -> Union[Dict[str, str], Tuple[Dict[str, str], Dict[str, Any]]]:
         """
         Process the PDF document.
 

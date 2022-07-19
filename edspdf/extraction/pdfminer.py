@@ -11,7 +11,7 @@ from .base import BaseExtractor
 from .functional import get_lines, remove_outside_lines
 
 
-@registry.extractors.register("pdfminer-extractor.v1")
+@registry.extractors.register("pdfminer.v1")
 class PdfMinerExtractor(BaseExtractor):
     """
     Extractor object. Given a PDF byte stream, produces a list of blocs.

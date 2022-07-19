@@ -69,8 +69,9 @@ def compare_results(
 ) -> List[PpmImageFile]:
 
     if colors is None:
-        colors = set(list(predictions.label.unique()) + list(labels.label.unique()))
-        colors = list(colors)
+        colors = list(
+            set(list(predictions.label.unique()) + list(labels.label.unique()))
+        )
 
     pages_preds = show_annotations(pdf, predictions, colors)
     pages_labels = show_annotations(pdf, labels, colors)
