@@ -1,6 +1,8 @@
 from pathlib import Path
-from edspdf import registry
+
 from thinc.api import Config
+
+from edspdf import registry
 from edspdf.reading.reader import PdfReader
 
 

@@ -1,7 +1,8 @@
 from pathlib import Path
-from pytest import fixture
-from edspdf import load, from_str
 
+from pytest import fixture
+
+from edspdf import from_str, load
 
 CONFIG = """
 [reader]

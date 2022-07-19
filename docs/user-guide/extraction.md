@@ -19,6 +19,6 @@ Be sure to have a look at their documentation, especially the
 
 Image-based PDF documents require an OCR[^1] step, which is not natively supported by EDS-PDF.
 However, you can easily extend EDS-PDF by adding such a method to the registry, and using that
-extractor function in place of `pdfminer.v1`. 
+extractor function in place of `pdfminer.v1`.
 
 [^1]: Optical Character Recognition, or OCR, is the process of converting an image of text into a text format.
