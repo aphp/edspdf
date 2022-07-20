@@ -16,7 +16,7 @@ text in markdown format.
 
 ## Developing the new aggregator
 
-Our aggregator will inherit from the [`StyledAggregator`][edspdf.aggregation.styled.styledaggregator],
+Our aggregator will inherit from the [`StyledAggregator`][edspdf.aggregation.styled.StyledAggregator],
 and use the style to detect italics and bold sections.
 
 ```python title="markdown_aggregator.py"

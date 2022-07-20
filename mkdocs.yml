@@ -28,8 +28,9 @@ nav:
   - Recipes:
       - recipes/index.md
       - recipes/rules.md
-      - recipes/extension.md
       - A First Trained Pipeline: recipes/sklearn.md
+      - recipes/extension.md
+      - recipes/annotation.md
   - Modules:
       - modules/index.md
       - modules/extraction.md
