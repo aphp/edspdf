@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.4.3 - 2022-07-20
 
 - Fix multi page boxes alignment
 
