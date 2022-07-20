@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List, Tuple
 
 import pandas as pd
 
@@ -10,7 +10,13 @@ from .simple import SimpleAggregator
 
 @registry.aggregators.register("styled.v1")
 class StyledAggregator(SimpleAggregator):
-    def aggregate(self, lines: pd.DataFrame) -> Dict[str, str]:
+    """
+    Aggregator that returns text and styles.
+    """
+
+    def aggregate(
+        self, lines: pd.DataFrame
+    ) -> Tuple[Dict[str, str], Dict[str, List[Dict]]]:
 
         lines = lines.sort_values(["page", "y1", "x0"])
 

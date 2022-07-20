@@ -71,6 +71,76 @@ The following catalogues are included within EDS-PDF:
 Much like spaCy pipelines, EDS-PDF pipelines are meant to be reproducible and serialisable,
 such that the primary way to define a pipeline is through the configuration system.
 
+To wit, compare the API-based approach to the configuration-based approach (the two are strictly equivalent):
+
+=== "API-based"
+
+    ```python hl_lines="4-14"
+    from edspdf import aggregation, reading, extraction, classification
+    from pathlib import Path
+
+    reader = reading.PdfReader(
+        extractor=extraction.PdfMinerExtractor(),
+        classifier=classification.simple_mask_classifier_factory(
+            x0=0.2,
+            x1=0.9,
+            y0=0.3,
+            y1=0.6,
+            threshold=0.1,
+        ),
+        aggregator=aggregation.SimpleAggregation(),
+    )
+
+    # Get a PDF
+    pdf = Path("letter.pdf").read_bytes()
+
+    texts = reader(pdf)
+
+    texts["body"]
+    # Out: Cher Pr ABC, Cher DEF,\n...
+    ```
+
+=== "Configuration-based"
+
+    ```toml title="config.cfg"
+    [reader]
+    @readers = "pdf-reader.v1"
+
+    [reader.extractor]
+    @extractors = "pdfminer.v1"
+
+    [reader.classifier]
+    @classifiers = "mask.v1"
+    x0 = 0.2
+    x1 = 0.9
+    y0 = 0.3
+    y1 = 0.6
+    threshold = 0.1
+
+    [reader.aggregator]
+    @aggregators = "simple.v1"
+    ```
+
+    ```python hl_lines="4-5"
+    from edspdf import registry, Config
+    from pathlib import Path
+
+    config = Config().from_disk("config.cfg")
+    reader = registry.resolve(config)["reader"]
+
+    # Get a PDF
+    pdf = Path("letter.pdf").read_bytes()
+
+    texts = reader(pdf)
+
+    texts["body"]
+    # Out: Cher Pr ABC, Cher DEF,\n...
+    ```
+
+The configuration-based approach strictly separates the definition of the pipeline
+to its application and avoids tucking away important configuration details.
+Changes to the pipeline are transparent as there is a single source of truth: the configuration file.
+
 For more information on the configuration system, refer to the documentations of
 [Thinc](https://thinc.ai/docs/usage-config) and [spaCy](https://spacy.io/usage/training#config).
 

@@ -1,3 +1,5 @@
+from thinc.api import Config
+
 from edspdf.reg import registry
 
 from . import aggregation, classification, extraction, misc, reading, transforms

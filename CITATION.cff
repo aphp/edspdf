@@ -23,13 +23,14 @@ authors:
   - given-names: Romain
     family-names: Bey
     affiliation: Assistance Publique – Hôpitaux de Paris
-repository-code: "https://gitlab.eds.aphp.fr/datasciencetools/eds-pseudonymisation"
-url: "https://gitlab.eds.aphp.fr/datasciencetools/eds-pseudonymisation"
+repository-code: "https://gitlab.eds.aphp.fr/datasciencetools/edspdf"
+url: "https://gitlab.eds.aphp.fr/datasciencetools/edspdf"
 abstract: >-
-  EDS-PDF provides modular framework to extract text from PDF documents.
+  EDS-PDF provides a modular and extendable framework to extract text from PDF documents.
 keywords:
   - PDF
   - extraction
+  - python
   - NLP
 license: BSD-3-Clause
 year: 2022
