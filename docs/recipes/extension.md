@@ -117,5 +117,5 @@ Catalogue solves this problem by using Python _entry points_.
     )
     ```
 
-By declaring the module as an entrypoint, it will become discoverable by EDS-PDF
-as long as it is installed in your environment.
+By declaring the new aggregator as an entrypoint, it will become discoverable by EDS-PDF
+as long as it is installed in your environment!
