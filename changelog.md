@@ -2,7 +2,9 @@
 
 ## v0.4.3 - 2022-07-20
 
-- Fix multi page boxes alignment
+### Fixed
+
+- Multi page boxes alignment
 
 ## v0.4.2 - 2022-07-06
 

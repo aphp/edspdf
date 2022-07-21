@@ -20,7 +20,7 @@ For the rest of this recipe, we will consider that the dataset follows the same 
 
 Let's use the following pipeline:
 
-```toml "config.cfg"
+```toml title="config.cfg"
 [reader]
 @readers = "pdf-reader.v1"
 
@@ -123,9 +123,9 @@ annotated.to_csv("data.csv", index=False)
 
 ## Training the machine learning pipeline
 
-Now everything is ready to train a Scikit-Learn pipeline! Let's define a simple RandomForestClassifier:
+Now everything is ready to train a Scikit-Learn pipeline! Let's define a simple classifier:
 
-```python "classifier.py"
+```python title="classifier.py"
 from sklearn.compose import ColumnTransformer
 from sklearn.decomposition import TruncatedSVD
 from sklearn.ensemble import RandomForestClassifier
@@ -209,7 +209,7 @@ Now that the machine learning model is trained, we can use the full pipeline:
 import edspdf
 from pathlib import Path
 
-reader = edspdf.load("config.cfg")  # (1)
+reader = edspdf.load("config.cfg")
 
 # Get a PDF
 pdf = Path("letter.pdf").read_bytes()

@@ -6,7 +6,7 @@ In this section, we will cover one methodology to annotate PDF documents.
 
     At AP-HP, we recently moved away from a rule- and Java-based PDF extraction pipeline
     (using PDFBox) to one using EDS-PDF. Hence, EDS-PDF is used in production, helping
-    extract the text from around 100k documents every day.
+    extract text from around 100k PDF documents every day.
 
     To train our pipeline presently in production, we annotated **around 270 documents**, and reached
     a **f1-score of 95%** on the body classification.
