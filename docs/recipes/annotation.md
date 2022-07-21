@@ -4,12 +4,12 @@ In this section, we will cover one methodology to annotate PDF documents.
 
 !!! aphp "Data annotation at AP-HP's CDW"
 
-    At AP-HP, we recently moved away from a rule- and Java-based PDF extraction pipeline
+    At AP-HP's CDW[^1], we recently moved away from a rule- and Java-based PDF extraction pipeline
     (using PDFBox) to one using EDS-PDF. Hence, EDS-PDF is used in production, helping
     extract text from around 100k PDF documents every day.
 
     To train our pipeline presently in production, we annotated **around 270 documents**, and reached
-    a **f1-score of 95%** on the body classification.
+    a **f1-score of 91%** on the body classification.
 
 ## Preparing the data for annotation
 
@@ -140,3 +140,5 @@ annotations = get_annotations(train_path)
 
 The annotations compiled this way can be used to train a pipeline.
 See the [trained pipeline recipe](./sklearn.md) for more detail.
+
+[^1]: Greater Paris University Hospital's Clinical Data Warehouse

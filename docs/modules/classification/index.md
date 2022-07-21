@@ -1,4 +1,4 @@
-# Overview
+# Classifiers
 
 We developed EDS-PDF with modularity in mind. To that end, you can choose between multiple classification methods.
 
