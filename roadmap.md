@@ -10,3 +10,4 @@
 - [ ] Multiple-column extraction
 - [ ] Table detector
 - [ ] Integrate third-party OCR module
+- [ ] Drop pandas DataFrame in favour of a Cython wrapper around PDF documents?
