@@ -24,7 +24,7 @@ theme:
 
 nav:
   - index.md
-  - rationale.md
+  - concepts.md
   - Recipes:
       - recipes/index.md
       - recipes/rules.md

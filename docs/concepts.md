@@ -1,4 +1,4 @@
-# Structure and Rationale
+# Key Concepts
 
 The goal of EDS-PDF is to provide a **framework** for text extraction from PDF documents,
 along with some utilities and a few pipelines, stitched together by a robust configuration
