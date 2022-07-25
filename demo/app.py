@@ -45,7 +45,7 @@ st.sidebar.header("About")
 st.sidebar.markdown(
     "EDS-PDF is a contributive effort maintained by AP-HP's Data Science team. "
     "Have a look at the "
-    "[documentation](https://aphp.github.io/edsnlp/) for more information."
+    "[documentation](https://aphp.github.io/edspdf/) for more information."
 )
 
 
