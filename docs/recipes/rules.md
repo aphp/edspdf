@@ -8,7 +8,7 @@ Let's create a rule-based extractor for PDF documents.
     come in varied forms. In that case, even a very simple trained pipeline
     may give you a substantial performance boost (see [next section](sklearn.md)).
 
-First, download this example [PDF](https://gitlab.eds.aphp.fr/datasciencetools/edspdf/-/raw/master/tests/resources/letter.pdf?inline=false).
+First, download this example [PDF](https://github.com/aphp/edspdf/raw/master/tests/resources/letter.pdf).
 
 We will use the following configuration:
 

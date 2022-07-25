@@ -23,8 +23,8 @@ authors:
   - given-names: Romain
     family-names: Bey
     affiliation: Assistance Publique – Hôpitaux de Paris
-repository-code: "https://gitlab.eds.aphp.fr/datasciencetools/edspdf"
-url: "https://gitlab.eds.aphp.fr/datasciencetools/edspdf"
+repository-code: "https://github.com/aphp/edspdf"
+url: "https://github.com/aphp/edspdf"
 abstract: >-
   EDS-PDF provides a modular and extendable framework to extract text from PDF documents.
 keywords:
@@ -34,3 +34,4 @@ keywords:
   - NLP
 license: BSD-3-Clause
 year: 2022
+doi: 10.5281/zenodo.6902977

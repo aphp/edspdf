@@ -1,6 +1,6 @@
 site_name: EDS-PDF
 
-repo_url: https://gitlab.eds.aphp.fr/datasciencetools/edspdf
+repo_url: https://github.com/aphp/edspdf
 # repo_name: algorithms/pseudonymisation
 
 theme:

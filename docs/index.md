@@ -44,7 +44,7 @@ threshold = 0.1
 @aggregators = "simple.v1"
 ```
 
-The PDF reader can be instantiated and applied (for instance with this [PDF](https://gitlab.eds.aphp.fr/datasciencetools/edspdf/-/raw/master/tests/resources/letter.pdf?inline=false)):
+The PDF reader can be instantiated and applied (for instance with this [PDF](https://github.com/aphp/edspdf/raw/master/tests/resources/letter.pdf)):
 
 ```python
 import edspdf
