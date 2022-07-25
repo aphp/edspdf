@@ -1,6 +1,7 @@
 import base64
 
 import pandas as pd
+import pdf2image  # noqa
 import streamlit as st
 from thinc.config import Config
 
