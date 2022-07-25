@@ -1,7 +1,7 @@
 from thinc.config import Config
 
 from edspdf import registry
-from edspdf.reading import PdfReader
+from edspdf.readers import PdfReader
 
 configuration = """
 [reader]

@@ -2,9 +2,9 @@ from typing import Any, Dict, Optional, Tuple, Union
 
 import pandas as pd
 
-from edspdf.aggregation import BaseAggregator
-from edspdf.classification import BaseClassifier
-from edspdf.extraction import BaseExtractor
+from edspdf.aggregators import BaseAggregator
+from edspdf.classifiers import BaseClassifier
+from edspdf.extractors import BaseExtractor
 from edspdf.reg import registry
 from edspdf.transforms import BaseTransform
 

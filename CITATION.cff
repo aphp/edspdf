@@ -11,11 +11,11 @@ authors:
     family-names: Dura
     orcid: "https://orcid.org/0000-0002-8315-4050"
     affiliation: Assistance Publique – Hôpitaux de Paris
-  - given-names: Alice
-    family-names: Calliger
-    affiliation: Assistance Publique – Hôpitaux de Paris
   - given-names: Perceval
     family-names: Wajsburt
+    affiliation: Assistance Publique – Hôpitaux de Paris
+  - given-names: Alice
+    family-names: Calliger
     affiliation: Assistance Publique – Hôpitaux de Paris
   - given-names: Christel
     family-names: Gérardin

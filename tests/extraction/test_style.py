@@ -1,6 +1,6 @@
 from pytest import raises
 
-from edspdf.extraction.style import models
+from edspdf.extractors.style import models
 
 
 def test_addition():

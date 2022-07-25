@@ -2,7 +2,7 @@ from email.policy import strict
 
 import pandas as pd
 
-from edspdf.extraction.functional import remove_outside_lines
+from edspdf.extractors.functional import remove_outside_lines
 
 
 def test_removal():

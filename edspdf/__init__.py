@@ -2,7 +2,7 @@ from thinc.api import Config
 
 from edspdf.reg import registry
 
-from . import aggregation, classification, extraction, misc, reading, transforms
+from . import aggregators, classifiers, extractors, misc, readers, transforms
 from .loading import from_str, load
 
-__version__ = "0.4.3"
+__version__ = "0.5.0"

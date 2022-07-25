@@ -1,6 +1,6 @@
 import pandas as pd
 
-from edspdf.aggregation.simple import SimpleAggregator
+from edspdf.aggregators.simple import SimpleAggregator
 
 example = pd.DataFrame.from_records(
     [

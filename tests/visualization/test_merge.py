@@ -1,7 +1,7 @@
 import pandas as pd
 
-from edspdf.classification.mask import simple_mask_classifier_factory
-from edspdf.extraction.pdfminer import PdfMinerExtractor
+from edspdf.classifiers.mask import simple_mask_classifier_factory
+from edspdf.extractors.pdfminer import PdfMinerExtractor
 from edspdf.visualization.merge import merge_lines
 
 lines = [

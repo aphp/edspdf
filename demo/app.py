@@ -5,7 +5,7 @@ import streamlit as st
 from thinc.config import Config
 
 from edspdf import registry
-from edspdf.reading.reader import PdfReader
+from edspdf.readers.reader import PdfReader
 from edspdf.visualization.annotations import show_annotations
 from edspdf.visualization.merge import merge_lines
 

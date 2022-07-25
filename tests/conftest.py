@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pytest import fixture
 
-from edspdf.extraction.pdfminer import PdfMinerExtractor
+from edspdf.extractors.pdfminer import PdfMinerExtractor
 
 TEST_DIR = Path(__file__).parent
 

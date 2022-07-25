@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.5.0 - 2022-07-25
+
+### Changed
+
+- Major refactoring of the library. Moved from concepts (`aggregation`) to plural names (`aggregators`).
+
 ## v0.4.3 - 2022-07-20
 
 ### Fixed

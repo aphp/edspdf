@@ -3,7 +3,7 @@ from pathlib import Path
 from thinc.api import Config
 
 from edspdf import registry
-from edspdf.reading.reader import PdfReader
+from edspdf.readers.reader import PdfReader
 
 
 def load(path: Path) -> PdfReader:

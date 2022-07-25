@@ -3,8 +3,8 @@ from itertools import cycle
 import pandas as pd
 from pytest import fixture
 
-from edspdf.aggregation import StyledAggregator
-from edspdf.extraction import PdfMinerExtractor
+from edspdf.aggregators import StyledAggregator
+from edspdf.extractors import PdfMinerExtractor
 
 
 @fixture

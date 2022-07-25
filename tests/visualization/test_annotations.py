@@ -1,5 +1,5 @@
-from edspdf.classification.mask import simple_mask_classifier_factory
-from edspdf.extraction.pdfminer import PdfMinerExtractor
+from edspdf.classifiers.mask import simple_mask_classifier_factory
+from edspdf.extractors.pdfminer import PdfMinerExtractor
 from edspdf.visualization import compare_results, merge_lines, show_annotations
 
 

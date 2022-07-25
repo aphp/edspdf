@@ -1,6 +1,6 @@
 import pandas as pd
 
-from edspdf.classification.align import align_labels
+from edspdf.classifiers.align import align_labels
 
 
 def test_align_multipage(multipage_lines):

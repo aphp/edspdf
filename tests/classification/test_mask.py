@@ -3,7 +3,7 @@ from pytest import raises
 from thinc.config import Config
 
 from edspdf import registry
-from edspdf.classification.mask import Mask
+from edspdf.classifiers.mask import Mask
 
 configuration = """
 [classifier]
