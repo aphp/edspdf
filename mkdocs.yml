@@ -24,6 +24,7 @@ theme:
 
 nav:
   - index.md
+  - Demo 🚀: https://aphp.github.io/edspdf/demo" target="_blank
   - concepts.md
   - Recipes:
       - recipes/index.md
