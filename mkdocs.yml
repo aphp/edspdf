@@ -66,6 +66,10 @@ watch:
   - roadmap.md
   - changelog.md
 
+extra:
+  version:
+    provider: mike
+
 plugins:
   - search
   - bibtex:
