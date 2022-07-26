@@ -94,6 +94,7 @@ plugins:
       height: auto
       zoomable: true
       draggable: true
+  - mike
 
 markdown_extensions:
   - admonition
