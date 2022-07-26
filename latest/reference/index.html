@@ -30,6 +30,10 @@
 </div>
 <div data-md-component="announce">
 </div>
+<div data-md-component="outdated" hidden="">
+<aside class="md-banner md-banner--warning">
+</aside>
+</div>
 <header class="md-header" data-md-component="header">
 <nav aria-label="Header" class="md-header__inner md-grid">
 <a aria-label="EDS-PDF" class="md-header__button md-logo" data-md-component="logo" href=".." title="EDS-PDF">
@@ -610,6 +614,52 @@
 </nav>
 </li>
 <li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.aggregators">
+    aggregators
+  </a>
+<nav aria-label="aggregators" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.aggregators.styled">
+    styled
+  </a>
+<nav aria-label="styled" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.aggregators.styled.StyledAggregator">
+    StyledAggregator
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.aggregators.base">
+    base
+  </a>
+<nav aria-label="base" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.aggregators.base.BaseAggregator">
+    BaseAggregator
+  </a>
+<nav aria-label="BaseAggregator" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.aggregators.base.BaseAggregator.aggregate">
+    aggregate()
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
 <a class="md-nav__link" href="#edspdf.transforms">
     transforms
   </a>
@@ -689,140 +739,6 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers">
-    classifiers
-  </a>
-<nav aria-label="classifiers" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.align">
-    align
-  </a>
-<nav aria-label="align" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.align.align_labels">
-    align_labels()
-  </a>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.base">
-    base
-  </a>
-<nav aria-label="base" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.base.BaseClassifier">
-    BaseClassifier
-  </a>
-<nav aria-label="BaseClassifier" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.base.BaseClassifier.predict">
-    predict()
-  </a>
-</li>
-</ul>
-</nav>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.dummy">
-    dummy
-  </a>
-<nav aria-label="dummy" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.dummy.DummyClassifier">
-    DummyClassifier
-  </a>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.random">
-    random
-  </a>
-<nav aria-label="random" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.random.RandomClassifier">
-    RandomClassifier
-  </a>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.mask">
-    mask
-  </a>
-<nav aria-label="mask" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.mask.MaskClassifier">
-    MaskClassifier
-  </a>
-</li>
-</ul>
-</nav>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.aggregators">
-    aggregators
-  </a>
-<nav aria-label="aggregators" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.aggregators.styled">
-    styled
-  </a>
-<nav aria-label="styled" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.aggregators.styled.StyledAggregator">
-    StyledAggregator
-  </a>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.aggregators.base">
-    base
-  </a>
-<nav aria-label="base" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.aggregators.base.BaseAggregator">
-    BaseAggregator
-  </a>
-<nav aria-label="BaseAggregator" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.aggregators.base.BaseAggregator.aggregate">
-    aggregate()
-  </a>
-</li>
-</ul>
-</nav>
-</li>
-</ul>
-</nav>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
 <a class="md-nav__link" href="#edspdf.extractors">
     extractors
   </a>
@@ -866,29 +782,6 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.extractors.base">
-    base
-  </a>
-<nav aria-label="base" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.extractors.base.BaseExtractor">
-    BaseExtractor
-  </a>
-<nav aria-label="BaseExtractor" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.extractors.base.BaseExtractor.extract">
-    extract()
-  </a>
-</li>
-</ul>
-</nav>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
 <a class="md-nav__link" href="#edspdf.extractors.functional">
     functional
   </a>
@@ -917,6 +810,29 @@
 <a class="md-nav__link" href="#edspdf.extractors.functional.remove_outside_lines">
     remove_outside_lines()
   </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.extractors.base">
+    base
+  </a>
+<nav aria-label="base" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.extractors.base.BaseExtractor">
+    BaseExtractor
+  </a>
+<nav aria-label="BaseExtractor" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.extractors.base.BaseExtractor.extract">
+    extract()
+  </a>
+</li>
+</ul>
+</nav>
 </li>
 </ul>
 </nav>
@@ -960,6 +876,94 @@
 <li class="md-nav__item">
 <a class="md-nav__link" href="#edspdf.extractors.style.models.StyledText">
     StyledText
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers">
+    classifiers
+  </a>
+<nav aria-label="classifiers" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.mask">
+    mask
+  </a>
+<nav aria-label="mask" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.mask.MaskClassifier">
+    MaskClassifier
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.align">
+    align
+  </a>
+<nav aria-label="align" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.align.align_labels">
+    align_labels()
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.random">
+    random
+  </a>
+<nav aria-label="random" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.random.RandomClassifier">
+    RandomClassifier
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.dummy">
+    dummy
+  </a>
+<nav aria-label="dummy" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.dummy.DummyClassifier">
+    DummyClassifier
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.base">
+    base
+  </a>
+<nav aria-label="base" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.base.BaseClassifier">
+    BaseClassifier
+  </a>
+<nav aria-label="BaseClassifier" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.base.BaseClassifier.predict">
+    predict()
   </a>
 </li>
 </ul>
@@ -1164,6 +1168,194 @@
     <span class="k">return</span> <span class="n">registry</span><span class="o">.</span><span class="n">resolve</span><span class="p">(</span><span class="n">conf</span><span class="p">)[</span><span class="s2">"reader"</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
 </details>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="edspdf.aggregators">
+<code>aggregators</code>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="edspdf.aggregators.styled">
+<code>styled</code>
+</h3>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h4 class="doc doc-heading" id="edspdf.aggregators.styled.StyledAggregator">
+<code>StyledAggregator</code>
+</h4>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+          Bases: <code><span title="edspdf.aggregators.simple.SimpleAggregator">SimpleAggregator</span></code></p>
+<p>Aggregator that returns text and styles.</p>
+<details class="quote">
+<summary>Source code in <code>edspdf/aggregators/styled.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@registry</span><span class="o">.</span><span class="n">aggregators</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">"styled.v1"</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">StyledAggregator</span><span class="p">(</span><span class="n">SimpleAggregator</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Aggregator that returns text and styles.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]]]:</span>
+
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s2">"page"</span><span class="p">,</span> <span class="s2">"y1"</span><span class="p">,</span> <span class="s2">"x0"</span><span class="p">])</span>
+
+        <span class="n">lines</span><span class="p">[</span><span class="s2">"line_id"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+
+        <span class="n">styles</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[[</span><span class="s2">"line_id"</span><span class="p">,</span> <span class="s2">"styles"</span><span class="p">]]</span><span class="o">.</span><span class="n">explode</span><span class="p">(</span><span class="s2">"styles"</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="n">styles</span> <span class="o">=</span> <span class="n">styles</span><span class="p">[[</span><span class="s2">"line_id"</span><span class="p">]]</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">styles</span><span class="p">))</span>
+
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">prepare_newlines</span><span class="p">(</span>
+            <span class="n">lines</span><span class="p">,</span>
+            <span class="n">nl_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nl_threshold</span><span class="p">,</span>
+            <span class="n">np_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">np_threshold</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">lines</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="s2">"text_with_newline"</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span>
+        <span class="n">lines</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"label"</span><span class="p">])[</span><span class="s2">"offset"</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s2">"cumsum"</span><span class="p">)</span>
+        <span class="n">lines</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"label"</span><span class="p">])[</span><span class="s2">"offset"</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s2">"shift"</span><span class="p">)</span>
+        <span class="n">lines</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="n">styles</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">lines</span><span class="p">[[</span><span class="s2">"line_id"</span><span class="p">,</span> <span class="s2">"offset"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">]],</span> <span class="n">on</span><span class="o">=</span><span class="s2">"line_id"</span><span class="p">)</span>
+        <span class="n">styles</span><span class="p">[</span><span class="s2">"start"</span><span class="p">]</span> <span class="o">+=</span> <span class="n">styles</span><span class="o">.</span><span class="n">offset</span>
+        <span class="n">styles</span><span class="p">[</span><span class="s2">"end"</span><span class="p">]</span> <span class="o">+=</span> <span class="n">styles</span><span class="o">.</span><span class="n">offset</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"label"</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="s2">"text_with_newline"</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">))</span>
+
+        <span class="n">text</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">style</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">label</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"label == @label"</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"line_id"</span><span class="p">,</span> <span class="s2">"offset"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">])</span>
+            <span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">"records"</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">style</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="edspdf.aggregators.base">
+<code>base</code>
+</h3>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h4 class="doc doc-heading" id="edspdf.aggregators.base.BaseAggregator">
+<code>BaseAggregator</code>
+</h4>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+          Bases: <code><span title="abc.ABC">ABC</span></code></p>
+<details class="quote">
+<summary>Source code in <code>edspdf/aggregators/base.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseAggregator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Handles the text aggregation</span>
+<span class="sd">        """</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<div class="doc doc-children">
+<div class="doc doc-object doc-function">
+<h5 class="doc doc-heading" id="edspdf.aggregators.base.BaseAggregator.aggregate">
+<code class="highlight language-python"><span class="n">aggregate</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></code>
+<span class="doc doc-properties">
+<small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+</span>
+</h5>
+<div class="doc doc-contents">
+<p>Handles the text aggregation</p>
+<details class="quote">
+<summary>Source code in <code>edspdf/aggregators/base.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Handles the text aggregation</span>
+<span class="sd">    """</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1959,676 +2151,6 @@ Can also be used to generate the training dataset for the classifier.</p>
 </div>
 </div>
 <div class="doc doc-object doc-module">
-<h2 class="doc doc-heading" id="edspdf.classifiers">
-<code>classifiers</code>
-</h2>
-<div class="doc doc-contents">
-<div class="doc doc-children">
-<div class="doc doc-object doc-module">
-<h3 class="doc doc-heading" id="edspdf.classifiers.align">
-<code>align</code>
-</h3>
-<div class="doc doc-contents">
-<div class="doc doc-children">
-<div class="doc doc-object doc-function">
-<h4 class="doc doc-heading" id="edspdf.classifiers.align.align_labels">
-<code class="highlight language-python"><span class="n">align_labels</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">)</span></code>
-</h4>
-<div class="doc doc-contents">
-<p>Align lines with possibly overlapping (and non-exhaustive) labels.</p>
-<p>Possible matches are sorted by covered area. Lines with no overlap at all</p>
-<table>
-<thead>
-<tr>
-<th><b>PARAMETER</b></th>
-<th><b>DESCRIPTION</b></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>lines</code></td>
-<td class="doc-param-details">
-<p>DataFrame containing the lines</p>
-<p>
-<span class="doc-param-annotation">
-<b>TYPE:</b>
-<code><span title="pandas">pd</span>.<span title="pandas.DataFrame">DataFrame</span></code>
-</span>
-</p>
-</td>
-</tr>
-<tr>
-<td><code>labels</code></td>
-<td class="doc-param-details">
-<p>DataFrame containing the labels</p>
-<p>
-<span class="doc-param-annotation">
-<b>TYPE:</b>
-<code><span title="pandas">pd</span>.<span title="pandas.DataFrame">DataFrame</span></code>
-</span>
-</p>
-</td>
-</tr>
-<tr>
-<td><code>threshold</code></td>
-<td class="doc-param-details">
-<p>Threshold to use for discounting a label. Used if the <code>labels</code> DataFrame
-does not provide a <code>threshold</code> column, or to fill <code>NaN</code> values thereof.</p>
-<p>
-<span class="doc-param-annotation">
-<b>TYPE:</b>
-<code>float, default 1</code>
-</span>
-<span class="doc-param-default">
-<b>DEFAULT:</b>
-<code>0.0001</code>
-</span>
-</p>
-</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th><b>RETURNS</b></th>
-<th><b>DESCRIPTION</b></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<span class="doc-returns-annotation">
-<code><span title="pandas">pd</span>.<span title="pandas.DataFrame">DataFrame</span></code>
-</span>
-</td>
-<td class="doc-returns-details">
-<p>A copy of the lines table, with the labels added.</p>
-</td>
-</tr>
-</tbody>
-</table>
-<details class="quote">
-<summary>Source code in <code>edspdf/classifiers/align.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">align_labels</span><span class="p">(</span>
-    <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">labels</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0001</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-    <span class="sd">"""</span>
-<span class="sd">    Align lines with possibly overlapping (and non-exhaustive) labels.</span>
-
-<span class="sd">    Possible matches are sorted by covered area. Lines with no overlap at all</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    lines : pd.DataFrame</span>
-<span class="sd">        DataFrame containing the lines</span>
-<span class="sd">    labels : pd.DataFrame</span>
-<span class="sd">        DataFrame containing the labels</span>
-<span class="sd">    threshold : float, default 1</span>
-<span class="sd">        Threshold to use for discounting a label. Used if the `labels` DataFrame</span>
-<span class="sd">        does not provide a `threshold` column, or to fill `NaN` values thereof.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    pd.DataFrame</span>
-<span class="sd">        A copy of the lines table, with the labels added.</span>
-<span class="sd">    """</span>
-
-    <span class="n">lines</span><span class="p">[</span><span class="s2">"uid"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
-
-    <span class="n">df</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span>
-        <span class="nb">sorted</span><span class="p">({</span><span class="s2">"uid"</span><span class="p">,</span> <span class="s2">"page"</span><span class="p">,</span> <span class="s2">"x0"</span><span class="p">,</span> <span class="s2">"y0"</span><span class="p">,</span> <span class="s2">"x1"</span><span class="p">,</span> <span class="s2">"y1"</span><span class="p">}</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">lines</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
-    <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-
-    <span class="k">if</span> <span class="s2">"threshold"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">labels</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="n">labels</span><span class="p">[</span><span class="s2">"threshold"</span><span class="p">]</span> <span class="o">=</span> <span class="n">threshold</span>
-
-    <span class="n">labels</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">threshold</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span>
-
-    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
-        <span class="n">labels</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">"inner"</span> <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"cross"</span>
-    <span class="p">)</span>
-
-    <span class="n">df</span><span class="p">[</span><span class="s2">"dx"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">"x1"</span><span class="p">,</span> <span class="s2">"X1"</span><span class="p">]]</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">df</span><span class="p">[[</span><span class="s2">"x0"</span><span class="p">,</span> <span class="s2">"X0"</span><span class="p">]]</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">df</span><span class="p">[</span><span class="s2">"dy"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">"y1"</span><span class="p">,</span> <span class="s2">"Y1"</span><span class="p">]]</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">df</span><span class="p">[[</span><span class="s2">"y0"</span><span class="p">,</span> <span class="s2">"Y0"</span><span class="p">]]</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="n">df</span><span class="p">[</span><span class="s2">"overlap"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dy</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">df</span><span class="o">.</span><span class="n">dx</span> <span class="o">*</span> <span class="n">df</span><span class="o">.</span><span class="n">dy</span>
-
-    <span class="n">df</span><span class="p">[</span><span class="s2">"area"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">x1</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">x0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">y1</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">y0</span><span class="p">)</span>
-    <span class="n">df</span><span class="p">[</span><span class="s2">"ratio"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">overlap</span> <span class="o">/</span> <span class="n">df</span><span class="o">.</span><span class="n">area</span>
-
-    <span class="n">df</span><span class="p">[</span><span class="s2">"area_mask"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">X1</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">X0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Y1</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">Y0</span><span class="p">)</span>
-    <span class="n">df</span><span class="p">[</span><span class="s2">"ratio_mask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">overlap</span> <span class="o">/</span> <span class="n">df</span><span class="o">.</span><span class="n">area_mask</span>
-
-    <span class="n">df</span><span class="p">[</span><span class="s2">"thresholded"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">ratio</span> <span class="o">&gt;=</span> <span class="n">df</span><span class="o">.</span><span class="n">threshold</span>
-
-    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s2">"thresholded"</span><span class="p">,</span> <span class="s2">"ratio_mask"</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"uid"</span><span class="p">],</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"uid"</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="n">df</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">thresholded</span><span class="p">)</span>
-
-    <span class="n">df</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">"uid"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">]],</span> <span class="n">on</span><span class="o">=</span><span class="s2">"uid"</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"uid"</span><span class="p">])</span>
-    <span class="n">lines</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"uid"</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">df</span>
-</code></pre></div></td></tr></table></div>
-</details>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="doc doc-object doc-module">
-<h3 class="doc doc-heading" id="edspdf.classifiers.base">
-<code>base</code>
-</h3>
-<div class="doc doc-contents">
-<div class="doc doc-children">
-<div class="doc doc-object doc-class">
-<h4 class="doc doc-heading" id="edspdf.classifiers.base.BaseClassifier">
-<code>BaseClassifier</code>
-</h4>
-<div class="doc doc-contents">
-<p class="doc doc-class-bases">
-          Bases: <code><span title="abc.ABC">ABC</span></code></p>
-<details class="quote">
-<summary>Source code in <code>edspdf/classifiers/base.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseClassifier</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Handles the classification.</span>
-<span class="sd">        """</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-</details>
-<div class="doc doc-children">
-<div class="doc doc-object doc-function">
-<h5 class="doc doc-heading" id="edspdf.classifiers.base.BaseClassifier.predict">
-<code class="highlight language-python"><span class="n">predict</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></code>
-<span class="doc doc-properties">
-<small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
-</span>
-</h5>
-<div class="doc doc-contents">
-<p>Handles the classification.</p>
-<details class="quote">
-<summary>Source code in <code>edspdf/classifiers/base.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
-<span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">"""</span>
-<span class="sd">    Handles the classification.</span>
-<span class="sd">    """</span>
-</code></pre></div></td></tr></table></div>
-</details>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="doc doc-object doc-module">
-<h3 class="doc doc-heading" id="edspdf.classifiers.dummy">
-<code>dummy</code>
-</h3>
-<div class="doc doc-contents">
-<div class="doc doc-children">
-<div class="doc doc-object doc-class">
-<h4 class="doc doc-heading" id="edspdf.classifiers.dummy.DummyClassifier">
-<code>DummyClassifier</code>
-</h4>
-<div class="doc doc-contents">
-<p class="doc doc-class-bases">
-          Bases: <code><a class="autorefs autorefs-internal" href="classifiers/base/#edspdf.classifiers.base.BaseClassifier" title="edspdf.classifiers.base.BaseClassifier">BaseClassifier</a></code></p>
-<p>"Dummy" classifier, for testing purposes. Classifies every line to <code>body</code>.</p>
-<details class="quote">
-<summary>Source code in <code>edspdf/classifiers/dummy.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@registry</span><span class="o">.</span><span class="n">classifiers</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">"dummy.v1"</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">DummyClassifier</span><span class="p">(</span><span class="n">BaseClassifier</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    "Dummy" classifier, for testing purposes. Classifies every line to ``body``.</span>
-<span class="sd">    """</span>
-
-    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s2">"body"</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-</details>
-<div class="doc doc-children">
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="doc doc-object doc-module">
-<h3 class="doc doc-heading" id="edspdf.classifiers.random">
-<code>random</code>
-</h3>
-<div class="doc doc-contents">
-<div class="doc doc-children">
-<div class="doc doc-object doc-class">
-<h4 class="doc doc-heading" id="edspdf.classifiers.random.RandomClassifier">
-<code>RandomClassifier</code>
-</h4>
-<div class="doc doc-contents">
-<p class="doc doc-class-bases">
-          Bases: <code><a class="autorefs autorefs-internal" href="classifiers/base/#edspdf.classifiers.base.BaseClassifier" title="edspdf.classifiers.base.BaseClassifier">BaseClassifier</a></code></p>
-<p>Random classifier, for chaos purposes. Classifies each line to a random element.</p>
-<details class="quote">
-<summary>Source code in <code>edspdf/classifiers/random.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@registry</span><span class="o">.</span><span class="n">classifiers</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">"random.v1"</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">RandomClassifier</span><span class="p">(</span><span class="n">BaseClassifier</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    Random classifier, for chaos purposes. Classifies each line to a random element.</span>
-<span class="sd">    """</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">classes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
-        <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">classes</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="n">classes</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">}</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">w</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">classes</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">rgn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="n">choices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgn</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
-            <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
-            <span class="n">p</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
-            <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">),</span>
-        <span class="p">)</span>
-
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">choices</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-</details>
-<div class="doc doc-children">
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="doc doc-object doc-module">
-<h3 class="doc doc-heading" id="edspdf.classifiers.mask">
-<code>mask</code>
-</h3>
-<div class="doc doc-contents">
-<div class="doc doc-children">
-<div class="doc doc-object doc-class">
-<h4 class="doc doc-heading" id="edspdf.classifiers.mask.MaskClassifier">
-<code>MaskClassifier</code>
-</h4>
-<div class="doc doc-contents">
-<p class="doc doc-class-bases">
-          Bases: <code><a class="autorefs autorefs-internal" href="classifiers/base/#edspdf.classifiers.base.BaseClassifier" title="edspdf.classifiers.base.BaseClassifier">BaseClassifier</a></code></p>
-<p>Mask classifier, that reproduces the PdfBox behaviour.</p>
-<details class="quote">
-<summary>Source code in <code>edspdf/classifiers/mask.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MaskClassifier</span><span class="p">(</span><span class="n">BaseClassifier</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    Mask classifier, that reproduces the PdfBox behaviour.</span>
-<span class="sd">    """</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="n">ms</span><span class="p">:</span> <span class="n">Mask</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-
-        <span class="n">masks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ms</span><span class="p">)</span>
-
-        <span class="n">masks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Mask</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">"pollution"</span><span class="p">))</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">([</span><span class="n">mask</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">mask</span> <span class="ow">in</span> <span class="n">masks</span><span class="p">])</span>
-
-    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-
-        <span class="n">df</span> <span class="o">=</span> <span class="n">align_labels</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparison</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">label</span>
-</code></pre></div></td></tr></table></div>
-</details>
-<div class="doc doc-children">
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="doc doc-object doc-module">
-<h2 class="doc doc-heading" id="edspdf.aggregators">
-<code>aggregators</code>
-</h2>
-<div class="doc doc-contents">
-<div class="doc doc-children">
-<div class="doc doc-object doc-module">
-<h3 class="doc doc-heading" id="edspdf.aggregators.styled">
-<code>styled</code>
-</h3>
-<div class="doc doc-contents">
-<div class="doc doc-children">
-<div class="doc doc-object doc-class">
-<h4 class="doc doc-heading" id="edspdf.aggregators.styled.StyledAggregator">
-<code>StyledAggregator</code>
-</h4>
-<div class="doc doc-contents">
-<p class="doc doc-class-bases">
-          Bases: <code><span title="edspdf.aggregators.simple.SimpleAggregator">SimpleAggregator</span></code></p>
-<p>Aggregator that returns text and styles.</p>
-<details class="quote">
-<summary>Source code in <code>edspdf/aggregators/styled.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@registry</span><span class="o">.</span><span class="n">aggregators</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">"styled.v1"</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">StyledAggregator</span><span class="p">(</span><span class="n">SimpleAggregator</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    Aggregator that returns text and styles.</span>
-<span class="sd">    """</span>
-
-    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]]]:</span>
-
-        <span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s2">"page"</span><span class="p">,</span> <span class="s2">"y1"</span><span class="p">,</span> <span class="s2">"x0"</span><span class="p">])</span>
-
-        <span class="n">lines</span><span class="p">[</span><span class="s2">"line_id"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
-
-        <span class="n">styles</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[[</span><span class="s2">"line_id"</span><span class="p">,</span> <span class="s2">"styles"</span><span class="p">]]</span><span class="o">.</span><span class="n">explode</span><span class="p">(</span><span class="s2">"styles"</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-        <span class="n">styles</span> <span class="o">=</span> <span class="n">styles</span><span class="p">[[</span><span class="s2">"line_id"</span><span class="p">]]</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="n">styles</span><span class="o">.</span><span class="n">styles</span><span class="p">))</span>
-
-        <span class="n">lines</span> <span class="o">=</span> <span class="n">prepare_newlines</span><span class="p">(</span>
-            <span class="n">lines</span><span class="p">,</span>
-            <span class="n">nl_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nl_threshold</span><span class="p">,</span>
-            <span class="n">np_threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">np_threshold</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="n">lines</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="s2">"text_with_newline"</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span>
-        <span class="n">lines</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"label"</span><span class="p">])[</span><span class="s2">"offset"</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s2">"cumsum"</span><span class="p">)</span>
-        <span class="n">lines</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"label"</span><span class="p">])[</span><span class="s2">"offset"</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s2">"shift"</span><span class="p">)</span>
-        <span class="n">lines</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="s2">"offset"</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-
-        <span class="n">styles</span> <span class="o">=</span> <span class="n">styles</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">lines</span><span class="p">[[</span><span class="s2">"line_id"</span><span class="p">,</span> <span class="s2">"offset"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">]],</span> <span class="n">on</span><span class="o">=</span><span class="s2">"line_id"</span><span class="p">)</span>
-        <span class="n">styles</span><span class="p">[</span><span class="s2">"start"</span><span class="p">]</span> <span class="o">+=</span> <span class="n">styles</span><span class="o">.</span><span class="n">offset</span>
-        <span class="n">styles</span><span class="p">[</span><span class="s2">"end"</span><span class="p">]</span> <span class="o">+=</span> <span class="n">styles</span><span class="o">.</span><span class="n">offset</span>
-
-        <span class="n">df</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"label"</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="p">(</span><span class="s2">"text_with_newline"</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">))</span>
-
-        <span class="n">text</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-        <span class="n">style</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">label</span><span class="p">:</span> <span class="n">styles</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">"label == @label"</span><span class="p">)</span>
-            <span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"line_id"</span><span class="p">,</span> <span class="s2">"offset"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">])</span>
-            <span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">orient</span><span class="o">=</span><span class="s2">"records"</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="p">}</span>
-
-        <span class="k">return</span> <span class="n">text</span><span class="p">,</span> <span class="n">style</span>
-</code></pre></div></td></tr></table></div>
-</details>
-<div class="doc doc-children">
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="doc doc-object doc-module">
-<h3 class="doc doc-heading" id="edspdf.aggregators.base">
-<code>base</code>
-</h3>
-<div class="doc doc-contents">
-<div class="doc doc-children">
-<div class="doc doc-object doc-class">
-<h4 class="doc doc-heading" id="edspdf.aggregators.base.BaseAggregator">
-<code>BaseAggregator</code>
-</h4>
-<div class="doc doc-contents">
-<p class="doc doc-class-bases">
-          Bases: <code><span title="abc.ABC">ABC</span></code></p>
-<details class="quote">
-<summary>Source code in <code>edspdf/aggregators/base.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseAggregator</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Handles the text aggregation</span>
-<span class="sd">        """</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
-            <span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-</details>
-<div class="doc doc-children">
-<div class="doc doc-object doc-function">
-<h5 class="doc doc-heading" id="edspdf.aggregators.base.BaseAggregator.aggregate">
-<code class="highlight language-python"><span class="n">aggregate</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></code>
-<span class="doc doc-properties">
-<small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
-</span>
-</h5>
-<div class="doc doc-contents">
-<p>Handles the text aggregation</p>
-<details class="quote">
-<summary>Source code in <code>edspdf/aggregators/base.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
-<span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">"""</span>
-<span class="sd">    Handles the text aggregation</span>
-<span class="sd">    """</span>
-</code></pre></div></td></tr></table></div>
-</details>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="doc doc-object doc-module">
 <h2 class="doc doc-heading" id="edspdf.extractors">
 <code>extractors</code>
 </h2>
@@ -3214,71 +2736,6 @@ does not provide a <code>threshold</code> column, or to fill <code>NaN</code> va
 </div>
 </div>
 <div class="doc doc-object doc-module">
-<h3 class="doc doc-heading" id="edspdf.extractors.base">
-<code>base</code>
-</h3>
-<div class="doc doc-contents">
-<div class="doc doc-children">
-<div class="doc doc-object doc-class">
-<h4 class="doc doc-heading" id="edspdf.extractors.base.BaseExtractor">
-<code>BaseExtractor</code>
-</h4>
-<div class="doc doc-contents">
-<p class="doc doc-class-bases">
-          Bases: <code><span title="abc.ABC">ABC</span></code></p>
-<details class="quote">
-<summary>Source code in <code>edspdf/extractors/base.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseExtractor</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Handles the extraction</span>
-<span class="sd">        """</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-</details>
-<div class="doc doc-children">
-<div class="doc doc-object doc-function">
-<h5 class="doc doc-heading" id="edspdf.extractors.base.BaseExtractor.extract">
-<code class="highlight language-python"><span class="n">extract</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span></code>
-<span class="doc doc-properties">
-<small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
-</span>
-</h5>
-<div class="doc doc-contents">
-<p>Handles the extraction</p>
-<details class="quote">
-<summary>Source code in <code>edspdf/extractors/base.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
-<span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-    <span class="sd">"""</span>
-<span class="sd">    Handles the extraction</span>
-<span class="sd">    """</span>
-</code></pre></div></td></tr></table></div>
-</details>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="doc doc-object doc-module">
 <h3 class="doc doc-heading" id="edspdf.extractors.functional">
 <code>functional</code>
 </h3>
@@ -3614,6 +3071,71 @@ by default False</p>
     <span class="k">return</span> <span class="n">lines</span>
 </code></pre></div></td></tr></table></div>
 </details>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="edspdf.extractors.base">
+<code>base</code>
+</h3>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h4 class="doc doc-heading" id="edspdf.extractors.base.BaseExtractor">
+<code>BaseExtractor</code>
+</h4>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+          Bases: <code><span title="abc.ABC">ABC</span></code></p>
+<details class="quote">
+<summary>Source code in <code>edspdf/extractors/base.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseExtractor</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Handles the extraction</span>
+<span class="sd">        """</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<div class="doc doc-children">
+<div class="doc doc-object doc-function">
+<h5 class="doc doc-heading" id="edspdf.extractors.base.BaseExtractor.extract">
+<code class="highlight language-python"><span class="n">extract</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span></code>
+<span class="doc doc-properties">
+<small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+</span>
+</h5>
+<div class="doc doc-contents">
+<p>Handles the extraction</p>
+<details class="quote">
+<summary>Source code in <code>edspdf/extractors/base.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Handles the extraction</span>
+<span class="sd">    """</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -4291,6 +3813,488 @@ by default False</p>
 </div>
 </div>
 </div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="edspdf.classifiers">
+<code>classifiers</code>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="edspdf.classifiers.mask">
+<code>mask</code>
+</h3>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h4 class="doc doc-heading" id="edspdf.classifiers.mask.MaskClassifier">
+<code>MaskClassifier</code>
+</h4>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+          Bases: <code><a class="autorefs autorefs-internal" href="classifiers/base/#edspdf.classifiers.base.BaseClassifier" title="edspdf.classifiers.base.BaseClassifier">BaseClassifier</a></code></p>
+<p>Mask classifier, that reproduces the PdfBox behaviour.</p>
+<details class="quote">
+<summary>Source code in <code>edspdf/classifiers/mask.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MaskClassifier</span><span class="p">(</span><span class="n">BaseClassifier</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Mask classifier, that reproduces the PdfBox behaviour.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">ms</span><span class="p">:</span> <span class="n">Mask</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">masks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ms</span><span class="p">)</span>
+
+        <span class="n">masks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Mask</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">"pollution"</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">([</span><span class="n">mask</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">mask</span> <span class="ow">in</span> <span class="n">masks</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">align_labels</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparison</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">label</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="edspdf.classifiers.align">
+<code>align</code>
+</h3>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-function">
+<h4 class="doc doc-heading" id="edspdf.classifiers.align.align_labels">
+<code class="highlight language-python"><span class="n">align_labels</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">)</span></code>
+</h4>
+<div class="doc doc-contents">
+<p>Align lines with possibly overlapping (and non-exhaustive) labels.</p>
+<p>Possible matches are sorted by covered area. Lines with no overlap at all</p>
+<table>
+<thead>
+<tr>
+<th><b>PARAMETER</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lines</code></td>
+<td class="doc-param-details">
+<p>DataFrame containing the lines</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code><span title="pandas">pd</span>.<span title="pandas.DataFrame">DataFrame</span></code>
+</span>
+</p>
+</td>
+</tr>
+<tr>
+<td><code>labels</code></td>
+<td class="doc-param-details">
+<p>DataFrame containing the labels</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code><span title="pandas">pd</span>.<span title="pandas.DataFrame">DataFrame</span></code>
+</span>
+</p>
+</td>
+</tr>
+<tr>
+<td><code>threshold</code></td>
+<td class="doc-param-details">
+<p>Threshold to use for discounting a label. Used if the <code>labels</code> DataFrame
+does not provide a <code>threshold</code> column, or to fill <code>NaN</code> values thereof.</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code>float, default 1</code>
+</span>
+<span class="doc-param-default">
+<b>DEFAULT:</b>
+<code>0.0001</code>
+</span>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><b>RETURNS</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<span class="doc-returns-annotation">
+<code><span title="pandas">pd</span>.<span title="pandas.DataFrame">DataFrame</span></code>
+</span>
+</td>
+<td class="doc-returns-details">
+<p>A copy of the lines table, with the labels added.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+<summary>Source code in <code>edspdf/classifiers/align.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">align_labels</span><span class="p">(</span>
+    <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">labels</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0001</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Align lines with possibly overlapping (and non-exhaustive) labels.</span>
+
+<span class="sd">    Possible matches are sorted by covered area. Lines with no overlap at all</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lines : pd.DataFrame</span>
+<span class="sd">        DataFrame containing the lines</span>
+<span class="sd">    labels : pd.DataFrame</span>
+<span class="sd">        DataFrame containing the labels</span>
+<span class="sd">    threshold : float, default 1</span>
+<span class="sd">        Threshold to use for discounting a label. Used if the `labels` DataFrame</span>
+<span class="sd">        does not provide a `threshold` column, or to fill `NaN` values thereof.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pd.DataFrame</span>
+<span class="sd">        A copy of the lines table, with the labels added.</span>
+<span class="sd">    """</span>
+
+    <span class="n">lines</span><span class="p">[</span><span class="s2">"uid"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span>
+        <span class="nb">sorted</span><span class="p">({</span><span class="s2">"uid"</span><span class="p">,</span> <span class="s2">"page"</span><span class="p">,</span> <span class="s2">"x0"</span><span class="p">,</span> <span class="s2">"y0"</span><span class="p">,</span> <span class="s2">"x1"</span><span class="p">,</span> <span class="s2">"y1"</span><span class="p">}</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">lines</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="s2">"threshold"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">labels</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">labels</span><span class="p">[</span><span class="s2">"threshold"</span><span class="p">]</span> <span class="o">=</span> <span class="n">threshold</span>
+
+    <span class="n">labels</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">threshold</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">labels</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">"inner"</span> <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">labels</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"cross"</span>
+    <span class="p">)</span>
+
+    <span class="n">df</span><span class="p">[</span><span class="s2">"dx"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">"x1"</span><span class="p">,</span> <span class="s2">"X1"</span><span class="p">]]</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">df</span><span class="p">[[</span><span class="s2">"x0"</span><span class="p">,</span> <span class="s2">"X0"</span><span class="p">]]</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"dy"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s2">"y1"</span><span class="p">,</span> <span class="s2">"Y1"</span><span class="p">]]</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">df</span><span class="p">[[</span><span class="s2">"y0"</span><span class="p">,</span> <span class="s2">"Y0"</span><span class="p">]]</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">df</span><span class="p">[</span><span class="s2">"overlap"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dy</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">df</span><span class="o">.</span><span class="n">dx</span> <span class="o">*</span> <span class="n">df</span><span class="o">.</span><span class="n">dy</span>
+
+    <span class="n">df</span><span class="p">[</span><span class="s2">"area"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">x1</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">x0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">y1</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">y0</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"ratio"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">overlap</span> <span class="o">/</span> <span class="n">df</span><span class="o">.</span><span class="n">area</span>
+
+    <span class="n">df</span><span class="p">[</span><span class="s2">"area_mask"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">X1</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">X0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">Y1</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">Y0</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">"ratio_mask"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">overlap</span> <span class="o">/</span> <span class="n">df</span><span class="o">.</span><span class="n">area_mask</span>
+
+    <span class="n">df</span><span class="p">[</span><span class="s2">"thresholded"</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">ratio</span> <span class="o">&gt;=</span> <span class="n">df</span><span class="o">.</span><span class="n">threshold</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s2">"thresholded"</span><span class="p">,</span> <span class="s2">"ratio_mask"</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"uid"</span><span class="p">],</span> <span class="n">as_index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"uid"</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">df</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">thresholded</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">"uid"</span><span class="p">,</span> <span class="s2">"label"</span><span class="p">]],</span> <span class="n">on</span><span class="o">=</span><span class="s2">"uid"</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"uid"</span><span class="p">])</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"uid"</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="edspdf.classifiers.random">
+<code>random</code>
+</h3>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h4 class="doc doc-heading" id="edspdf.classifiers.random.RandomClassifier">
+<code>RandomClassifier</code>
+</h4>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+          Bases: <code><a class="autorefs autorefs-internal" href="classifiers/base/#edspdf.classifiers.base.BaseClassifier" title="edspdf.classifiers.base.BaseClassifier">BaseClassifier</a></code></p>
+<p>Random classifier, for chaos purposes. Classifies each line to a random element.</p>
+<details class="quote">
+<summary>Source code in <code>edspdf/classifiers/random.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@registry</span><span class="o">.</span><span class="n">classifiers</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">"random.v1"</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">RandomClassifier</span><span class="p">(</span><span class="n">BaseClassifier</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Random classifier, for chaos purposes. Classifies each line to a random element.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">classes</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]],</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">classes</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">classes</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">w</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">classes</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rgn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="n">choices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rgn</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="n">p</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>
+            <span class="n">size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">choices</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="edspdf.classifiers.dummy">
+<code>dummy</code>
+</h3>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h4 class="doc doc-heading" id="edspdf.classifiers.dummy.DummyClassifier">
+<code>DummyClassifier</code>
+</h4>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+          Bases: <code><a class="autorefs autorefs-internal" href="classifiers/base/#edspdf.classifiers.base.BaseClassifier" title="edspdf.classifiers.base.BaseClassifier">BaseClassifier</a></code></p>
+<p>"Dummy" classifier, for testing purposes. Classifies every line to <code>body</code>.</p>
+<details class="quote">
+<summary>Source code in <code>edspdf/classifiers/dummy.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@registry</span><span class="o">.</span><span class="n">classifiers</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">"dummy.v1"</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">DummyClassifier</span><span class="p">(</span><span class="n">BaseClassifier</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    "Dummy" classifier, for testing purposes. Classifies every line to ``body``.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">"body"</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h3 class="doc doc-heading" id="edspdf.classifiers.base">
+<code>base</code>
+</h3>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h4 class="doc doc-heading" id="edspdf.classifiers.base.BaseClassifier">
+<code>BaseClassifier</code>
+</h4>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+          Bases: <code><span title="abc.ABC">ABC</span></code></p>
+<details class="quote">
+<summary>Source code in <code>edspdf/classifiers/base.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseClassifier</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Handles the classification.</span>
+<span class="sd">        """</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<div class="doc doc-children">
+<div class="doc doc-object doc-function">
+<h5 class="doc doc-heading" id="edspdf.classifiers.base.BaseClassifier.predict">
+<code class="highlight language-python"><span class="n">predict</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></code>
+<span class="doc doc-properties">
+<small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+</span>
+</h5>
+<div class="doc doc-contents">
+<p>Handles the classification.</p>
+<details class="quote">
+<summary>Source code in <code>edspdf/classifiers/base.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Handles the classification.</span>
+<span class="sd">    """</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -4344,7 +4348,7 @@ by default False</p>
 <div class="md-dialog" data-md-component="dialog">
 <div class="md-dialog__inner md-typeset"></div>
 </div>
-<script id="__config" type="application/json">{"base": "..", "features": ["navigation.tracking", "navigation.instant", "navigation.indexes", "content.code.annotate"], "search": "../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+<script id="__config" type="application/json">{"base": "..", "features": ["navigation.tracking", "navigation.instant", "navigation.indexes", "content.code.annotate"], "search": "../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
 <script src="../assets/javascripts/bundle.6c7ad80a.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
