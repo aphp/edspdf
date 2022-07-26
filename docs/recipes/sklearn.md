@@ -51,7 +51,7 @@ path = "classifier.joblib"
 
 ## Data preparation
 
-The reader object exposes a [`#!python prepare_data`][edspdf.reading.reader.PdfReader.prepare_data] method,
+The reader object exposes a [`#!python prepare_data`][edspdf.readers.reader.PdfReader.prepare_data] method,
 which runs the pipeline until the classification phase, and returns the `DataFrame` as it would be seen
 by the classifier. Hence, we can use it to produce a training dataset for the classification step.
 
