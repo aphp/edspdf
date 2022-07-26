@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Drop the `pdf2image` dependency, replacing it with `pypdfium2`
+
 ## v0.5.0 - 2022-07-25
 
 ### Changed

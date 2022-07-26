@@ -2,7 +2,7 @@ from typing import Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
-import pdf2image
+import pypdfium2 as pdfium
 from PIL import Image, ImageDraw
 from PIL.PpmImagePlugin import PpmImageFile
 
@@ -35,7 +35,9 @@ def show_annotations(
     annotations: pd.DataFrame,
     colors: Optional[Union[Dict[str, str], List[str]]] = None,
 ) -> List[PpmImageFile]:
-    pages = pdf2image.convert_from_bytes(pdf)
+
+    pdf_doc = pdfium.PdfDocument(pdf)
+    pages = list(pdf_doc.render_topil(scale=2))
 
     if colors is None:
         colors = {
@@ -55,7 +57,7 @@ def show_annotations(
             draw.rectangle(
                 [(bloc.x0 * w, bloc.y0 * h), (bloc.x1 * w, bloc.y1 * h)],
                 outline=colors[bloc.label],
-                width=4,
+                width=3,
             )
 
     return pages

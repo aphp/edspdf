@@ -1,2 +1,2 @@
-git+https://github.com/aphp/edspdf.git
+git+https://github.com/aphp/edspdf.git@pypdfium
 streamlit
