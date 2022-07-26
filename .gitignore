@@ -57,6 +57,5 @@ coverage.xml
 *.pdf
 data/
 
-docs/_build
-
-lightning_logs/
+# MkDocs output
+site/
