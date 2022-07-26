@@ -65,6 +65,20 @@ texts["body"]
 
 See the [rule-based recipe](recipes/rules.md) for a step-by-step explanation of what is happening.
 
+## Citation
+
+If you use EDS-NLP, please cite us as below.
+
+```bibtex
+@software{edspdf,
+  author  = {Dura, Basile and Wajsburt, Perceval and Calliger, Alice and Gérardin, Christel and Bey, Romain},
+  doi = {10.5281/zenodo.6902977},
+  license = {BSD-3-Clause},
+  title   = {{EDS-PDF: Smart text extraction from PDF documents}},
+  url     = {https://github.com/aphp/edspdf}
+}
+```
+
 ## Acknowledgement
 
 We would like to thank [Assistance Publique – Hôpitaux de Paris](https://www.aphp.fr/) and
