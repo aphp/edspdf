@@ -10,4 +10,4 @@
 
 - [ ] If this PR is a bug fix, the bug is documented in the test suite.
 - [ ] Changes were documented in the changelog (pending section).
-- [ ] If necessary, changes were made to the documentation (eg new pipeline).
+- [ ] If necessary, changes were made to the documentation.
