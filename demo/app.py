@@ -102,8 +102,8 @@ if upload:
 
         st.image(imgs[page])
 
-    with st.expander("PDF"):
-        st.markdown(pdf_display, unsafe_allow_html=True)
+    # with st.expander("PDF"):
+    #     st.markdown(pdf_display, unsafe_allow_html=True)
 
     with st.expander("Text"):
         if body is None:
