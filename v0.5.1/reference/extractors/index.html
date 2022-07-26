@@ -30,6 +30,10 @@
 </div>
 <div data-md-component="announce">
 </div>
+<div data-md-component="outdated" hidden="">
+<aside class="md-banner md-banner--warning">
+</aside>
+</div>
 <header class="md-header" data-md-component="header">
 <nav aria-label="Header" class="md-header__inner md-grid">
 <a aria-label="EDS-PDF" class="md-header__button md-logo" data-md-component="logo" href="../.." title="EDS-PDF">
@@ -628,29 +632,6 @@
 </nav>
 </li>
 <li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.extractors.base">
-    base
-  </a>
-<nav aria-label="base" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.extractors.base.BaseExtractor">
-    BaseExtractor
-  </a>
-<nav aria-label="BaseExtractor" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.extractors.base.BaseExtractor.extract">
-    extract()
-  </a>
-</li>
-</ul>
-</nav>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
 <a class="md-nav__link" href="#edspdf.extractors.functional">
     functional
   </a>
@@ -679,6 +660,29 @@
 <a class="md-nav__link" href="#edspdf.extractors.functional.remove_outside_lines">
     remove_outside_lines()
   </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.extractors.base">
+    base
+  </a>
+<nav aria-label="base" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.extractors.base.BaseExtractor">
+    BaseExtractor
+  </a>
+<nav aria-label="BaseExtractor" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.extractors.base.BaseExtractor.extract">
+    extract()
+  </a>
+</li>
+</ul>
+</nav>
 </li>
 </ul>
 </nav>
@@ -1324,71 +1328,6 @@
 </div>
 </div>
 <div class="doc doc-object doc-module">
-<h2 class="doc doc-heading" id="edspdf.extractors.base">
-<code>base</code>
-</h2>
-<div class="doc doc-contents">
-<div class="doc doc-children">
-<div class="doc doc-object doc-class">
-<h3 class="doc doc-heading" id="edspdf.extractors.base.BaseExtractor">
-<code>BaseExtractor</code>
-</h3>
-<div class="doc doc-contents">
-<p class="doc doc-class-bases">
-          Bases: <code><span title="abc.ABC">ABC</span></code></p>
-<details class="quote">
-<summary>Source code in <code>edspdf/extractors/base.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseExtractor</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Handles the extraction</span>
-<span class="sd">        """</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-</details>
-<div class="doc doc-children">
-<div class="doc doc-object doc-function">
-<h4 class="doc doc-heading" id="edspdf.extractors.base.BaseExtractor.extract">
-<code class="highlight language-python"><span class="n">extract</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span></code>
-<span class="doc doc-properties">
-<small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
-</span>
-</h4>
-<div class="doc doc-contents">
-<p>Handles the extraction</p>
-<details class="quote">
-<summary>Source code in <code>edspdf/extractors/base.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
-<span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-    <span class="sd">"""</span>
-<span class="sd">    Handles the extraction</span>
-<span class="sd">    """</span>
-</code></pre></div></td></tr></table></div>
-</details>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="doc doc-object doc-module">
 <h2 class="doc doc-heading" id="edspdf.extractors.functional">
 <code>functional</code>
 </h2>
@@ -1724,6 +1663,71 @@ by default False</p>
     <span class="k">return</span> <span class="n">lines</span>
 </code></pre></div></td></tr></table></div>
 </details>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="edspdf.extractors.base">
+<code>base</code>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="edspdf.extractors.base.BaseExtractor">
+<code>BaseExtractor</code>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+          Bases: <code><span title="abc.ABC">ABC</span></code></p>
+<details class="quote">
+<summary>Source code in <code>edspdf/extractors/base.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseExtractor</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Handles the extraction</span>
+<span class="sd">        """</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<div class="doc doc-children">
+<div class="doc doc-object doc-function">
+<h4 class="doc doc-heading" id="edspdf.extractors.base.BaseExtractor.extract">
+<code class="highlight language-python"><span class="n">extract</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span></code>
+<span class="doc doc-properties">
+<small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+</span>
+</h4>
+<div class="doc doc-contents">
+<p>Handles the extraction</p>
+<details class="quote">
+<summary>Source code in <code>edspdf/extractors/base.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Handles the extraction</span>
+<span class="sd">    """</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -2451,7 +2455,7 @@ by default False</p>
 <div class="md-dialog" data-md-component="dialog">
 <div class="md-dialog__inner md-typeset"></div>
 </div>
-<script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tracking", "navigation.instant", "navigation.indexes", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+<script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tracking", "navigation.instant", "navigation.indexes", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
 <script src="../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>

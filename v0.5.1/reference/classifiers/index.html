@@ -30,6 +30,10 @@
 </div>
 <div data-md-component="announce">
 </div>
+<div data-md-component="outdated" hidden="">
+<aside class="md-banner md-banner--warning">
+</aside>
+</div>
 <header class="md-header" data-md-component="header">
 <nav aria-label="Header" class="md-header__inner md-grid">
 <a aria-label="EDS-PDF" class="md-header__button md-logo" data-md-component="logo" href="../.." title="EDS-PDF">
@@ -591,6 +595,20 @@
     </label>
 <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
 <li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.mask">
+    mask
+  </a>
+<nav aria-label="mask" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.mask.MaskClassifier">
+    MaskClassifier
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
 <a class="md-nav__link" href="#edspdf.classifiers.align">
     align
   </a>
@@ -599,6 +617,34 @@
 <li class="md-nav__item">
 <a class="md-nav__link" href="#edspdf.classifiers.align.align_labels">
     align_labels()
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.random">
+    random
+  </a>
+<nav aria-label="random" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.random.RandomClassifier">
+    RandomClassifier
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.dummy">
+    dummy
+  </a>
+<nav aria-label="dummy" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.classifiers.dummy.DummyClassifier">
+    DummyClassifier
   </a>
 </li>
 </ul>
@@ -627,48 +673,6 @@
 </ul>
 </nav>
 </li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.dummy">
-    dummy
-  </a>
-<nav aria-label="dummy" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.dummy.DummyClassifier">
-    DummyClassifier
-  </a>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.random">
-    random
-  </a>
-<nav aria-label="random" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.random.RandomClassifier">
-    RandomClassifier
-  </a>
-</li>
-</ul>
-</nav>
-</li>
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.mask">
-    mask
-  </a>
-<nav aria-label="mask" class="md-nav">
-<ul class="md-nav__list">
-<li class="md-nav__item">
-<a class="md-nav__link" href="#edspdf.classifiers.mask.MaskClassifier">
-    MaskClassifier
-  </a>
-</li>
-</ul>
-</nav>
-</li>
 </ul>
 </nav>
 </div>
@@ -683,6 +687,72 @@
 <div class="doc doc-object doc-module">
 <div class="doc doc-contents first">
 <div class="doc doc-children">
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="edspdf.classifiers.mask">
+<code>mask</code>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="edspdf.classifiers.mask.MaskClassifier">
+<code>MaskClassifier</code>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+          Bases: <code><a class="autorefs autorefs-internal" href="base/#edspdf.classifiers.base.BaseClassifier" title="edspdf.classifiers.base.BaseClassifier">BaseClassifier</a></code></p>
+<p>Mask classifier, that reproduces the PdfBox behaviour.</p>
+<details class="quote">
+<summary>Source code in <code>edspdf/classifiers/mask.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MaskClassifier</span><span class="p">(</span><span class="n">BaseClassifier</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Mask classifier, that reproduces the PdfBox behaviour.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">ms</span><span class="p">:</span> <span class="n">Mask</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">masks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ms</span><span class="p">)</span>
+
+        <span class="n">masks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Mask</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">"pollution"</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">([</span><span class="n">mask</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">mask</span> <span class="ow">in</span> <span class="n">masks</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">align_labels</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparison</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">label</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div class="doc doc-object doc-module">
 <h2 class="doc doc-heading" id="edspdf.classifiers.align">
 <code>align</code>
@@ -908,111 +978,6 @@ does not provide a <code>threshold</code> column, or to fill <code>NaN</code> va
 </div>
 </div>
 <div class="doc doc-object doc-module">
-<h2 class="doc doc-heading" id="edspdf.classifiers.base">
-<code>base</code>
-</h2>
-<div class="doc doc-contents">
-<div class="doc doc-children">
-<div class="doc doc-object doc-class">
-<h3 class="doc doc-heading" id="edspdf.classifiers.base.BaseClassifier">
-<code>BaseClassifier</code>
-</h3>
-<div class="doc doc-contents">
-<p class="doc doc-class-bases">
-          Bases: <code><span title="abc.ABC">ABC</span></code></p>
-<details class="quote">
-<summary>Source code in <code>edspdf/classifiers/base.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseClassifier</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">"""</span>
-<span class="sd">        Handles the classification.</span>
-<span class="sd">        """</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-</details>
-<div class="doc doc-children">
-<div class="doc doc-object doc-function">
-<h4 class="doc doc-heading" id="edspdf.classifiers.base.BaseClassifier.predict">
-<code class="highlight language-python"><span class="n">predict</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></code>
-<span class="doc doc-properties">
-<small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
-</span>
-</h4>
-<div class="doc doc-contents">
-<p>Handles the classification.</p>
-<details class="quote">
-<summary>Source code in <code>edspdf/classifiers/base.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
-<span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">"""</span>
-<span class="sd">    Handles the classification.</span>
-<span class="sd">    """</span>
-</code></pre></div></td></tr></table></div>
-</details>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="doc doc-object doc-module">
-<h2 class="doc doc-heading" id="edspdf.classifiers.dummy">
-<code>dummy</code>
-</h2>
-<div class="doc doc-contents">
-<div class="doc doc-children">
-<div class="doc doc-object doc-class">
-<h3 class="doc doc-heading" id="edspdf.classifiers.dummy.DummyClassifier">
-<code>DummyClassifier</code>
-</h3>
-<div class="doc doc-contents">
-<p class="doc doc-class-bases">
-          Bases: <code><a class="autorefs autorefs-internal" href="base/#edspdf.classifiers.base.BaseClassifier" title="edspdf.classifiers.base.BaseClassifier">BaseClassifier</a></code></p>
-<p>"Dummy" classifier, for testing purposes. Classifies every line to <code>body</code>.</p>
-<details class="quote">
-<summary>Source code in <code>edspdf/classifiers/dummy.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@registry</span><span class="o">.</span><span class="n">classifiers</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">"dummy.v1"</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">DummyClassifier</span><span class="p">(</span><span class="n">BaseClassifier</span><span class="p">):</span>
-    <span class="sd">"""</span>
-<span class="sd">    "Dummy" classifier, for testing purposes. Classifies every line to ``body``.</span>
-<span class="sd">    """</span>
-
-    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s2">"body"</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-</details>
-<div class="doc doc-children">
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="doc doc-object doc-module">
 <h2 class="doc doc-heading" id="edspdf.classifiers.random">
 <code>random</code>
 </h2>
@@ -1091,65 +1056,104 @@ does not provide a <code>threshold</code> column, or to fill <code>NaN</code> va
 </div>
 </div>
 <div class="doc doc-object doc-module">
-<h2 class="doc doc-heading" id="edspdf.classifiers.mask">
-<code>mask</code>
+<h2 class="doc doc-heading" id="edspdf.classifiers.dummy">
+<code>dummy</code>
 </h2>
 <div class="doc doc-contents">
 <div class="doc doc-children">
 <div class="doc doc-object doc-class">
-<h3 class="doc doc-heading" id="edspdf.classifiers.mask.MaskClassifier">
-<code>MaskClassifier</code>
+<h3 class="doc doc-heading" id="edspdf.classifiers.dummy.DummyClassifier">
+<code>DummyClassifier</code>
 </h3>
 <div class="doc doc-contents">
 <p class="doc doc-class-bases">
           Bases: <code><a class="autorefs autorefs-internal" href="base/#edspdf.classifiers.base.BaseClassifier" title="edspdf.classifiers.base.BaseClassifier">BaseClassifier</a></code></p>
-<p>Mask classifier, that reproduces the PdfBox behaviour.</p>
+<p>"Dummy" classifier, for testing purposes. Classifies every line to <code>body</code>.</p>
 <details class="quote">
-<summary>Source code in <code>edspdf/classifiers/mask.py</code></summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">MaskClassifier</span><span class="p">(</span><span class="n">BaseClassifier</span><span class="p">):</span>
+<summary>Source code in <code>edspdf/classifiers/dummy.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@registry</span><span class="o">.</span><span class="n">classifiers</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">"dummy.v1"</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">DummyClassifier</span><span class="p">(</span><span class="n">BaseClassifier</span><span class="p">):</span>
     <span class="sd">"""</span>
-<span class="sd">    Mask classifier, that reproduces the PdfBox behaviour.</span>
+<span class="sd">    "Dummy" classifier, for testing purposes. Classifies every line to ``body``.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="o">*</span><span class="n">ms</span><span class="p">:</span> <span class="n">Mask</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-
-        <span class="n">masks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ms</span><span class="p">)</span>
-
-        <span class="n">masks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Mask</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">"pollution"</span><span class="p">))</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">comparison</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">([</span><span class="n">mask</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">mask</span> <span class="ow">in</span> <span class="n">masks</span><span class="p">])</span>
-
-    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-
-        <span class="n">df</span> <span class="o">=</span> <span class="n">align_labels</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">comparison</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">label</span>
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s2">"body"</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <div class="doc doc-children">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="doc doc-object doc-module">
+<h2 class="doc doc-heading" id="edspdf.classifiers.base">
+<code>base</code>
+</h2>
+<div class="doc doc-contents">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h3 class="doc doc-heading" id="edspdf.classifiers.base.BaseClassifier">
+<code>BaseClassifier</code>
+</h3>
+<div class="doc doc-contents">
+<p class="doc doc-class-bases">
+          Bases: <code><span title="abc.ABC">ABC</span></code></p>
+<details class="quote">
+<summary>Source code in <code>edspdf/classifiers/base.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BaseClassifier</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">"""</span>
+<span class="sd">        Handles the classification.</span>
+<span class="sd">        """</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<div class="doc doc-children">
+<div class="doc doc-object doc-function">
+<h4 class="doc doc-heading" id="edspdf.classifiers.base.BaseClassifier.predict">
+<code class="highlight language-python"><span class="n">predict</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span></code>
+<span class="doc doc-properties">
+<small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+</span>
+</h4>
+<div class="doc doc-contents">
+<p>Handles the classification.</p>
+<details class="quote">
+<summary>Source code in <code>edspdf/classifiers/base.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@abstractmethod</span>
+<span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">"""</span>
+<span class="sd">    Handles the classification.</span>
+<span class="sd">    """</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -1209,7 +1213,7 @@ does not provide a <code>threshold</code> column, or to fill <code>NaN</code> va
 <div class="md-dialog" data-md-component="dialog">
 <div class="md-dialog__inner md-typeset"></div>
 </div>
-<script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tracking", "navigation.instant", "navigation.indexes", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+<script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tracking", "navigation.instant", "navigation.indexes", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
 <script src="../../assets/javascripts/bundle.6c7ad80a.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
