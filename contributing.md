@@ -87,7 +87,7 @@ Most modern editors propose extensions that will format files on save.
 Make sure to document your improvements, both within the code with comprehensive docstrings,
 as well as in the documentation itself if need be.
 
-We use `MkDocs` for EDS-Toolbox's documentation. You can checkout the changes you make with:
+We use `MkDocs` for EDS-PDF's documentation. You can checkout the changes you make with:
 
 <div class="termy">
 
