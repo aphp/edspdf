@@ -18,6 +18,9 @@ class StyledAggregator(SimpleAggregator):
         self, lines: pd.DataFrame
     ) -> Tuple[Dict[str, str], Dict[str, List[Dict]]]:
 
+        if len(lines) == 0:
+            return {}, {}
+
         lines = lines.sort_values(["page", "y1", "x0"])
 
         lines["line_id"] = range(len(lines))
