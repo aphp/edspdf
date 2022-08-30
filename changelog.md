@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.5.2 - 2022-07-26
+
+### Changed
+
+- Fix aggregation for empty documents
+
 ## v0.5.1 - 2022-07-26
 
 ### Changed
