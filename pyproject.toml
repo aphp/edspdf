@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "edspdf"
-version = "0.5.1"
+version = "0.5.2"
 description = "Smart text extraction from PDF documents"
 authors = [
     "Basile Dura <basile.dura-ext@aphp.fr>",
