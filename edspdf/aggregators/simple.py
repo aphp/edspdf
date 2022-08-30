@@ -21,6 +21,9 @@ class SimpleAggregator(BaseAggregator):
 
     def aggregate(self, lines: pd.DataFrame) -> Dict[str, str]:
 
+        if len(lines) == 0:
+            return {}
+
         lines = lines.sort_values(["page", "y1", "x0"])
 
         lines = prepare_newlines(
