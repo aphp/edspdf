@@ -26,3 +26,9 @@ def test_simple_aggregation(lines):
 
     for value in style.values():
         assert value[0]["start"] == 0
+
+
+def test_empty_aggregation(lines):
+    aggregator = StyledAggregator()
+    assert aggregator(pd.DataFrame([])) == (dict(), dict())
+    assert aggregator(lines.iloc[:0], copy=True) == (dict(), dict())
