@@ -14,3 +14,8 @@ example = pd.DataFrame.from_records(
 def test_simple_aggregation():
     aggregator = SimpleAggregator()
     assert aggregator(example, copy=True) == dict(body="Begin and end.\n\n")
+
+
+def test_empty_aggregation():
+    aggregator = SimpleAggregator()
+    assert aggregator(example.iloc[:0], copy=True) == dict()
