@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 
 def prepare_newlines(
@@ -10,16 +11,18 @@ def prepare_newlines(
     lines["next_page"] = lines.groupby(["label"])["page"].shift(-1)
 
     lines["dy"] = (lines.next_y1 - lines.y1).where(lines.next_y1 > lines.y1)
-    lines["med_dy"] = lines.groupby(["label"])["dy"].transform("median")
+    lines["height"] = lines.y1 - lines.y0
+    lines["next_height"] = lines.groupby(["label"])["height"].shift(-1)
+    lines["min_height"] = np.minimum(lines["height"], lines["next_height"])
 
     lines["newline"] = " "
 
     lines.newline = lines.newline.mask(
-        lines.dy > lines.med_dy * nl_threshold,
+        lines.dy > lines.min_height * nl_threshold,
         "\n",
     )
     lines.newline = lines.newline.mask(
-        lines.dy > lines.med_dy * np_threshold,
+        lines.dy > lines.min_height * np_threshold,
         "\n\n",
     )
 
