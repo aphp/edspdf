@@ -22,7 +22,7 @@ class StyledAggregator(SimpleAggregator):
             return {}, {}
 
         lines = lines.sort_values(["page", "y1", "x0"])
-        lines['label'] = lines['label'].map(lambda l: self.label_map.get(l, l))
+        lines["label"] = lines["label"].map(lambda l: self.label_map.get(l, l))
 
         lines["line_id"] = range(len(lines))
 

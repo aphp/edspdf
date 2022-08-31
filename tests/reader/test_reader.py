@@ -60,25 +60,26 @@ def test_reader(pdf, blank_pdf, letter_pdf):
     reader(pdf, orbis=True)
     reader(blank_pdf, orbis=True)
     assert reader(letter_pdf)["body"] == (
-        'Cher Pr ABC, Cher DEF,\n'
-        '\n'
-        'Nous souhaitons remercier le CSE pour son avis favorable quant à l’accès aux '
-        'données de\n'
-        'l’Entrepôt de Données de Santé du projet n° XXXX.\n'
-        '\n'
-        'Nous avons bien pris connaissance des conditions requises pour cet avis '
-        'favorable, c’est\n'
-        'pourquoi nous nous engageons par la présente à :\n'
-        '\n'
-        '• Informer individuellement les patients concernés par la recherche, admis à '
+        "Cher Pr ABC, Cher DEF,\n"
+        "\n"
+        "Nous souhaitons remercier le CSE pour son avis favorable quant à l’accès aux "
+        "données de\n"
+        "l’Entrepôt de Données de Santé du projet n° XXXX.\n"
+        "\n"
+        "Nous avons bien pris connaissance des conditions requises pour cet avis "
+        "favorable, c’est\n"
+        "pourquoi nous nous engageons par la présente à :\n"
+        "\n"
+        "• Informer individuellement les patients concernés par la recherche, admis à "
         "l'AP-HP\n"
-        'avant juillet 2017, sortis vivants, et non réadmis depuis.\n'
-        '\n'
+        "avant juillet 2017, sortis vivants, et non réadmis depuis.\n"
+        "\n"
         "• Effectuer une demande d'autorisation à la CNIL en cas d'appariement avec "
-        'd’autres\n'
-        'cohortes.\n'
-        '\n'
-        'Bien cordialement,\n'
-        '\n'
-        'Pr XXXX Pr YYYY\n'
-        '\n')
+        "d’autres\n"
+        "cohortes.\n"
+        "\n"
+        "Bien cordialement,\n"
+        "\n"
+        "Pr XXXX Pr YYYY\n"
+        "\n"
+    )
