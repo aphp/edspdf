@@ -1,8 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Add label mapping parameter to aggregators (to merge different types of blocks such as `title` and `body`)
+- Improved line aggregation formula
+
 ## v0.5.2 - 2022-08-30
 
-### Changed
+### Fixed
 
 - Fix aggregation for empty documents
 
