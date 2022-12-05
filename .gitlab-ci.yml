@@ -17,6 +17,8 @@ Linting:
       paths:
         - ~/.pre-commit
   before_script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends git
     - pip install pre-commit
   script:
     - pre-commit run --all-files
