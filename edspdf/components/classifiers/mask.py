@@ -1,39 +1,9 @@
-from typing import List
-
-import pandas as pd
-from pydantic import BaseModel, Field, confloat, parse_obj_as, validator
-
-from edspdf.reg import registry
-
-from .align import align_labels
-from .base import BaseClassifier
+from edspdf import Component, registry
+from edspdf.models import Box, PDFDoc
+from edspdf.utils.alignment import align_box_labels
 
 
-class Mask(BaseModel):
-
-    label: str
-
-    X0: confloat(ge=0, le=1) = Field(0, alias="x0")
-    X1: confloat(ge=0, le=1) = Field(1, alias="x1")
-    Y0: confloat(ge=0, le=1) = Field(0, alias="y0")
-    Y1: confloat(ge=0, le=1) = Field(1, alias="y1")
-
-    threshold: confloat(ge=0, le=1) = 1
-
-    @validator("X1", always=True)
-    def check_x(cls, v, values):
-        if v <= values["X0"]:
-            raise ValueError("x1 should be greater than x0")
-        return v
-
-    @validator("Y1", always=True)
-    def check_y(cls, v, values):
-        if v <= values["Y0"]:
-            raise ValueError("y1 should be greater than y0")
-        return v
-
-
-@registry.classifiers.register("mask.v1")
+@registry.factory.register("mask-classifier")
 def simple_mask_classifier_factory(
     x0: float,
     y0: float,
@@ -42,40 +12,56 @@ def simple_mask_classifier_factory(
     threshold: float = 1.0,
 ):
     return MaskClassifier(
-        Mask(
+        Box(
             label="body",
+            page=None,
             x0=x0,
             y0=y0,
             x1=x1,
             y1=y1,
-            threshold=threshold,
-        )
+        ),
+        threshold=threshold,
     )
 
 
-@registry.classifiers.register("custom_masks.v1")
-def mask_classifier_factory(**masks):
-    return MaskClassifier(*parse_obj_as(List[Mask], list(masks.values())))
+@registry.factory.register("multi-mask-classifier")
+def mask_classifier_factory(threshold: float = 1.0, **masks: Box):
+    return MaskClassifier(*masks.values(), threshold=threshold)
 
 
-class MaskClassifier(BaseClassifier):
+class MaskClassifier(Component):
     """
     Mask classifier, that reproduces the PdfBox behaviour.
     """
 
     def __init__(
         self,
-        *ms: Mask,
-    ) -> None:
+        *ms: Box,
+        threshold: float = 1.0,
+    ):
+        super().__init__()
 
         masks = list(ms)
 
-        masks.append(Mask(label="pollution"))
+        masks.append(
+            Box(
+                label="pollution",
+                x0=-10000,
+                x1=10000,
+                y0=-10000,
+                y1=10000,
+            )
+        )
 
-        self.comparison = pd.DataFrame.from_records([mask.dict() for mask in masks])
+        self.masks = masks
+        self.threshold = threshold
 
-    def predict(self, lines: pd.DataFrame) -> pd.Series:
+    def __call__(self, doc: PDFDoc) -> PDFDoc:
 
-        df = align_labels(lines, self.comparison)
+        doc.lines = align_box_labels(
+            src_boxes=self.masks,
+            dst_boxes=doc.lines,
+            threshold=self.threshold,
+        )
 
-        return df.label
+        return doc
