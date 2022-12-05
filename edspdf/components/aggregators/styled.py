@@ -1,57 +1,63 @@
+from itertools import groupby
 from typing import Dict, List, Tuple
 
-import pandas as pd
+import numpy as np
 
-from edspdf.reg import registry
+from edspdf import registry
+from edspdf.models import PDFDoc, TextBox
 
-from .functional import prepare_newlines
 from .simple import SimpleAggregator
 
 
-@registry.aggregators.register("styled.v1")
+@registry.factory.register("styled-aggregator")
 class StyledAggregator(SimpleAggregator):
     """
     Aggregator that returns text and styles.
     """
 
-    def aggregate(
-        self, lines: pd.DataFrame
-    ) -> Tuple[Dict[str, str], Dict[str, List[Dict]]]:
+    def __call__(self, doc: PDFDoc) -> Tuple[Dict[str, str], Dict[str, List[Dict]]]:
 
-        if len(lines) == 0:
-            return {}, {}
-
-        lines = lines.sort_values(["page", "y1", "x0"])
-        lines["label"] = lines["label"].map(lambda l: self.label_map.get(l, l))
-
-        lines["line_id"] = range(len(lines))
-
-        styles = lines[["line_id", "styles"]].explode("styles").dropna().reset_index()
-        styles = styles[["line_id"]].join(pd.json_normalize(styles.styles))
-
-        lines = prepare_newlines(
-            lines,
-            nl_threshold=self.nl_threshold,
-            np_threshold=self.np_threshold,
+        row_height = sum(b.y1 - b.y0 for b in doc.lines) / len(doc.lines)
+        all_lines = sorted(
+            [
+                line
+                for line in doc.lines
+                if len(line.text) > 0 and line.label is not None
+            ],
+            key=lambda b: (b.label, b.page, b.y1 // row_height, b.x0),
         )
 
-        lines["offset"] = lines["text_with_newline"].str.len()
-        lines["offset"] = lines.groupby(["label"])["offset"].transform("cumsum")
-        lines["offset"] = lines.groupby(["label"])["offset"].transform("shift")
-        lines["offset"] = lines["offset"].fillna(0).astype(int)
+        texts = {}
+        styles = {}
+        for label, lines in groupby(all_lines, key=lambda b: b.label):
+            styles[label] = []
+            text = ""
+            lines: List[TextBox] = list(lines)
+            pairs = list(zip(lines, [*lines[1:], None]))
+            dys = [
+                next_box.y1 - line.y1
+                if next_box is not None and line.page == next_box.page
+                else None
+                for line, next_box in pairs
+            ]
+            height = np.median(np.asarray([line.y1 - line.y0 for line in lines]))
+            for (line, next_box), dy in zip(pairs, dys):
+                for style in line.styles:
+                    style_dict = style.dict()
+                    style_dict["begin"] += len(text)
+                    style_dict["end"] += len(text)
+                    styles[label].append(style_dict)
+                text = text + line.text
+                if next_box is None:
+                    continue
+                if line.page != next_box.page:
+                    text = text + "\n\n"
+                elif dy / height > self.new_paragraph_threshold:
+                    text = text + "\n\n"
+                elif dy / height > self.new_line_threshold:
+                    text = text + "\n"
+                else:
+                    text = text + " "
+            texts[label] = "".join(text)
 
-        styles = styles.merge(lines[["line_id", "offset", "label"]], on="line_id")
-        styles["start"] += styles.offset
-        styles["end"] += styles.offset
-
-        df = lines.groupby(["label"]).agg(text=("text_with_newline", "sum"))
-
-        text = df.text.to_dict()
-        style = {
-            label: styles.query("label == @label")
-            .drop(columns=["line_id", "offset", "label"])
-            .to_dict(orient="records")
-            for label in text.keys()
-        }
-
-        return text, style
+        return texts, styles
