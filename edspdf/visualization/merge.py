@@ -1,142 +1,103 @@
-from typing import Iterable, List, Tuple
+from typing import List, Sequence
 
 import networkx as nx
 import numpy as np
-import pandas as pd
-from pydantic import BaseModel
-from scipy.linalg import block_diag
+
+from edspdf.models import Box
+
+INF = 1000000
 
 
-def sort_lines(lines: pd.DataFrame) -> pd.DataFrame:
-    sorted_lines = lines.sort_values(["page", "label"])
-    sorted_lines["key"] = range(len(lines))
-    return sorted_lines
+def merge_boxes(
+    boxes: Sequence[Box],
+) -> List[Box]:
+    pages = np.asarray([b.page for b in boxes])
+    labels = np.asarray([b.label for b in boxes])
 
+    coords = np.asarray([(b.x0, b.x1, b.y0, b.y1) for b in boxes])
 
-class Comparable(BaseModel, arbitrary_types_allowed=True):
-    x0: np.ndarray
-    x1: np.ndarray
-    y0: np.ndarray
-    y1: np.ndarray
+    # Key that determines if two boxes can be merged, initialized from the box labels
+    merge_keys = np.unique(labels, return_inverse=True)[1]
 
-
-def build_comparison(
-    lines: pd.DataFrame, page: int, label: str
-) -> Tuple[Comparable, Comparable]:
-    df = lines.query("page == @page")
-
-    comparable = df.query("label == @label")
-    others = df.query("label != @label")
-
-    comparable_obj = Comparable(
-        x0=comparable.x0.values,
-        x1=comparable.x1.values,
-        y0=comparable.y0.values,
-        y1=comparable.y1.values,
-    )
-
-    others_obj = Comparable(
-        x0=others.x0.values,
-        x1=others.x1.values,
-        y0=others.y0.values,
-        y1=others.y1.values,
-    )
-
-    return comparable_obj, others_obj
-
-
-def iter_comparison(lines: pd.DataFrame) -> Iterable[Tuple[Comparable, Comparable]]:
-
-    df = lines[["page", "label"]].drop_duplicates()
-
-    for page, label in zip(df.page, df.label):
-        yield build_comparison(lines=lines, page=page, label=label)
-
-
-def compute_sub_adj(comparable: Comparable, others: Comparable) -> np.ndarray:
-
-    if not len(others.x0):
-        return np.ones((len(comparable.x0), len(comparable.x0))) > 0
-
-    X0 = np.minimum(comparable.x0[None, :], comparable.x0[:, None])
-    X1 = np.maximum(comparable.x1[None, :], comparable.x1[:, None])
-    Y0 = np.minimum(comparable.y0[None, :], comparable.y0[:, None])
-    Y1 = np.maximum(comparable.y1[None, :], comparable.y1[:, None])
-
-    DX = np.minimum(X1[:, :, None], others.x1[None, None, :])
-    DX -= np.maximum(X0[:, :, None], others.x0[None, None, :])
-
-    DY = np.minimum(Y1[:, :, None], others.y1[None, None, :])
-    DY -= np.maximum(Y0[:, :, None], others.y0[None, None, :])
-
-    adj = np.logical_or(DX <= 0, DY <= 0).all(axis=2)
-
-    return adj
-
-
-def build_full_adj_matrix(lines: pd.DataFrame) -> np.ndarray:
-    adjs = []
-
-    for c, o in iter_comparison(lines=lines):
-        adjs.append(compute_sub_adj(c, o))
-
-    return block_diag(*adjs)
-
-
-def compute_clique(adj: np.ndarray) -> List[List[int]]:
-
-    G = nx.from_numpy_array(adj)
-
-    return list(nx.find_cliques(G))
-
-
-def process_cliques(
-    lines: pd.DataFrame, cliques: List[List[int]]
-) -> Tuple[pd.DataFrame, bool]:
-
-    seen = set()
-    has_overlap = False
-
-    cliques = sorted(cliques, key=len, reverse=True)
-
-    for i, clique in enumerate(cliques):
-        for element in clique:
-            if element in seen:
-                has_overlap = True
-            else:
-                seen.add(element)
-                lines["key"].iat[element] = i
-
-    return lines, has_overlap
-
-
-def merge_lines(lines: pd.DataFrame) -> pd.DataFrame:
-
-    if len(lines) == 0:
-        return lines
-
-    lines["lab"] = lines["label"]
-
+    # For each page
     while True:
-        lines = sort_lines(lines).copy()
+        adj = np.zeros((len(boxes), len(boxes)), dtype=bool)
 
-        adj = build_full_adj_matrix(lines)
-        cliques = compute_clique(adj)
+        for page in set(pages):
+            page_filter = pages == page
 
-        lines, has_overlap = process_cliques(lines, cliques)
+            # Split boxes between those that belong to a label (and could be merged),
+            # and those that do not belong to that label and will prevent the mergers
+            for key in np.unique(merge_keys[page_filter]):
+                key_filter = merge_keys == key
 
-        if not has_overlap:
+                x0, x1, y0, y1 = coords[page_filter & key_filter].T
+                obs_x0, obs_x1, obs_y0, obs_y1 = coords[page_filter & ~key_filter].T
+
+                A = (slice(None), None, None)
+                B = (None, slice(None), None)
+
+                # Find the bbox of the hypothetical merged boxes
+                merged_x0 = np.minimum(x0[A], x0[B])
+                merged_x1 = np.maximum(x1[A], x1[B])
+                merged_y0 = np.minimum(y0[A], y0[B])
+                merged_y1 = np.maximum(y1[A], y1[B])
+
+                # And detect if it overlaps existing box of a different label
+                dx = np.minimum(merged_x1, obs_x1) - np.maximum(merged_x0, obs_x0)
+                dy = np.minimum(merged_y1, obs_y1) - np.maximum(merged_y0, obs_y0)
+                merged_overlap_with_other = (dx > 0) & (dy > 0)
+                no_box_inbetween = (~merged_overlap_with_other).all(-1)
+
+                # Update the adjacency matrix to 1 if two boxes can be merged
+                # (ie no box of a different label lie inbetween)
+                adj_indices = np.flatnonzero(page_filter & key_filter)
+                adj[adj_indices[:, None], adj_indices[None, :]] = no_box_inbetween
+
+        # Build the cliques of boxes that can be merged
+        cliques = nx.find_cliques(nx.from_numpy_array(adj))
+
+        # These cliques of mergeable boxes can be overlapping: think of a cross
+        # like this=
+        # *** --- ***
+        # --- --- ---
+        # *** --- ***
+        # for which the two (-) labelled cliques would be the two axis of the cross
+        # For each box, we change its label to its first clique number, so the cross
+        # looks like this (symbols between the 2 figures don't map to the same indices)
+        # *** --- ***
+        # ooo ooo ooo
+        # *** --- ***
+        # and rerun the above process until there is no conflict
+
+        conflicting_cliques = False
+        seen = set()
+        for clique_idx, clique_box_indices in enumerate(cliques):
+            for box_idx in clique_box_indices:
+                if box_idx in seen:
+                    # print("Already seen", box_idx)
+                    conflicting_cliques = True
+                else:
+                    seen.add(box_idx)
+                    merge_keys[box_idx] = clique_idx
+
+        if not conflicting_cliques:
             break
 
-        lines["label"] = lines["key"]
+    x0, x1, y0, y1 = coords.T.reshape((4, -1))
 
-    merged = lines.groupby(["key"]).agg(
-        page=("page", "first"),
-        x0=("x0", "min"),
-        y0=("y0", "min"),
-        x1=("x1", "max"),
-        y1=("y1", "max"),
-        label=("lab", "first"),
-    )
+    # Finally, compute the bbox of the sets of mergeable boxes (same `key`)
+    merged_boxes = []
+    for group_key in dict.fromkeys(merge_keys):
+        indices = [i for i, key in enumerate(merge_keys) if group_key == key]
+        first_box = boxes[indices[0]]
+        merged_boxes.append(
+            first_box.evolve(
+                x0=min(x0[i] for i in indices),
+                y0=min(y0[i] for i in indices),
+                x1=max(x1[i] for i in indices),
+                y1=max(y1[i] for i in indices),
+            )
+        )
 
-    return merged
+    return merged_boxes

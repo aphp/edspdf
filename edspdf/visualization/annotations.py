@@ -1,10 +1,11 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
-import pandas as pd
 import pypdfium2 as pdfium
 from PIL import Image, ImageDraw
 from PIL.PpmImagePlugin import PpmImageFile
+
+from edspdf.models import Box
 
 CATEGORY20 = [
     "#1f77b4",
@@ -32,56 +33,57 @@ CATEGORY20 = [
 
 def show_annotations(
     pdf: bytes,
-    annotations: pd.DataFrame,
+    annotations: Sequence[Box],
     colors: Optional[Union[Dict[str, str], List[str]]] = None,
 ) -> List[PpmImageFile]:
 
     pdf_doc = pdfium.PdfDocument(pdf)
     pages = list(pdf_doc.render_topil(scale=2))
+    unique_labels = list(dict.fromkeys([box.label for box in annotations]))
 
     if colors is None:
-        colors = {
-            key: color
-            for key, color in zip(sorted(annotations.label.unique()), CATEGORY20)
-        }
+        colors = {key: color for key, color in zip(unique_labels, CATEGORY20)}
     elif isinstance(colors, list):
         colors = {label: color for label, color in zip(colors, CATEGORY20)}
 
     for page, img in enumerate(pages):
-        anns = annotations[annotations.page == page]
 
         w, h = img.size
         draw = ImageDraw.Draw(img)
 
-        for _, bloc in anns.iterrows():
-            draw.rectangle(
-                [(bloc.x0 * w, bloc.y0 * h), (bloc.x1 * w, bloc.y1 * h)],
-                outline=colors[bloc.label],
-                width=3,
-            )
+        for bloc in annotations:
+            if bloc.page == page:
+                draw.rectangle(
+                    [(bloc.x0 * w, bloc.y0 * h), (bloc.x1 * w, bloc.y1 * h)],
+                    outline=colors[bloc.label],
+                    width=3,
+                )
 
     return pages
 
 
 def compare_results(
     pdf: bytes,
-    predictions: pd.DataFrame,
-    labels: pd.DataFrame,
+    pred: Sequence[Box],
+    gold: Sequence[Box],
     colors: Optional[Union[Dict[str, str], List[str]]] = None,
 ) -> List[PpmImageFile]:
 
     if colors is None:
         colors = list(
-            set(list(predictions.label.unique()) + list(labels.label.unique()))
+            {
+                **dict.fromkeys([b.label for b in pred]),
+                **dict.fromkeys([b.label for b in gold]),
+            }
         )
 
-    pages_preds = show_annotations(pdf, predictions, colors)
-    pages_labels = show_annotations(pdf, labels, colors)
+    pages_pred = show_annotations(pdf, pred, colors)
+    pages_gold = show_annotations(pdf, gold, colors)
 
     pages = []
 
-    for pred, label in zip(pages_preds, pages_labels):
-        array = np.hstack((np.asarray(pred), np.asarray(label)))
+    for page_pred, page_gold in zip(pages_pred, pages_gold):
+        array = np.hstack((np.asarray(page_pred), np.asarray(page_gold)))
         pages.append(Image.fromarray(array))
 
     return pages
