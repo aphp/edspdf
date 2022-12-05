@@ -1,6 +1,6 @@
 # Overview
 
-EDS-PDF provides modular framework to extract text from PDF documents.
+EDS-PDF provides modular framework to extract text information from PDF documents.
 
 You can use it out-of-the-box, or extend it to fit your use-case.
 
@@ -26,42 +26,43 @@ Let's build a simple PDF extractor that uses a rule-based classifier,
 using the following configuration:
 
 ```toml title="config.cfg"
-[reader]
-@readers = "pdf-reader.v1"
+[pipeline]
+components = ["extractor", "classifier", "aggregator"]
+components_config = ${components}
 
-[reader.extractor]
-@extractors = "pdfminer.v1"
+[components.extractor]
+@factory = "pdfminer-extractor"
 
-[reader.classifier]
-@classifiers = "mask.v1"
+[components.classifier]
+@factory = "mask-classifier"
 x0 = 0.2
 x1 = 0.9
 y0 = 0.3
 y1 = 0.6
 threshold = 0.1
 
-[reader.aggregator]
-@aggregators = "simple.v1"
+[components.aggregator]
+@factory = "simple-aggregator"
 ```
 
-The PDF reader can be instantiated and applied (for instance with this [PDF](https://github.com/aphp/edspdf/raw/master/tests/resources/letter.pdf)):
+The PDF Pipeline can be instantiated and applied (for instance with this [PDF](https://github.com/aphp/edspdf/raw/master/tests/resources/letter.pdf)):
 
 ```python
 import edspdf
 from pathlib import Path
 
-reader = edspdf.load("config.cfg")  # (1)
+model = edspdf.load("config.cfg")  # (1)
 
 # Get a PDF
 pdf = Path("letter.pdf").read_bytes()
 
-texts = reader(pdf)
+texts = model(pdf)
 
 texts["body"]
 # Out: Cher Pr ABC, Cher DEF,\n...
 ```
 
-1. The `reader` object is loaded from the configuration directly.
+1. The `Pipeline` instance is loaded from the configuration directly.
 
 See the [rule-based recipe](recipes/rules.md) for a step-by-step explanation of what is happening.
 
