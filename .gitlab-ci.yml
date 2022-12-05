@@ -99,7 +99,8 @@ pages:
       paths:
         - .venv
   before_script:
-    - pip install .
+    - pip install poetry
+    - poetry install
   script:
     - poetry run mkdocs build --site-dir public
   artifacts:
