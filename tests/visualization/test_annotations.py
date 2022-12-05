@@ -1,6 +1,5 @@
-from edspdf.classifiers.mask import simple_mask_classifier_factory
-from edspdf.extractors.pdfminer import PdfMinerExtractor
-from edspdf.visualization import compare_results, merge_lines, show_annotations
+from edspdf.components import PdfMinerExtractor, simple_mask_classifier_factory
+from edspdf.visualization import compare_results, merge_boxes, show_annotations
 
 
 def test_pipeline(pdf):
@@ -10,10 +9,10 @@ def test_pipeline(pdf):
         x0=0.1, y0=0.4, x1=0.5, y1=0.9, threshold=0.1
     )
 
-    df = extractor(pdf)
-    df["label"] = classifier(df)
+    doc = extractor(pdf)
+    doc = classifier(doc)
 
-    merged = merge_lines(df)
+    merged = merge_boxes(doc.lines)
 
-    show_annotations(pdf, merged)
-    compare_results(pdf, merged, merged)
+    assert len(show_annotations(pdf, merged)) == 1
+    assert len(compare_results(pdf, doc.lines, merged)) == 1
