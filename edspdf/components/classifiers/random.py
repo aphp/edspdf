@@ -1,37 +1,38 @@
 from typing import Dict, List, Optional, Union
 
 import numpy as np
-import pandas as pd
 
-from edspdf.reg import registry
-
-from .base import BaseClassifier
+from edspdf import Component, registry
+from edspdf.models import PDFDoc
 
 
-@registry.classifiers.register("random.v1")
-class RandomClassifier(BaseClassifier):
+@registry.factory.register("random-classifier")
+class RandomClassifier(Component):
     """
     Random classifier, for chaos purposes. Classifies each line to a random element.
     """
 
     def __init__(
         self,
-        classes: Union[List[str], Dict[str, float]],
+        labels: Union[List[str], Dict[str, float]],
         seed: Optional[int] = 0,
     ) -> None:
+        super().__init__()
 
-        if isinstance(classes, list):
-            classes = {c: 1 for c in classes}
+        if isinstance(labels, list):
+            labels = {c: 1 for c in labels}
 
-        self.classes = {c: w / sum(classes.values()) for c, w in classes.items()}
+        self.labels = {c: w / sum(labels.values()) for c, w in labels.items()}
 
         self.rgn = np.random.default_rng(seed=seed)
 
-    def predict(self, lines: pd.DataFrame) -> List[str]:
-        choices = self.rgn.choice(
-            list(self.classes.keys()),
-            p=list(self.classes.values()),
-            size=len(lines),
+    def __call__(self, doc: PDFDoc) -> PDFDoc:
+        prediction = self.rgn.choice(
+            list(self.labels.keys()),
+            p=list(self.labels.values()),
+            size=len(doc.lines),
         )
+        for b, label in zip(doc.lines, prediction):
+            b.label = label
 
-        return list(choices)
+        return doc
