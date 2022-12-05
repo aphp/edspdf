@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.5.4 - 2022-12-05
+## v0.6.0 - 2022-12-05
 
 Many, many changes:
 - added torch as the main deep learning framework instead of spaCy and thinc :tada:
