@@ -7,40 +7,41 @@ EDS-PDF provides utilities to help you visualise the output of the pipeline.
 You can use EDS-PDF to overlay labelled bounding boxes on top of a PDF document.
 
 ```python
-import edspdf
+from edspdf import Config, load
 from pathlib import Path
 from edspdf.visualization.annotations import show_annotations
 
 config = """
-[reader]
-@readers = "pdf-reader.v1"
+[pipeline]
+    components = ["extractor", "classifier", "aggregator"]
+    components_config = ${components}
 
-[reader.extractor]
-@extractors = "pdfminer.v1"
+[components]
 
-[reader.classifier]
-@classifiers = "mask.v1"
-x0 = 0.1
-x1 = 0.9
-y0 = 0.4
+[components.extractor]
+@factory = "pdfminer-extractor"
+extract_style = true
+
+[components.classifier]
+@factory = "mask-classifier"
+x0 = 0.25
+x1 = 0.95
+y0 = 0.3
 y1 = 0.9
 threshold = 0.1
-
-[reader.aggregator]
-@aggregators = "simple.v1"
 """
 
-reader = edspdf.from_str(config)
+model = load(Config.from_str(config))
 
 # Get a PDF
 pdf = Path("letter.pdf").read_bytes()
 
 # Construct the DataFrame of blocs
-lines = reader.prepare_and_predict(pdf)
+doc = model(pdf)
 
 # Compute an image representation of each page of the PDF
 # overlaid with the predicted bounding boxes
-imgs = show_annotations(pdf=pdf, annotations=lines)
+imgs = show_annotations(pdf=pdf, annotations=doc.lines)
 
 imgs[0]
 ```
@@ -57,9 +58,9 @@ that does just that.
 
 ```python
 # ↑ Omitted code above ↑
-from edspdf.visualization.merge import merge_lines
+from edspdf.visualization.merge import merge_boxes
 
-merged = merge_lines(lines)
+merged = merge_boxes(doc.lines)
 
 imgs = show_annotations(pdf=pdf, annotations=merged)
 imgs[0]
@@ -75,5 +76,5 @@ See the difference:
 
     ![lines](resources/merged.jpeg)
 
-The `merge_lines` method uses the notion of maximal cliques to compute merges.
+The `merge_boxes` method uses the notion of maximal cliques to compute merges.
 It forbids the combined blocs from overlapping with any bloc from another label.
