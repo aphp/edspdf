@@ -2,30 +2,31 @@ import base64
 
 import pandas as pd
 import streamlit as st
-from thinc.config import Config
 
-from edspdf import registry
-from edspdf.readers.reader import PdfReader
-from edspdf.visualization.annotations import show_annotations
-from edspdf.visualization.merge import merge_lines
+from edspdf import Config, load
+from edspdf.visualization import merge_boxes, show_annotations
 
 CONFIG = """\
-[reader]
-@readers = "pdf-reader.v1"
+[pipeline]
+    components = ["extractor", "classifier", "aggregator"]
+    components_config = ${components}
 
-[reader.extractor]
-@extractors = "pdfminer.v1"
+[components]
 
-[reader.classifier]
-@classifiers = "mask.v1"
-x0 = 0.1
-x1 = 0.9
-y0 = 0.4
+[components.extractor]
+@factory = "pdfminer-extractor"
+extract_style = true
+
+[components.classifier]
+@factory = "mask-classifier"
+x0 = 0.25
+x1 = 0.95
+y0 = 0.3
 y1 = 0.9
 threshold = 0.1
 
-[reader.aggregator]
-@aggregators = "styled.v1"\
+[components.aggregator]
+@factory = "styled-aggregator"
 """
 
 
@@ -55,15 +56,9 @@ st.subheader("Configuration")
 config = st.text_area(label="Change the config", value=CONFIG, height=200)
 
 
-def load_model(cfg) -> PdfReader:
-    config = Config().from_str(cfg)
-    resolved = registry.resolve(config)
-    return resolved["reader"]
-
-
 model_load_state = st.info("Loading model...")
 
-reader = load_model(config)
+reader = load(Config.from_str(config))
 
 model_load_state.empty()
 
@@ -93,8 +88,13 @@ if upload:
 
     with st.expander("Visualisation"):
 
-        lines = reader.prepare_and_predict(pdf)  # noqa
-        merged = merge_lines(lines)
+        doc = reader.components.extractor(pdf)  # noqa
+        doc = reader.components.classifier(doc)  # noqa
+        merged = merge_boxes(sorted(doc.lines, key=lambda b: (b.y0, b.x0)))
+
+        texts, styles = reader.components.aggregator(doc)  # noqa
+        body = texts.get("body", "")
+        styles = texts.get("styles", "")
 
         imgs = show_annotations(pdf=pdf, annotations=merged)
 
@@ -109,7 +109,7 @@ if upload:
         if body is None:
             st.warning(
                 "No text detected... Are you sure this is a text-based PDF?\n\n"
-                "There is no support for OCR within EDSPDF (for now?)."
+                "There is no support for OCR within EDS-PDF (for now?)."
             )
         else:
             st.markdown("```\n" + body + "\n```")
@@ -118,7 +118,7 @@ if upload:
         if body_styles is None:
             st.warning(
                 "No text detected... Are you sure this is a text-based PDF?\n\n"
-                "There is no support for OCR within EDSPDF (for now?)."
+                "There is no support for OCR within EDS-PDF (for now?)."
             )
         else:
             st.dataframe(pd.DataFrame.from_records(body_styles))
