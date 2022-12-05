@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.5.4 - 2022-12-05
+
+Many, many changes:
+- added torch as the main deep learning framework instead of spaCy and thinc :tada:
+- added poppler and mupdf as alternatives to pdfminer
+- new pipeline / config / registry system to facilitate consistency between training and inference
+- standardization of the exchange format between components with dataclass models (attrs more specifically) instead of pandas dataframes
+
 ## v0.5.3 - 2022-08-31
 
 ### Added
