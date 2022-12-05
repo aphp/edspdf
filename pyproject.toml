@@ -3,9 +3,9 @@ name = "edspdf"
 version = "0.5.3"
 description = "Smart text extraction from PDF documents"
 authors = [
-    "Basile Dura <basile.dura-ext@aphp.fr>",
-    "Alice Calliger <alice.calliger-ext@aphp.fr>",
     "Perceval Wajsburt <perceval.wajsburt-ext@aphp.fr>",
+    "Alice Calliger <alice.calliger-ext@aphp.fr>",
+    "Basile Dura <basile.dura-ext@aphp.fr>",
 ]
 license = "BSD-3"
 readme = "README.md"
