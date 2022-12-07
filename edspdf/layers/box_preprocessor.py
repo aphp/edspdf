@@ -112,6 +112,7 @@ class BoxPreprocessor(Module[PDFDoc, BoxBatch]):
                 flatten(batch["last_page"]),
             ],
             dtype=torch.float,
+            device=device,
         ).unbind(
             0
         )
