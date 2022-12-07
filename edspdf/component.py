@@ -321,12 +321,13 @@ class TrainableComponent(
         return batch
 
     def batch_process(self, docs: Sequence[InT], refs=None) -> Sequence[OutT]:
-        batch = self.make_batch(docs)
+        with torch.no_grad():
+            batch = self.make_batch(docs)
 
-        inputs = self.collate(batch[self.name], device=self.device)
-        res = self.forward(inputs)
-        docs = self.postprocess(docs, res)
-        return docs
+            inputs = self.collate(batch[self.name], device=self.device)
+            res = self.forward(inputs)
+            docs = self.postprocess(docs, res)
+            return docs
 
     def postprocess(self, docs: Sequence[InT], batch: Dict[str, Any]) -> Sequence[OutT]:
         return docs
