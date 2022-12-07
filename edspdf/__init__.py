@@ -7,4 +7,4 @@ from .registry import registry
 
 from . import components, utils  # isort:skip
 
-__version__ = "0.6.0"
+__version__ = "0.6.1"

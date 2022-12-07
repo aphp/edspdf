@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.6.1 - 2022-12-07
+
+Performance and cuda related fixes.
+
 ## v0.6.0 - 2022-12-05
 
 Many, many changes:
