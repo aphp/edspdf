@@ -78,12 +78,13 @@ class PdfMinerExtractor(Component):
             PDF document
         """
 
-        if isinstance(doc, bytes):
-            doc = PDFDoc(id=str(hash(doc)), content=doc)
-        pdf = doc.content
-        pdf_stream = BytesIO(pdf)
+        if not isinstance(doc, PDFDoc):
+            content = bytes(doc)
+            doc = PDFDoc(id=str(hash(content)), content=content)
+        content = doc.content
+        content_stream = BytesIO(content)
 
-        layout = extract_pages(pdf_stream, laparams=self.laparams)
+        layout = extract_pages(content_stream, laparams=self.laparams)
         lines = []
 
         page_count = 0
