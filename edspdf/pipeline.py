@@ -447,4 +447,4 @@ def load(config: Union[Path, str, Config]):
 
     assert "pipeline" in config, "The config object is missing a `pipeline` section"
 
-    return Pipeline(**config["pipeline"].resolve())
+    return Pipeline(**config.resolve()["pipeline"])

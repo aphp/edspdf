@@ -339,8 +339,8 @@ class Config(dict):
         return config
 
     @classmethod
-    def from_disk(cls, path: Union[str, Path], resolve: bool = True) -> "Config":
-        s = Path(path).read_text(path)
+    def from_disk(cls, path: Union[str, Path], resolve: bool = False) -> "Config":
+        s = Path(path).read_text()
         return cls.from_str(s, resolve=resolve)
 
     def to_disk(self, path: Union[str, Path]):
