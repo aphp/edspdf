@@ -58,7 +58,7 @@ class BoxPreprocessor(Module[PDFDoc, BoxBatch]):
     def preprocess_boxes(self, boxes):
         box_pages = [box.page for box in boxes]
 
-        last_page = max(box_pages)
+        last_page = max(box_pages, default=0)
 
         return {
             "page": [b.page for b in boxes],
