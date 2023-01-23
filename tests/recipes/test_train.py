@@ -86,7 +86,7 @@ def detect_text_flow_(
                 # blocks[i].join_type = ""
 
 
-def test_function(pdf, change_test_dir, dummy_dataset, tmp_path):
+def test_function(pdf, error_pdf, change_test_dir, dummy_dataset, tmp_path):
     model = Pipeline()
     model.add_pipe("pdfminer-extractor", name="extractor")
     model.add_pipe(
@@ -129,8 +129,6 @@ def test_function(pdf, change_test_dir, dummy_dataset, tmp_path):
     )
     print(model.cfg.to_str())
 
-    print(dummy_dataset)
-
     train(
         model=model,
         train_data=make_segmentation_adapter(dummy_dataset),
@@ -141,7 +139,7 @@ def test_function(pdf, change_test_dir, dummy_dataset, tmp_path):
         output_dir=tmp_path,
     )
 
-    list(model.pipe([pdf] * 2))
+    list(model.pipe([pdf] * 2 + [error_pdf] * 2))
     output = model(PDFDoc(content=pdf))
 
     assert type(output) == PDFDoc

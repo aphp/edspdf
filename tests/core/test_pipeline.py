@@ -37,7 +37,7 @@ def frozen_pipeline():
 
 
 @pytest.fixture()
-def pipeline(empty_dataset):
+def pipeline():
     model = Pipeline()
     model.add_pipe("pdfminer-extractor", name="extractor")
     model.add_pipe(

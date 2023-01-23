@@ -12,3 +12,4 @@ class PDFDoc(BaseModel):
     content: bytes = attrs.field(repr=lambda c: f"{len(c)} bytes")
     text: Optional[str] = None
     lines: List[TextBox] = []
+    error: bool = False

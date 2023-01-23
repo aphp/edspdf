@@ -45,6 +45,12 @@ def letter_pdf():
 
 
 @fixture(scope="session")
+def error_pdf():
+    path = TEST_DIR / "resources" / "error.pdf"
+    return path.read_bytes()
+
+
+@fixture(scope="session")
 def dummy_dataset(tmpdir_factory, pdf):
     tmp_path = tmpdir_factory.mktemp("datasets")
     dataset_path = str(tmp_path / "pdf-dataset.hf")
@@ -82,15 +88,5 @@ def dummy_dataset(tmpdir_factory, pdf):
             ]
         )
     )
-    ds.save_to_disk(dataset_path)
-    return dataset_path
-
-
-@fixture(scope="session")
-def empty_dataset(tmpdir_factory):
-    tmp_path = tmpdir_factory.mktemp("datasets")
-    dataset_path = str(tmp_path / "empty-dataset.hf")
-
-    ds = Dataset.from_dict({})
     ds.save_to_disk(dataset_path)
     return dataset_path

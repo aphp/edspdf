@@ -4,6 +4,7 @@ from typing import List, Optional, Tuple, Union
 
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LAParams, LTTextBoxHorizontal, LTTextLineHorizontal
+from pdfminer.pdftypes import PDFException
 
 from edspdf import Component, registry
 from edspdf.models import PDFDoc, SpannedStyle, TextBox
@@ -24,6 +25,7 @@ class PdfMinerExtractor(Component):
         detect_vertical: bool = False,
         all_texts: bool = False,
         extract_style: bool = False,
+        raise_on_error: bool = False,
     ):
         """
         Extractor object. Given a PDF byte stream, produces a list of elements.
@@ -62,6 +64,7 @@ class PdfMinerExtractor(Component):
             all_texts=all_texts,
         )
         self.extract_style = extract_style
+        self.raise_on_error = raise_on_error
 
     def __call__(self, doc: Union[PDFDoc, bytes]) -> PDFDoc:
         """
@@ -84,7 +87,15 @@ class PdfMinerExtractor(Component):
         content = doc.content
         content_stream = BytesIO(content)
 
-        layout = extract_pages(content_stream, laparams=self.laparams)
+        try:
+            layout = list(extract_pages(content_stream, laparams=self.laparams))
+        except PDFException:
+            if self.raise_on_error:
+                raise
+            doc.lines = []
+            doc.error = True
+            return doc
+
         lines = []
 
         page_count = 0
