@@ -244,7 +244,7 @@ class DeepClassifier(TrainableComponent[PDFDoc, Dict[str, Any], PDFDoc]):
         device = embeds.device
         # ex: [[0, 2, -1], [1, 3, 4]]
 
-        batch["loss"] = 0
+        output = {"loss": 0}
 
         if self.do_harmonize:
             page_boxes = batch["boxes"]["page_ids"]
@@ -261,7 +261,6 @@ class DeepClassifier(TrainableComponent[PDFDoc, Dict[str, Any], PDFDoc]):
                 height=batch["boxes"]["height"][page_boxes],
                 n_relative_positions=self.n_relative_positions,
             )  # n_pages * n_blocks * n_blocks * 2
-            batch["relative_positions"] = relative_positions
 
             # How to go from initial blocks ([0, 1, 2, 3, 4]) to per-page indice ?
             idx_in_page = page_boxes  # [[0, 2, -1], [1, 3, 4]]
@@ -271,7 +270,6 @@ class DeepClassifier(TrainableComponent[PDFDoc, Dict[str, Any], PDFDoc]):
                 : page_boxes_mask.sum()
             ]  # [0, 3, 1, 4, 5]... and removed [, 2]
             idx_in_page = idx_in_page % page_boxes.shape[-1]  # [0, 0, 1, 1, 2]
-            batch["idx_in_page"] = idx_in_page
             page_range = torch.arange(page_boxes_mask.shape[-1], device=device)
             # During the training, to learn adjacency, the two boxes must exist
             next_mask: torch.BoolTensor = (
@@ -302,12 +300,6 @@ class DeepClassifier(TrainableComponent[PDFDoc, Dict[str, Any], PDFDoc]):
                 [prev_scores, torch.zeros_like(prev_scores[:, :, :1])], dim=2
             )
 
-            batch["next_mask"] = next_mask
-            batch["prev_mask"] = prev_mask
-
-            batch["next_scores"] = next_scores
-            batch["prev_scores"] = prev_scores
-
             if supervision:
                 labels_per_page = batch["labels"][page_boxes]
 
@@ -323,7 +315,6 @@ class DeepClassifier(TrainableComponent[PDFDoc, Dict[str, Any], PDFDoc]):
                     (labels_per_page[:, :, None] == labels_per_page[:, None, :])
                     & next_mask
                 )[page_boxes_mask][batch["next_indices"] == -1]
-                batch["next_target"] = next_target
 
                 prev_target = idx_in_page[
                     batch["prev_indices"]
@@ -337,9 +328,7 @@ class DeepClassifier(TrainableComponent[PDFDoc, Dict[str, Any], PDFDoc]):
                     & prev_mask
                 )[page_boxes_mask][batch["prev_indices"] == -1]
 
-                batch["prev_target"] = prev_target
-
-                batch["adj_loss"] = -(
+                output["adj_loss"] = -(
                     torch.log_softmax(next_scores[page_boxes_mask], dim=-1)
                     .masked_fill(~next_target, -10000)
                     .logsumexp(-1)
@@ -349,7 +338,7 @@ class DeepClassifier(TrainableComponent[PDFDoc, Dict[str, Any], PDFDoc]):
                     .logsumexp(-1)
                     .sum()
                 )
-                batch["loss"] = batch["loss"] + batch["adj_loss"]
+                output["loss"] = output["loss"] + output["adj_loss"]
 
                 # block_embeds = block_embeds[page_boxes_mask]
 
@@ -357,12 +346,12 @@ class DeepClassifier(TrainableComponent[PDFDoc, Dict[str, Any], PDFDoc]):
         logits = self.classifier(embeds)
         if supervision:
             targets = batch["labels"]
-            batch["label_loss"] = F.cross_entropy(
+            output["label_loss"] = F.cross_entropy(
                 logits,
                 targets,
                 reduction="sum",
             )
-            batch["loss"] = batch["loss"] + batch["label_loss"]
+            output["loss"] = output["loss"] + output["label_loss"]
         else:
             if self.do_harmonize:
                 logits = self.harmonize(
@@ -370,15 +359,15 @@ class DeepClassifier(TrainableComponent[PDFDoc, Dict[str, Any], PDFDoc]):
                     next_scores,
                     prev_scores,
                 )[page_boxes_mask]
-            batch["labels"] = logits.argmax(-1)
-        batch["labels_logit"] = logits
+            output["labels"] = logits.argmax(-1)
+        output["labels_logit"] = logits
 
-        return batch
+        return output
 
-    def postprocess(self, docs: Sequence[PDFDoc], batch: Dict) -> Sequence[PDFDoc]:
+    def postprocess(self, docs: Sequence[PDFDoc], output: Dict) -> Sequence[PDFDoc]:
         for b, label in zip(
             (b for doc in docs for b in doc.lines),
-            batch["labels"].cpu().tolist(),
+            output["labels"].cpu().tolist(),
         ):
             if b.text == "":
                 b.label = None
