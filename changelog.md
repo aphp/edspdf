@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.6.2 - 2022-12-07
+
+Cast bytes-like extractor inputs as bytes
+
 ## v0.6.1 - 2022-12-07
 
 Performance and cuda related fixes.

@@ -17,7 +17,7 @@ class StyledAggregator(SimpleAggregator):
 
     def __call__(self, doc: PDFDoc) -> Tuple[Dict[str, str], Dict[str, List[Dict]]]:
 
-        row_height = sum(b.y1 - b.y0 for b in doc.lines) / len(doc.lines)
+        row_height = sum(b.y1 - b.y0 for b in doc.lines) / max(1, len(doc.lines))
         all_lines = sorted(
             [
                 line
