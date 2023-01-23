@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.6.3 - 2023-01-23
+
+### Fixed
+
+- Allow corrupted PDF to not raise an error by default (they are treated as empty PDFs)
+- Fix classification and aggregation for empty PDFs
+
 ## v0.6.2 - 2022-12-07
 
 Cast bytes-like extractor inputs as bytes
