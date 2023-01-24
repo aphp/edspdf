@@ -5,20 +5,22 @@ import torch
 
 from edspdf import registry
 
-T = TypeVar("T")
+T = TypeVar("InputT")
 
 
 @registry.factory.register("vocabulary")
 class Vocabulary(torch.nn.Module, Generic[T]):
+    """
+    Vocabulary layer.
+    This is not meant to be used as torch.nn.Module but subclassing torch.nn.Module
+    makes the instances appear when printing a model, which is nice.
+    """
+
     def __init__(self, items: Sequence[T] = None, default: int = -100):
         """
-        Vocabulary layer.
-        This is not meant to be used as torch.nn.Module but subclassing torch.nn.Module
-        makes the instances appear when printing a model, which is nice.
-
         Parameters
         ----------
-        items: Sequence[T]
+        items: Sequence[InputT]
             Initial vocabulary elements if any.
             Specific elements such as padding and unk can be set here to enforce their
             index in the vocabulary.
@@ -57,7 +59,7 @@ class Vocabulary(torch.nn.Module, Generic[T]):
 
         Parameters
         ----------
-        item: T
+        item: InputT
 
         Returns
         -------
@@ -82,7 +84,7 @@ class Vocabulary(torch.nn.Module, Generic[T]):
 
         Returns
         -------
-        T
+        InputT
         """
         return list(self.indices.keys())[idx] if idx >= 0 else None
 

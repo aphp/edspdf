@@ -8,6 +8,8 @@ import torch
 from torch import FloatTensor
 from torch.nn import Parameter
 
+from edspdf import registry
+
 IMPOSSIBLE = -10000
 
 
@@ -70,8 +72,16 @@ class RelativeAttentionMode(str, enum.Enum):
     p2c = "p2c"
 
 
-# @registry.factory.register("relative-attention")
+@registry.factory.register("relative-attention")
 class RelativeAttention(torch.nn.Module):
+    """
+    A self/cross-attention layer that takes relative position of elements into
+    account to compute the attention weights.
+    When running a relative attention layer, key and queries are represented using
+    content and position embeddings, where position embeddings are retrieved using
+    the relative position of keys relative to queries
+    """
+
     def __init__(
         self,
         size: int,
@@ -91,12 +101,6 @@ class RelativeAttention(torch.nn.Module):
         n_additional_heads: int = 0,
     ):
         """
-        A self/cross-attention layer that takes relative position of elements into
-        account to compute the attention weights.
-        When running a relative attention layer, key and queries are represented using
-        content and position embeddings, where position embeddings are retrieved using
-        the relative position of keys relative to queries
-
         Parameters
         ----------
         size: int
@@ -264,124 +268,98 @@ class RelativeAttention(torch.nn.Module):
         Returns
         -------
         Union[Tuple[torch.FloatTensor, torch.FloatTensor], torch.FloatTensor]
-        - the output contextualized embeddings (only if content_values is not None
-          and the `do_pooling` attribute is set to True)
-          Shape: n_sample * n_keys * `size`
-        - the attention logits
-          Shape: n_sample * n_keys * n_queries * (n_heads + n_additional_heads)
+            - the output contextualized embeddings (only if content_values is not None
+              and the `do_pooling` attribute is set to True)
+              Shape: n_sample * n_keys * `size`
+            - the attention logits
+              Shape: n_sample * n_keys * n_queries * (n_heads + n_additional_heads)
         """
-        n_samples, n_queries = content_queries.shape[:2]
-        n_keys = content_queries.shape[1]
-
         if content_keys is None:
             content_keys = content_queries
 
-        attn = None
-        if 0 in content_queries.shape or 0 in content_keys.shape:
-            attn = torch.zeros(
+        attn = (
+            torch.zeros(
                 content_queries.shape[0],
                 content_queries.shape[1],
                 content_keys.shape[1],
                 self.n_heads,
                 device=content_queries.device,
             )
-            if content_values is None:
-                return attn
-            return (
-                torch.zeros(
-                    content_queries.shape[0],
-                    content_queries.shape[1],
-                    self.content_value_proj.weight.shape[0],
-                    device=content_queries.device,
-                ),
-                attn,
-            )
-
-        content_keys = make_heads(
-            self.content_key_proj(self.dropout(content_keys)), self.n_heads
+            if base_attn is None
+            else base_attn
         )
-        content_queries = make_heads(
-            self.content_query_proj(self.dropout(content_queries)), self.n_heads
-        )
-        if content_values is not None:
-            content_values = make_heads(
-                self.content_value_proj(self.dropout(content_values)),
-                self.n_heads - self.n_additional_heads,
-            )
 
-        size = content_queries.shape[-1]
-        if "c2c" in self.mode:
-            content_to_content_attn = torch.einsum(
-                "nihd,njhd->nijh", content_queries, content_keys
-            ) / math.sqrt(size)
-        else:
-            content_to_content_attn = torch.zeros(
-                n_samples,
-                n_queries,
-                n_keys,
-                self.n_heads,
-                device=content_queries.device,
+        attn_weights = []
+        if 0 not in content_queries.shape and 0 not in content_keys.shape:
+            content_keys = make_heads(
+                self.content_key_proj(self.dropout(content_keys)), self.n_heads
             )
-
-        if relative_positions is not None and (
-            "p2c" in self.mode or "c2p" in self.mode
-        ):
-            position_keys = make_heads(
-                self.position_key_proj(self.dropout(self.position_embedding)),
-                (self.n_coordinates, self.n_heads),
+            content_queries = make_heads(
+                self.content_query_proj(self.dropout(content_queries)), self.n_heads
             )
-            position_queries = make_heads(
-                self.position_query_proj(self.dropout(self.position_embedding)),
-                (self.n_coordinates, self.n_heads),
-            )
-            relative_positions = (
-                position_queries.shape[0] // 2 + relative_positions
-            ).clamp(0, position_queries.shape[0] - 1)
-
-            content_to_position_attn = torch.einsum(
-                "nihxd,zxhd->nizhx",
-                make_heads(content_queries, self.n_coordinates),
-                position_keys,
-            )
-            content_to_position_attn = gather(
-                content_to_position_attn, index=relative_positions.unsqueeze(-2), dim=2
-            ).sum(-1) / math.sqrt(size)
-            if no_position_mask is not None:
-                content_to_position_attn = content_to_position_attn.masked_fill(
-                    no_position_mask[..., None], 0
-                )
-            position_to_content_attn = torch.einsum(
-                "zxhd,njhxd->nzjhx",
-                position_queries,
-                make_heads(content_keys, self.n_coordinates),
-            )
-            position_to_content_attn = gather(
-                position_to_content_attn, index=relative_positions.unsqueeze(-2), dim=1
-            ).sum(-1) / math.sqrt(size)
-            if no_position_mask is not None:
-                position_to_content_attn = position_to_content_attn.masked_fill(
-                    no_position_mask[..., None], 0
+            if content_values is not None:
+                content_values = make_heads(
+                    self.content_value_proj(self.dropout(content_values)),
+                    self.n_heads - self.n_additional_heads,
                 )
 
-            if "c2p" in self.mode and "p2c" in self.mode:
-                attn = (
-                    content_to_content_attn
-                    + position_to_content_attn
-                    + content_to_position_attn
-                ) / math.sqrt(3 if "c2c" in self.mode else 2)
-            elif "c2p" in self.mode:
-                attn = (content_to_content_attn + content_to_position_attn) / math.sqrt(
-                    2 if "c2c" in self.mode else 1
-                )
-            elif "p2c" in self.mode:
-                attn = (content_to_content_attn + position_to_content_attn) / math.sqrt(
-                    2 if "c2c" in self.mode else 1
-                )
-        else:
-            attn = content_to_content_attn
+            size = content_queries.shape[-1]
+            if "c2c" in self.mode:
+                content_to_content_attn = torch.einsum(
+                    "nihd,njhd->nijh", content_queries, content_keys
+                ) / math.sqrt(size)
+                attn_weights.append(content_to_content_attn)
 
-        if base_attn is not None:
-            attn = attn + base_attn
+            if relative_positions is not None and (
+                "p2c" in self.mode or "c2p" in self.mode
+            ):
+                position_keys = make_heads(
+                    self.position_key_proj(self.dropout(self.position_embedding)),
+                    (self.n_coordinates, self.n_heads),
+                )
+                position_queries = make_heads(
+                    self.position_query_proj(self.dropout(self.position_embedding)),
+                    (self.n_coordinates, self.n_heads),
+                )
+                relative_positions = (
+                    position_queries.shape[0] // 2 + relative_positions
+                ).clamp(0, position_queries.shape[0] - 1)
+
+                if "c2p" in self.mode:
+                    content_to_position_attn = torch.einsum(
+                        "nihxd,zxhd->nizhx",
+                        make_heads(content_queries, self.n_coordinates),
+                        position_keys,
+                    )
+                    content_to_position_attn = gather(
+                        content_to_position_attn,
+                        index=relative_positions.unsqueeze(-2),
+                        dim=2,
+                    ).sum(-1) / math.sqrt(size)
+                    if no_position_mask is not None:
+                        content_to_position_attn = content_to_position_attn.masked_fill(
+                            no_position_mask[..., None], 0
+                        )
+                    attn_weights.append(content_to_position_attn)
+
+                if "p2c" in self.mode:
+                    position_to_content_attn = torch.einsum(
+                        "zxhd,njhxd->nzjhx",
+                        position_queries,
+                        make_heads(content_keys, self.n_coordinates),
+                    )
+                    position_to_content_attn = gather(
+                        position_to_content_attn,
+                        index=relative_positions.unsqueeze(-2),
+                        dim=1,
+                    ).sum(-1) / math.sqrt(size)
+                    if no_position_mask is not None:
+                        position_to_content_attn = position_to_content_attn.masked_fill(
+                            no_position_mask[..., None], 0
+                        )
+                    attn_weights.append(position_to_content_attn)
+
+        attn = attn + sum(attn_weights) / math.sqrt(len(attn_weights))
 
         if hasattr(self, "bias"):
             attn = attn + self.bias
@@ -399,4 +377,5 @@ class RelativeAttention(torch.nn.Module):
             pooled = torch.einsum("nijh,njhd->nihd", weights, content_values)
             pooled = pooled.reshape(*pooled.shape[:-2], -1)
             return pooled, attn
+
         return attn

@@ -1,9 +1,10 @@
 from . import (
-    block_transformer,
     box_embedding,
+    box_layout_embedding,
+    box_text_embedding,
+    box_transformer,
+    cnn_pooler,
     relative_attention,
     sinusoidal_embedding,
-    text_box_embedding,
-    text_embedding,
     vocabulary,
 )
