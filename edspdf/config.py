@@ -7,19 +7,62 @@ from functools import wraps
 from io import StringIO
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Sequence, Union
+from weakref import WeakKeyDictionary
 
 import pydantic
 import srsly
 import typer
 from pydantic import ValidationError
+from pydantic.decorator import (
+    ALT_V_ARGS,
+    ALT_V_KWARGS,
+    V_DUPLICATE_KWARGS,
+    V_POSITIONAL_ONLY_NAME,
+)
 from pydantic.error_wrappers import ErrorWrapper
 
 from edspdf.utils.collections import dedup
 
+RESOLVED = WeakKeyDictionary()
 
-def validate_arguments(func: Optional[Callable] = None, *, config: Dict = None) -> Any:
+
+def resolve_non_dict(model: pydantic.BaseModel, values: Dict[str, Any]):
+    """
+    Iterates over the model fields and try to resolve the matching values
+    if they are not type hinted as dictionaries.
+    """
+    values = dict(values)
+    for field in model.__fields__.values():
+        if field.name not in values:
+            continue
+        if field.shape not in pydantic.fields.MAPPING_LIKE_SHAPES and isinstance(
+            values[field.name], dict
+        ):
+            values[field.name] = Config(values[field.name]).resolve(deep=False)
+    return values
+
+
+def validate_arguments(
+    func: Optional[Callable] = None,
+    *,
+    config: Dict = None,
+    save_params: Optional[Dict] = None,
+) -> Any:
     """
     Decorator to validate the arguments passed to a function.
+
+    Parameters
+    ----------
+    func: Callable
+        The function or class to call
+    config: Dict
+        The validation configuration object
+    save_params: bool
+        Should we save the function parameters
+
+    Returns
+    -------
+    Any
     """
     if config is None:
         config = {}
@@ -38,6 +81,7 @@ def validate_arguments(func: Optional[Callable] = None, *, config: Dict = None) 
 
             def __get_validators__():
                 def validate(value):
+                    params = value
                     if isinstance(value, dict):
                         value = Config(value).resolve(deep=False)
 
@@ -51,13 +95,36 @@ def validate_arguments(func: Optional[Callable] = None, *, config: Dict = None) 
                         if k in m.__fields_set__ or m.__fields__[k].default_factory
                     }
                     var_kwargs = d.pop(vd.v_kwargs_name, {})
-                    return _func(**d, **var_kwargs)
+                    resolved = _func(**d, **var_kwargs)
+
+                    if save_params is not None:
+                        RESOLVED[resolved] = {**save_params, **params}
+
+                    return resolved
 
                 yield validate
 
             @wraps(vd.raw_function)
             def wrapper_function(*args: Any, **kwargs: Any) -> Any:
-                return vd.call(*args, **kwargs)
+                values = vd.build_values(args, kwargs)
+                if save_params is not None:
+                    if set(values.keys()) & {
+                        ALT_V_ARGS,
+                        ALT_V_KWARGS,
+                        V_POSITIONAL_ONLY_NAME,
+                        V_DUPLICATE_KWARGS,
+                        "args",
+                        "kwargs",
+                    }:
+                        print("VALUES", values.keys(), values["kwargs"])
+                        raise Exception(
+                            f"{func} must not have positional only args, "
+                            f"kwargs or duplicated kwargs"
+                        )
+                    params = dict(values)
+                    resolved = params.pop("self")
+                    RESOLVED[resolved] = {**save_params, **params}
+                return vd.execute(vd.model(**resolve_non_dict(vd.model, values)))
 
             _func.vd = vd  # type: ignore
             # _func.validate = vd.init_model_instance  # type: ignore
@@ -72,7 +139,23 @@ def validate_arguments(func: Optional[Callable] = None, *, config: Dict = None) 
 
             @wraps(_func)
             def wrapper_function(*args: Any, **kwargs: Any) -> Any:
-                return vd.call(*args, **kwargs)
+                values = vd.build_values(args, kwargs)
+                resolved = vd.execute(vd.model(**resolve_non_dict(vd.model, values)))
+                if save_params is not None:
+                    if set(values.keys()) & {
+                        ALT_V_ARGS,
+                        ALT_V_KWARGS,
+                        V_POSITIONAL_ONLY_NAME,
+                        V_DUPLICATE_KWARGS,
+                        "args",
+                        "kwargs",
+                    }:
+                        raise Exception(
+                            f"{func} must not have positional only args, "
+                            f"kwargs or duplicated kwargs"
+                        )
+                    RESOLVED[resolved] = {**save_params, **values}
+                return resolved
 
             wrapper_function.vd = vd  # type: ignore
             wrapper_function.validate = vd.init_model_instance  # type: ignore
@@ -139,6 +222,8 @@ def config_literal_eval(s):
 
 
 def config_literal_dump(v: Any):
+    if isinstance(v, Reference):
+        return "${" + v.value + "}"
     if isinstance(v, str):
         if config_literal_eval(str(v)) == v:
             return str(v)
@@ -227,7 +312,7 @@ class Config(dict):
         self.__path__ = path
 
     @classmethod
-    def from_str(cls, s: str, resolve: bool = True) -> "Config":
+    def from_str(cls, s: str, resolve: bool = False) -> "Config":
         parser = ConfigParser()
         parser.optionxform = str
         parser.read_string(s)
@@ -262,47 +347,73 @@ class Config(dict):
         s = self.to_str()
         Path(path).write_text(s)
 
-    def to_str(self):
+    def serialize(self):
+        """
+        Try to convert non-serializable objects using the RESOLVED object
+        back to their original catalogue + params form
+
+        Returns
+        -------
+        Config
+        """
         refs = {}
 
+        def rec(o, path=()):
+            if o is None or isinstance(
+                o, (str, int, float, bool, tuple, list, Reference)
+            ):
+                return o
+            if isinstance(o, collections.Mapping):
+                serialized = {k: rec(v, (*path, k)) for k, v in o.items()}
+                if isinstance(o, Config):
+                    serialized = Config(serialized)
+                    serialized.__path__ = o.__path__
+                return serialized
+            cfg = None
+            try:
+                cfg = o.cfg
+            except AttributeError:
+                try:
+                    cfg = RESOLVED[o]
+                except KeyError:
+                    pass
+            if cfg is not None:
+                if id(o) in refs:
+                    return refs[id(o)]
+                else:
+                    refs[id(o)] = Reference(join_path(path))
+                return rec(cfg, path)
+            raise TypeError(f"Cannot dump {o!r}")
+
+        result = rec(self)
+        return result
+
+    def to_str(self):
         additional_sections = {}
 
-        def prepare(o, path=()):
-            if o is None or isinstance(o, (str, int, float, bool, tuple, list)):
-                return srsly.json_dumps(o)
-            if isinstance(o, Reference):
-                return repr(o)
+        def rec(o, path=()):
             if isinstance(o, collections.Mapping):
-
                 if isinstance(o, Config) and o.__path__ is not None:
-                    res = {k: prepare(v, (*o.__path__, k)) for k, v in o.items()}
+                    res = {k: rec(v, (*o.__path__, k)) for k, v in o.items()}
                     current = additional_sections
                     for part in o.__path__[:-1]:
                         current = current.setdefault(part, Config())
                     current[o.__path__[-1]] = res
-                    return "${" + join_path(o.__path__) + "}"
+                    return Reference(join_path(o.__path__))
                 else:
-                    return {k: prepare(v, (*path, k)) for k, v in o.items()}
-            try:
-                cfg = o.cfg
-            except AttributeError:
-                pass
-            else:
-                if id(o) in refs:
-                    return refs[id(o)]
-                else:
-                    refs[id(o)] = "${" + join_path(path) + "}"
-                return prepare(cfg, path)
-            raise TypeError(f"Cannot dump {o!r}")
+                    return {k: rec(v, (*path, k)) for k, v in o.items()}
+            return o
 
-        prepared = flatten_sections(prepare(self))
+        prepared = flatten_sections(rec(self.serialize()))
         prepared.update(flatten_sections(additional_sections))
 
         parser = ConfigParser()
         parser.optionxform = str
         for section_name, section in prepared.items():
             parser.add_section(section_name)
-            parser[section_name].update(section)
+            parser[section_name].update(
+                {k: config_literal_dump(v) for k, v in section.items()}
+            )
         s = StringIO()
         parser.write(s)
         return s.getvalue()
@@ -363,7 +474,17 @@ class Config(dict):
             params.pop(registries[0][0])
             fn = registries[0][2].get(registries[0][1])
             try:
-                return fn(**params)
+                resolved = fn(**params)
+                try:
+                    resolved.cfg
+                except Exception:
+                    try:
+                        RESOLVED[resolved] = self
+                    except Exception:
+                        print(f"Could not store original config for {resolved}")
+                        pass
+
+                return resolved
             except ValidationError as e:
                 raise ValidationError(patch_errors(e.raw_errors), e.model)
 

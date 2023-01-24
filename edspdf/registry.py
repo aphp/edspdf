@@ -12,7 +12,11 @@ class SubRegistry(catalogue.Registry):
         registerer = super().register(name)
 
         def wrap_and_register(fn: catalogue.InFunc) -> catalogue.InFunc:
-            fn = validate_arguments(fn, config={"arbitrary_types_allowed": True})
+            fn = validate_arguments(
+                func=fn,
+                config={"arbitrary_types_allowed": True},
+                save_params={f"@{self.namespace[-1]}": name},
+            )
             return registerer(fn)
 
         if func is not None:
@@ -31,6 +35,11 @@ class Registry:
         adapter=adapter,
         misc=misc,
     )
+
+    def resolve(self, config):
+        from .config import Config
+
+        return Config(__root__=config).resolve(deep=True)["__root__"]
 
 
 registry = Registry()
