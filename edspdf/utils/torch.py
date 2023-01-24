@@ -17,7 +17,6 @@ def compute_pdf_relative_positions(x0, y0, x1, y1, width, height, n_relative_pos
     Compute relative positions between boxes.
     Input boxes must be split between pages with the shape n_pages * n_boxes
 
-
     Parameters
     ----------
     x0: torch.FloatTensor
@@ -33,28 +32,16 @@ def compute_pdf_relative_positions(x0, y0, x1, y1, width, height, n_relative_pos
     Returns
     -------
     torch.LongTensor
-    Shape: n_pages * n_boxes * n_boxes * 2
+        Shape: n_pages * n_boxes * n_boxes * 2
     """
-
-    dx0 = x1[:, None, :] - x0[:, :, None]  # B end -> A begin
-    dx1 = x0[:, None, :] - x1[:, :, None]  # B begin -> A end
-    dx = (
-        torch.where(
-            (dx0.sign() > 0) & (dx1.sign() > 0),
-            torch.minimum(dx0, dx1),
-            torch.where(
-                (dx0.sign() < 0) & (dx1.sign() < 0), torch.maximum(dx0, dx1), 0
-            ),
-        )
-        / 2
-        * n_relative_positions
-    ).long()
+    dx = x0[:, None, :] - x0[:, :, None]  # B begin -> A begin
+    dx = (dx * n_relative_positions).long()
 
     dy = y0[:, None, :] - y0[:, :, None]
     # If query above (dy > 0) key, use query height
-    ref_height = (dy >= 0).float() * height[:, :, None] + (dy < 0).float() * height[
-        :, None, :
-    ]
+    ref_height = (dy >= 0).float() * height.float()[:, :, None] + (
+        dy < 0
+    ).float() * height[:, None, :]
     dy0 = y1[:, None, :] - y0[:, :, None]  # A begin -> B end
     dy1 = y0[:, None, :] - y1[:, :, None]  # A end -> B begin
     offset = 0.5
@@ -68,7 +55,8 @@ def compute_pdf_relative_positions(x0, y0, x1, y1, width, height, n_relative_pos
             (torch.maximum(dy0, dy1) / ref_height - offset).floor(),
             0,
         ),
-    ).long()
+    )
+    dy = (dy.abs().ceil() * dy.sign()).long()
 
     relative_positions = torch.stack([dx, dy], dim=-1)
 

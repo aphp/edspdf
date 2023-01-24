@@ -1,4 +1,6 @@
+import copy
 import itertools
+import math
 from collections import defaultdict
 from typing import Any, Dict, Iterable, List, Mapping, Sequence, TypeVar
 
@@ -43,7 +45,7 @@ def dl_to_ld(dl: Mapping[str, Sequence[T]]) -> List[Dict[str, T]]:
     return [dict(zip(dl, t)) for t in zip(*dl.values())]
 
 
-def flatten(seq: List[List["T"]]) -> List["T"]:
+def flatten(seq: Sequence[Sequence["T"]]) -> List["T"]:
     return list(itertools.chain.from_iterable(seq))
 
 
@@ -80,15 +82,31 @@ def discover_scheme(obj):
     return code
 
 
-def batch_compress_dict(seq: Iterable[Dict[str, Any]]) -> Dict[str, List]:
-    exec_result = {}
-    flatten = None
-    for item in seq:
-        if flatten is None:
+class batch_compress_dict:
+    __slots__ = ("flatten", "seq")
+
+    def __init__(self, seq: Iterable[Dict[str, Any]]):
+        self.seq = seq
+        self.flatten = None
+
+    def __iter__(self):
+        return batch_compress_dict(iter(self.seq))
+
+    def __getstate__(self):
+        return {"seq": self.seq}
+
+    def __setstate__(self, state):
+        self.seq = state["seq"]
+        self.flatten = None
+
+    def __next__(self) -> Dict[str, List]:
+        exec_result = {}
+
+        item = next(self.seq)
+        if self.flatten is None:
             exec(discover_scheme(item), {}, exec_result)
-            flatten = exec_result["flatten"]
-        flat = flatten(item)
-        yield flat
+            self.flatten = exec_result["flatten"]
+        return self.flatten(item)
 
 
 def decompress_dict(seq):
@@ -108,14 +126,26 @@ def dedup(seq: Iterable["T"]) -> List["T"]:
     return list(dict.fromkeys(seq).keys())
 
 
-def batchify(iterable: Iterable[T], batch_size: int) -> Iterable[List[T]]:
-    batch_size = int(batch_size)
-    iterable = iter(iterable)
-    while True:
-        batch = list(itertools.islice(iterable, batch_size))
+class batchify(Iterable[List[T]]):
+    def __init__(self, iterable: Iterable[T], batch_size: int):
+        self.iterable = iter(iterable)
+        self.batch_size = batch_size
+        try:
+            self.length = math.ceil(len(iterable) / batch_size)
+        except (AttributeError, TypeError):
+            pass
+
+    def __len__(self):
+        return self.length
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        batch = list(itertools.islice(self.iterable, self.batch_size))
         if len(batch) == 0:
-            return
-        yield batch
+            raise StopIteration()
+        return batch
 
 
 def get_attr_item(base, attr):
@@ -191,3 +221,26 @@ def list_factorize(values, reference_values=None, freeze_reference=None):
         return reference_values.get(obj, -1)
 
     return rec(values), list(reference_values.keys())
+
+
+class multi_tee:
+    """
+    Makes copies of an iterable such that every iteration over it
+    starts from 0. If the iterable is a sequence (list, tuple), just returns
+    it since every iter() over the object restart from the beginning
+    """
+
+    def __new__(cls, iterable):
+        if isinstance(iterable, Sequence):
+            return iterable
+        return super().__new__(cls)
+
+    def __init__(self, iterable):
+        self.main, self.copy = itertools.tee(iterable)
+
+    def __iter__(self):
+        if self.copy is not None:
+            it = self.copy
+            self.copy = None
+            return it
+        return copy.copy(self.main)
