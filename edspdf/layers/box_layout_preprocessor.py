@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing import Any, Dict
 
 import torch
 from typing_extensions import TypedDict
@@ -23,37 +24,34 @@ class BoxBatch(TypedDict):
 
 
 @registry.factory.register("box-preprocessor")
-class BoxPreprocessor(Module[PDFDoc, BoxBatch]):
+class BoxLayoutPreprocessor(Module[PDFDoc, BoxBatch]):
+    """
+    The box preprocessor is singleton since its is not configurable.
+    The following features of each box of an input PDFDoc document are encoded
+    as 1D tensors:
+
+    - `boxes_page`: page index of the box
+    - `boxes_first_page`: is the box on the first page
+    - `boxes_last_page`: is the box on the last page
+    - `boxes_xmin`: left position of the box
+    - `boxes_ymin`: bottom position of the box
+    - `boxes_xmax`: right position of the box
+    - `boxes_ymax`: top position of the box
+    - `boxes_w`: width position of the box
+    - `boxes_h`: height position of the box
+
+    The preprocessor also returns an additional tensors:
+
+    - `page_boxes_id`: box indices per page to index the
+      above 1D tensors (LongTensor: n_pages * n_boxes)
+    """
+
     INSTANCE = None
 
     def __new__(cls):
-        if BoxPreprocessor.INSTANCE is None:
-            BoxPreprocessor.INSTANCE = super().__new__(cls)
-        return BoxPreprocessor.INSTANCE
-
-    def __init__(self):
-        """
-        Box preprocessor.
-        The following features of each box of an input PDFDoc document are encoded
-        as 1D tensors:
-        - boxes_page: page index of the box
-        - boxes_first_page: is the box on the first page
-        - boxes_last_page: is the box on the last page
-        - boxes_xmin: left position of the box
-        - boxes_ymin: bottom position of the box
-        - boxes_xmax: right position of the box
-        - boxes_ymax: top position of the box
-        - boxes_w: width position of the box
-        - boxes_h: height position of the box
-
-        The preprocessor also returns an additional tensors:
-        - page_boxes_id: box indices per page to index the
-          above 1D tensors (LongTensor: n_pages * n_boxes)
-        """
-        super().__init__()
-
-    def initialize(self, gold_data):
-        pass
+        if BoxLayoutPreprocessor.INSTANCE is None:
+            BoxLayoutPreprocessor.INSTANCE = super().__new__(cls)
+        return BoxLayoutPreprocessor.INSTANCE
 
     def preprocess_boxes(self, boxes):
         box_pages = [box.page for box in boxes]
@@ -76,8 +74,6 @@ class BoxPreprocessor(Module[PDFDoc, BoxBatch]):
         return self.preprocess_boxes(doc.lines)
 
     def collate(self, batch, device: torch.device) -> BoxBatch:
-        self.last_prep = batch
-
         page_boxes_id = defaultdict(lambda: [])
         doc_pages = [[] for _ in range(len(batch["page"]))]
         box_i = 0
@@ -129,3 +125,6 @@ class BoxPreprocessor(Module[PDFDoc, BoxBatch]):
             "last_page": boxes_last_page,
             "page_ids": page_boxes_id.long(),
         }
+
+    def forward(self, *args, **kwargs) -> Dict[str, Any]:
+        pass

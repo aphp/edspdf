@@ -1,20 +1,21 @@
-from typing import Any, Dict
+from typing import Optional
 
 import regex
 import torch
-from unidecode import unidecode
 
-from edspdf import TrainableComponent, registry
+from edspdf import Module, registry
 from edspdf.utils.collections import flatten
 from edspdf.utils.torch import pad_2d
 
-from .cnn_encoder import CnnPooler
 from .vocabulary import Vocabulary
 
 
 def word_shape(text: str) -> str:
     """
-    Converts a word into its shape
+    Converts a word into its shape following the algorithm used in the
+    spaCy library.
+
+    https://github.com/explosion/spaCy/blob/b69d249a/spacy/lang/lex_attrs.py#L118
 
     Parameters
     ----------
@@ -51,15 +52,18 @@ def word_shape(text: str) -> str:
     return "".join(shape)
 
 
-@registry.factory.register("text-embedding")
-class TextEmbedding(TrainableComponent):
+@registry.factory.register("box-text-embedding")
+class BoxTextEmbedding(Module):
+    """
+    A module that embeds the textual features of the blocks
+    """
+
     def __init__(
         self,
-        size: int,
-        pooler: Dict[str, Any] = {},
+        pooler: Module,
+        size: Optional[int] = None,
     ):
         """
-
         Parameters
         ----------
         size: int
@@ -68,8 +72,6 @@ class TextEmbedding(TrainableComponent):
             The module used to encode the textual features of the blocks
         """
         super().__init__()
-
-        assert size % 6 == 0, "Embedding dimension must be dividable by 6"
 
         self.size = size
         self.shape_voc = Vocabulary(["__unk__"], default=0)
@@ -86,11 +88,7 @@ class TextEmbedding(TrainableComponent):
         self.first_page_embedding = None
         self.last_page_embedding = None
 
-        self.pooler = CnnPooler(
-            input_size=size,
-            output_size=size,
-            **pooler,
-        )
+        self.pooler = pooler
 
         punct = "[:punct:]" + "\"'ˊ＂〃ײ᳓″״‶˶ʺ“”˝"
         num_like = r"\d+(?:[.,]\d+)?"
@@ -103,7 +101,11 @@ class TextEmbedding(TrainableComponent):
     def output_size(self):
         return self.size
 
-    def initialize(self, gold_data):
+    def initialize(self, gold_data, size: int = None, **kwargs):
+        super().initialize(gold_data, size=size, **kwargs)
+
+        self.pooler.initialize(gold_data, input_size=size)
+
         shape_init = self.shape_voc.initialization()
         prefix_init = self.prefix_voc.initialization()
         suffix_init = self.suffix_voc.initialization()
@@ -129,7 +131,8 @@ class TextEmbedding(TrainableComponent):
             words = [m.group(0) for m in self.word_regex.finditer(b.text)]
 
             for word in words:
-                ascii_str = unidecode(word)
+                # ascii_str = unidecode(word)
+                ascii_str = word
                 tokens_shape[i].append(self.shape_voc.encode(word_shape(ascii_str)))
                 tokens_prefix[i].append(self.prefix_voc.encode(ascii_str.lower()[:3]))
                 tokens_suffix[i].append(self.suffix_voc.encode(ascii_str.lower()[-3:]))
@@ -143,10 +146,6 @@ class TextEmbedding(TrainableComponent):
         }
 
     def collate(self, batch, device: torch.device):
-        self.last_prep = batch
-
-        # print("Collating embedding")
-
         shapes = pad_2d(flatten(batch["tokens_shape"]), pad=-1, device=device)
         mask = shapes != -1
         shapes[~mask] = 0
@@ -163,14 +162,12 @@ class TextEmbedding(TrainableComponent):
         }
 
     def forward(self, batch, supervision=False):
-        self.last_batch = batch
-
         text_embeds = self.pooler(
             embeds=(
                 self.shape_embedding(batch["tokens_shape"])
                 + self.prefix_embedding(batch["tokens_prefix"])
                 + self.suffix_embedding(batch["tokens_suffix"])
-                # + self.norm_embedding(batch["tokens_norm"])
+                + self.norm_embedding(batch["tokens_norm"])
             ),
             mask=batch["tokens_mask"],
         )
