@@ -1,6 +1,8 @@
+from collections import defaultdict
+
 import torch
 
-from .utils.collections import get_deep_attr, set_deep_attr
+from edspdf.utils.collections import get_deep_attr, set_deep_attr
 
 
 def split_name(names):
@@ -16,12 +18,14 @@ def split_name(names):
 class ScheduledOptimizer(torch.optim.Optimizer):
     def __init__(self, optim):
         self.optim = optim
+        schedule_to_groups = defaultdict(lambda: [])
         for group in self.optim.param_groups:
             if "schedules" in group:
                 if not isinstance(group["schedules"], list):
                     group["schedules"] = [group["schedules"]]
                 group["schedules"] = list(group["schedules"])
                 for schedule in group["schedules"]:
+                    schedule_to_groups[schedule].append(group)
                     schedule.step(group)
 
     def zero_grad(self):
@@ -78,6 +82,11 @@ class ScheduledOptimizer(torch.optim.Optimizer):
             if "schedules" in group:
                 for schedule in group["schedules"]:
                     schedule.step(group)
+
+
+class OptimizerGroupsProxy:
+    def __init__(self, groups):
+        self.param_groups = groups
 
 
 class LinearSchedule:
