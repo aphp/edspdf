@@ -28,7 +28,7 @@ def _align_box_labels_on_page(
     src_sources = np.asarray(src_sources)
 
     src_x0, src_x1, src_y0, src_y1 = np.asarray(
-        [(b.x0, b.x1, b.y0, b.y1) for b in src_boxes] + [(-INF, -INF, INF, INF)]
+        [(b.x0, b.x1, b.y0, b.y1) for b in src_boxes] + [(-INF, INF, -INF, INF)]
     ).T[:, :, None]
     dst_x0, dst_x1, dst_y0, dst_y1 = np.asarray(
         [(b.x0, b.x1, b.y0, b.y1) for b in dst_boxes]
@@ -41,8 +41,8 @@ def _align_box_labels_on_page(
     dy = np.minimum(src_y1, dst_y1) - np.maximum(src_y0, dst_y0)  # shape: n_src, n_dst
 
     overlap = np.clip(dx, 0, None) * np.clip(dy, 0, None)  # shape: n_src, n_dst
-    src_area = (src_x1 - src_x0) * (src_y1 - src_y0)  # shape: n_src, n_dst
-    dst_area = (dst_x1 - dst_x0) * (dst_y1 - dst_y0)  # shape: n_src, n_dst
+    src_area = (src_x1 - src_x0) * (src_y1 - src_y0)  # shape: n_src
+    dst_area = (dst_x1 - dst_x0) * (dst_y1 - dst_y0)  # shape: n_dst
 
     # To remove errors for 0 divisions
     src_area[src_area == 0] = 1
@@ -88,7 +88,7 @@ def align_box_labels(
     threshold: float = 0.0001,
     group_by_source: bool = False,
     pollution_label: Any = None,
-):
+) -> Sequence[Box]:
     """
     Align lines with possibly overlapping (and non-exhaustive) labels.
 
