@@ -9,9 +9,7 @@ label = "body"
 
 
 def test_dummy(single_page_doc):
-    classifier: Component[PDFDoc, PDFDoc] = Config().from_str(configuration)[
-        "classifier"
-    ]
+    classifier = Config.from_str(configuration).resolve()["classifier"]
 
     single_page_doc = classifier(single_page_doc)
 
