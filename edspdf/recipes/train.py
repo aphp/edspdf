@@ -14,8 +14,8 @@ from tqdm import tqdm
 
 from edspdf import Cli, Pipeline
 from edspdf.models import PDFDoc
-from edspdf.optimization import LinearSchedule, ScheduledOptimizer
 from edspdf.utils.collections import dedup, flatten_dict
+from edspdf.utils.optimization import LinearSchedule, ScheduledOptimizer
 from edspdf.utils.random import set_seed
 
 app = Cli(pretty_exceptions_show_locals=False)
