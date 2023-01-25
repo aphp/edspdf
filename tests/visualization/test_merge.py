@@ -11,10 +11,10 @@ lines = [
     TextBox(page=1, x0=0.6, x1=1, y0=0.2, y1=0.3, label="body"),
 ]
 merged = [
-    TextBox(page=0, x0=0.0, x1=1.0, y0=0.0, y1=0.2, page_width=None, page_height=None, label='body', source=None, styles=[], text=None, next_box=None),  # noqa: E501
-    TextBox(page=0, x0=0.0, x1=0.4, y0=0.2, y1=0.3, page_width=None, page_height=None, label='body', source=None, styles=[], text=None, next_box=None),  # noqa: E501
-    TextBox(page=0, x0=0.6, x1=1.0, y0=0.2, y1=0.3, page_width=None, page_height=None, label='other', source=None, styles=[], text=None, next_box=None),  # noqa: E501
-    TextBox(page=1, x0=0.6, x1=1.0, y0=0.2, y1=0.3, page_width=None, page_height=None, label='body', source=None, styles=[], text=None, next_box=None),  # noqa: E501
+    TextBox(page=0, x0=0.0, x1=1.0, y0=0.0, y1=0.2, page_width=None, page_height=None, label='body', source=None, styles=[], text=None),  # noqa: E501
+    TextBox(page=0, x0=0.0, x1=0.4, y0=0.2, y1=0.3, page_width=None, page_height=None, label='body', source=None, styles=[], text=None),  # noqa: E501
+    TextBox(page=0, x0=0.6, x1=1.0, y0=0.2, y1=0.3, page_width=None, page_height=None, label='other', source=None, styles=[], text=None),  # noqa: E501
+    TextBox(page=1, x0=0.6, x1=1.0, y0=0.2, y1=0.3, page_width=None, page_height=None, label='body', source=None, styles=[], text=None),  # noqa: E501
 ]
 
 

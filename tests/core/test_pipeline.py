@@ -22,17 +22,18 @@ def frozen_pipeline():
         "deep-classifier",
         config=dict(
             embedding={
-                "@factory": "text-box-embedding",
+                "@factory": "box-embedding",
                 "size": "96",
-                "box_encoder": {
+                "layout_encoder": {
+                    "@factory": "box-layout-embedding",
                     "n_positions": 32,
                 },
             },
             labels=["first", "second"],
-            do_harmonize=False,
         ),
     )
     model.add_pipe("simple-aggregator")
+    model.initialize([])
     return model
 
 
@@ -45,12 +46,14 @@ def pipeline():
         name="classifier",
         config=dict(
             embedding={
-                "@factory": "text-box-embedding",
+                "@factory": "box-embedding",
                 "size": "96",
-                "box_encoder": {"n_positions": 32},
+                "layout_encoder": {
+                    "@factory": "box-layout-embedding",
+                    "n_positions": 32,
+                },
             },
             labels=["first", "second"],
-            do_harmonize=False,
         ),
     )
     model.add_pipe("simple-aggregator")
@@ -95,7 +98,6 @@ def test_sequence(frozen_pipeline: Pipeline):
 
 
 def test_serialization(frozen_pipeline: Pipeline):
-    print(Config(model=frozen_pipeline).to_str())
     assert (
         repr(frozen_pipeline)
         == """\
@@ -103,32 +105,19 @@ Pipeline(
   (pdfminer-extractor): PdfMinerExtractor()
   (deep-classifier): DeepClassifier(
     (label_vocabulary): Vocabulary(n=3)
-    (embedding): TextBoxEmbedding(
-      (box_encoder): BoxEmbedding(
-        (box_preprocessor): BoxPreprocessor()
+    (embedding): BoxEmbedding(
+      (layout_encoder): BoxLayoutEmbedding(
+        (box_preprocessor): BoxLayoutPreprocessor()
         (x_embedding): SinusoidalEmbedding(32, 16)
         (y_embedding): SinusoidalEmbedding(32, 16)
         (w_embedding): SinusoidalEmbedding(32, 16)
         (h_embedding): SinusoidalEmbedding(32, 16)
       )
-      (text_encoder): TextEmbedding(
-        (shape_voc): Vocabulary(n=1)
-        (prefix_voc): Vocabulary(n=1)
-        (suffix_voc): Vocabulary(n=1)
-        (norm_voc): Vocabulary(n=1)
-        (pooler): CnnPooler(
-          (convolutions): ModuleList(
-            (0): Conv1d(96, 96, kernel_size=(3,), stride=(1,))
-            (1): Conv1d(96, 96, kernel_size=(4,), stride=(1,))
-            (2): Conv1d(96, 96, kernel_size=(5,), stride=(1,))
-          )
-          (linear): Linear(in_features=288, out_features=96, bias=True)
-        )
-      )
       (dropout): Dropout(p=0.2, inplace=False)
     )
     (linear): Linear(in_features=96, out_features=96, bias=True)
     (dropout): Dropout(p=0.15, inplace=False)
+    (classifier): Linear(in_features=96, out_features=3, bias=True)
   )
   (simple-aggregator): SimpleAggregator()
 )"""
@@ -144,22 +133,22 @@ components_config = ${components}
 [components]
 
 [components.pdfminer-extractor]
-@factory = "pdfminer-extractor"
+@factory = pdfminer-extractor
 
 [components.deep-classifier]
-@factory = "deep-classifier"
+@factory = deep-classifier
 labels = ["first","second"]
-do_harmonize = false
 
 [components.deep-classifier.embedding]
-@factory = "text-box-embedding"
-size = 96
+@factory = box-embedding
+size = "96"
 
-[components.deep-classifier.embedding.box_encoder]
+[components.deep-classifier.embedding.layout_encoder]
+@factory = box-layout-embedding
 n_positions = 32
 
 [components.simple-aggregator]
-@factory = "simple-aggregator"
+@factory = simple-aggregator
 
 """
     )  # noqa: E501
@@ -181,9 +170,9 @@ components_config = ${components}
 labels = ['first', 'second']
 
 [components.'deep-classifier'.embedding]
-@factory = 'text-box-embedding'
+@factory = 'box-embedding'
 size = 96
-box_encoder = {"n_positions": 32}
+layout_encoder = {"@factory": "box-layout-embedding", "n_positions": 32}
 
 [components.'simple-aggregator']
 @factory = 'simple-aggregator'"""  # noqa: E501
@@ -192,7 +181,7 @@ box_encoder = {"n_positions": 32}
     def function(model: Pipeline):
         assert len(model) == 3
 
-    function(Config().from_str(config_str)["model"])
+    function(Config().from_str(config_str).resolve()["model"])
 
 
 def test_torch_module(frozen_pipeline: Pipeline):

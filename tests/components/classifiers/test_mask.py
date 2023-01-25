@@ -46,9 +46,7 @@ y1 = 1
 
 
 def test_simple_mask(single_page_doc):
-    classifier: Component[PDFDoc, PDFDoc] = Config().from_str(configuration)[
-        "classifier"
-    ]
+    classifier = Config.from_str(configuration).resolve()["classifier"]
 
     single_page_doc = classifier(single_page_doc)
 
@@ -61,9 +59,7 @@ def test_simple_mask(single_page_doc):
 
 def test_custom_mask(single_page_doc):
 
-    classifier: Component[PDFDoc, PDFDoc] = Config().from_str(configuration_custom)[
-        "classifier"
-    ]
+    classifier = Config.from_str(configuration_custom).resolve()["classifier"]
 
     single_page_doc = classifier(single_page_doc)
 

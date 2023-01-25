@@ -3,7 +3,7 @@ from pydantic import ValidationError, validate_arguments
 
 from edspdf import Pipeline
 from edspdf.config import Config, MissingReference, Reference
-from edspdf.layers.text_box_embedding import TextBoxEmbedding
+from edspdf.layers.box_embedding import BoxEmbedding
 
 
 class CustomClass:
@@ -17,34 +17,36 @@ components_config = ${components}
 [components]
 
 [components.extractor]
-@factory = "pdfminer-extractor"
+@factory = pdfminer-extractor
 extract_style = false
 
 [components.classifier]
-@factory = "deep-classifier"
+@factory = deep-classifier
 labels = []
 
 [components.classifier.embedding]
-@factory = "text-box-embedding"
+@factory = box-embedding
 size = 96
 dropout_p = 0.2
-n_relative_positions = 64
 
 [components.classifier.embedding.text_encoder]
+@factory = box-text-embedding
 
 [components.classifier.embedding.text_encoder.pooler]
+@factory = cnn-pooler
 out_channels = 64
 kernel_sizes = [3,4,5]
 
-[components.classifier.embedding.box_encoder]
+[components.classifier.embedding.layout_encoder]
+@factory = box-layout-embedding
 n_positions = 128
-x_mode = "sin"
-y_mode = "sin"
-w_mode = "sin"
-h_mode = "sin"
+x_mode = sin
+y_mode = sin
+w_mode = sin
+h_mode = sin
 
 [components.aggregator]
-@factory = "simple-aggregator"
+@factory = simple-aggregator
 
 """
 
@@ -60,20 +62,25 @@ def test_read_from_str():
             "classifier": {
                 "@factory": "deep-classifier",
                 "embedding": {
-                    "@factory": "text-box-embedding",
-                    "box_encoder": {
-                        "h_mode": "sin",
+                    "@factory": "box-embedding",
+                    "layout_encoder": {
+                        "@factory": "box-layout-embedding",
                         "n_positions": 128,
-                        "w_mode": "sin",
                         "x_mode": "sin",
                         "y_mode": "sin",
+                        "h_mode": "sin",
+                        "w_mode": "sin",
+                    },
+                    "text_encoder": {
+                        "@factory": "box-text-embedding",
+                        "pooler": {
+                            "@factory": "cnn-pooler",
+                            "kernel_sizes": [3, 4, 5],
+                            "out_channels": 64,
+                        },
                     },
                     "dropout_p": 0.2,
-                    "n_relative_positions": 64,
                     "size": 96,
-                    "text_encoder": {
-                        "pooler": {"kernel_sizes": [3, 4, 5], "out_channels": 64}
-                    },
                 },
                 "labels": [],
             },
@@ -84,15 +91,15 @@ def test_read_from_str():
             "components_config": Reference("components"),
         },
     }
-    resolved = config.resolve()
-    assert isinstance(resolved["components"]["classifier"].embedding, TextBoxEmbedding)
+    resolved = config.resolve(deep=True)
+    assert isinstance(resolved["components"]["classifier"].embedding, BoxEmbedding)
     exported_config = config.to_str()
     assert exported_config == pipeline_config
 
 
 def test_write_to_str():
     def reexport(s):
-        config = Config().from_str(s, resolve=True)
+        config = Config().from_str(s).resolve(deep=True)
         return Config(pipeline=Pipeline(**config["pipeline"])).to_str()
 
     exported = reexport(pipeline_config)
@@ -144,7 +151,7 @@ def test_missing_error():
 
 def test_type_hinted_instantiation_error():
     @validate_arguments
-    def function(embedding: TextBoxEmbedding):
+    def function(embedding: BoxEmbedding):
         ...
 
     params = Config.from_str(
@@ -167,16 +174,16 @@ def test_factory_instantiation_error():
         Config.from_str(
             """
         [embedding]
-        @factory = "text-box-embedding"
-        n_relative_positions = "ok"
+        @factory = "box-embedding"
+        dropout_p = "ok"
         """
-        )
+        ).resolve(deep=True)
     assert str(exc_info.value) == (
-        "2 validation errors for TextBoxEmbedding\n"
+        "2 validation errors for BoxEmbedding\n"
         "embedding -> size\n"
         "  field required (type=value_error.missing)\n"
-        "embedding -> n_relative_positions\n"
-        "  value is not a valid integer (type=type_error.integer)"
+        "embedding -> dropout_p\n"
+        "  value is not a valid float (type=type_error.float)"
     )
 
 
@@ -198,13 +205,13 @@ def test_absolute_dump_path():
         "[my.deep]\n"
         "\n"
         "[my.deep.path]\n"
-        'test = "ok"\n'
+        "test = ok\n"
         "\n"
     )
 
 
 def test_merge():
-    config = Config().from_str(pipeline_config, resolve=False)
+    config = Config().from_str(pipeline_config)
     other = Config().from_str(
         """\
 [components]
@@ -215,8 +222,7 @@ extract_style = true
 
 [components.extra]
 size = 128
-""",
-        resolve=False,
+"""
     )
     merged = config.merge(other, remove_extra=True)
     merged = merged.merge(
@@ -240,6 +246,5 @@ size = 128
     )
     resolved = merged.resolve()
     assert merged["components"]["extractor"]["extract_style"] is True
-    assert resolved["components"]["extractor"].factory_name == "pdfminer-extractor"
     assert "extra" not in resolved["components"]
     assert "other_extra" in resolved["components"]
