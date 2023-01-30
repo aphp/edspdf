@@ -8,11 +8,11 @@ Said blocs will go on to the classification phase to separate the body from the 
 
 We provide a multiple extractor architectures for text-based PDFs :
 
-| Component              | Description                              |
-|------------------------|------------------------------------------|
-| [pdfminer](./pdfminer) | Text-based PDF extraction using PDFMiner |
-| [mupdf](./mupdf)       | Text-based PDF extraction using MuPDF    |
-| [poppler](./poppler)   | Text-based PDF extraction using Poppler  |
+| Component                        | Description                              |
+|----------------------------------|------------------------------------------|
+| [pdfminer-extractor](./pdfminer) | Text-based PDF extraction using PDFMiner |
+| [mupdf-extractor](./mupdf)       | Text-based PDF extraction using MuPDF    |
+| [poppler-extractor](./poppler)   | Text-based PDF extraction using Poppler  |
 
 ## Image-based PDF
 

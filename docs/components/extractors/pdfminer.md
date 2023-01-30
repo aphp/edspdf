@@ -15,9 +15,9 @@ from pathlib import Path
 # Add the component to a new pipeline
 model = Pipeline()
 model.add_pipe(
-    "pdfminer",
+    "pdfminer-extractor",
     config=dict(
-        extract_styles=False,
+        extract_style=False,
     ),
 )
 
@@ -37,10 +37,3 @@ model(Path("path/to/your/pdf/document").read_bytes())
 | detect_vertical | See PDFMiner documentation                                                            | False   |
 | all_texts       | See PDFMiner documentation                                                            | False   |
 | extract_style   | Whether to extract style (font, size, ...) information for each line of the document. | False   |
-
-The `mupdf` extractor, based on the [python version MuPDF](https://github.com/pymupdf/PyMuPDF) is
-faster and should also be relatively easy to install on a wide range of architectures, Linux, OS X and Windows. Indeed, the package offering a large number of pre-compiled binaries
-on [PyPI](https://pypi.org/project/PyMuPDF/#files).
-
-Finally, the `poppler` extractor based on Poppler is the fastest extraction system but is more difficult
-to install. In particular, the bindings we provide have not been tested on Windows.

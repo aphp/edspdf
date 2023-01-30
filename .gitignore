@@ -46,6 +46,7 @@ coverage.xml
 *,cover
 .hypothesis/
 .pytest_cache/
+report.xml
 
 # IPython Notebook
 .ipynb_checkpoints
@@ -66,3 +67,4 @@ data/
 
 # MkDocs output
 site/
+public/

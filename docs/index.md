@@ -68,7 +68,7 @@ See the [rule-based recipe](recipes/rules.md) for a step-by-step explanation of 
 
 ## Citation
 
-If you use EDS-NLP, please cite us as below.
+If you use EDS-PDF, please cite us as below.
 
 ```bibtex
 @software{edspdf,
