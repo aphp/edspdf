@@ -31,7 +31,7 @@ y1 = 0.9
 threshold = 0.1
 """
 
-model = load(Config.from_str(config))
+model = load(Config.from_str(config).resolve()["pipeline"])
 
 # Get a PDF
 pdf = Path("letter.pdf").read_bytes()

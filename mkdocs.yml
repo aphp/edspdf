@@ -25,22 +25,32 @@ theme:
 nav:
   - index.md
   - Demo 🚀: https://share.streamlit.io/aphp/edspdf/demo/app.py" target="_blank
-  - concepts.md
+  - Concepts:
+      - concepts/index.md
+      - concepts/pipeline.md
+      - concepts/configuration.md
+      - concepts/trainable-components.md
   - Recipes:
       - recipes/index.md
-      - recipes/rules.md
-      - A First Trained Pipeline: recipes/sklearn.md
+      - recipes/rule-based.md
+      - recipes/training.md
       - recipes/extension.md
       - recipes/annotation.md
-  - Modules:
-      - modules/index.md
-      - modules/extraction.md
-      - modules/transforms.md
-      - Classification:
-          - modules/classification/index.md
-          - modules/classification/sklearn.md
-          - modules/classification/mask.md
-      - modules/aggregation.md
+  - Components:
+      - Extractors:
+        - components/extractors/index.md
+        - components/extractors/pdfminer.md
+        - components/extractors/mupdf.md
+        - components/extractors/poppler.md
+      - Classifiers:
+        - components/classifiers/index.md
+        - components/classifiers/deep-classifier.md
+        - components/classifiers/mask.md
+      - Aggregators:
+        - components/aggregators/index.md
+      - components/index.md
+  - Layers:
+      - layers/index.md
   - Utilities:
       - utilities/index.md
       - utilities/visualisation.md
@@ -65,6 +75,7 @@ watch:
   - contributing.md
   - roadmap.md
   - changelog.md
+  - edspdf
 
 extra:
   version:
@@ -84,10 +95,10 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          selection:
+          options:
             docstring_style: numpy
-          rendering:
             docstring_section_style: spacy
+            separate_signature: false
             heading_level: 2
             members_order: source
             show_root_toc_entry: false

@@ -30,9 +30,9 @@ from pathlib import Path
 # Add the component to a new pipeline
 model = Pipeline()
 model.add_pipe(
-    "mupdf",
+    "mupdf-extractor",
     config=dict(
-        extract_styles=False,
+        extract_style=False,
     ),
 )
 

@@ -26,7 +26,7 @@ Visit the [documentation](https://aphp.github.io/edspdf/) for more information!
 
 ## Citation
 
-If you use EDS-NLP, please cite us as below.
+If you use EDS-PDF, please cite us as below.
 
 ```bibtex
 @software{edspdf,
