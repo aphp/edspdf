@@ -1,0 +1,3201 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<link href="../../assets/logo/edspdf-blue.svg" rel="icon"/>
+<meta content="mkdocs-1.3.0, mkdocs-material-8.5.4" name="generator"/>
+<title>pipeline - EDS-PDF</title>
+<link href="../../assets/stylesheets/main.80dcb947.min.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/palette.cbb835fc.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<link href="../../assets/_mkdocstrings.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/extra.css" rel="stylesheet"/>
+<link href="../../assets/termynal/termynal.css" rel="stylesheet"/>
+<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>html.glightbox-open { overflow: initial; height: 100%; }</style><script src="../../assets/javascripts/glightbox.min.js"></script></head>
+<body data-md-color-accent="" data-md-color-primary="" data-md-color-scheme="default" dir="ltr">
+<script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#edspdfpipeline">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<div data-md-component="outdated" hidden="">
+</div>
+<header class="md-header" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="EDS-PDF" class="md-header__button md-logo" data-md-component="logo" href="../.." title="EDS-PDF">
+<img alt="logo" src="../../assets/logo/edspdf-white.svg"/>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            EDS-PDF
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              pipeline
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="" data-md-color-media="" data-md-color-primary="" data-md-color-scheme="default" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_2" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="" data-md-color-media="" data-md-color-primary="" data-md-color-scheme="slate" id="__palette_2" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"></path></svg>
+</label>
+</form>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"></path></svg>
+</button>
+</nav>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/aphp/edspdf" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="EDS-PDF" class="md-nav__button md-logo" data-md-component="logo" href="../.." title="EDS-PDF">
+<img alt="logo" src="../../assets/logo/edspdf-white.svg"/>
+</a>
+    EDS-PDF
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/aphp/edspdf" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"></path></svg>
+</div>
+<div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../..">
+        Overview
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="https://share.streamlit.io/aphp/edspdf/demo/app.py" target="_blank">
+        Demo 🚀
+      </a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" id="__nav_3" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../../concepts/">Concepts</a>
+<label for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="Concepts" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+          Concepts
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/pipeline/">
+        Pipeline
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/configuration/">
+        Configuration
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../concepts/trainable-components/">
+        Trainable components
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" id="__nav_4" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../../recipes/">Recipes</a>
+<label for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="Recipes" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+          Recipes
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../recipes/rule-based/">
+        Rule-based extraction
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../recipes/training/">
+        Training a Pipeline
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../recipes/extension/">
+        Extending EDS-PDF
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../recipes/annotation/">
+        PDF Annotation
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" id="__nav_5" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../../components/">Components</a>
+<label for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="Components" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+          Components
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_1" id="__nav_5_1" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../../components/extractors/">Extractors</a>
+<label for="__nav_5_1">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="Extractors" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_1">
+<span class="md-nav__icon md-icon"></span>
+          Extractors
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../components/extractors/pdfminer/">
+        PdfMinerExtractor
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../components/extractors/mupdf/">
+        MuPdfExtractor
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../components/extractors/poppler/">
+        PopplerExtractor
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_2" id="__nav_5_2" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../../components/classifiers/">Classifiers</a>
+<label for="__nav_5_2">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="Classifiers" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_2">
+<span class="md-nav__icon md-icon"></span>
+          Classifiers
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../components/classifiers/deep-classifier/">
+        Deep learning classifier
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../components/classifiers/mask/">
+        Mask Classification
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_3" id="__nav_5_3" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../../components/aggregators/">Aggregators</a>
+</div>
+<nav aria-label="Aggregators" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_5_3">
+<span class="md-nav__icon md-icon"></span>
+          Aggregators
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" id="__nav_6" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../../layers/">Layers</a>
+</div>
+<nav aria-label="Layers" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_6">
+<span class="md-nav__icon md-icon"></span>
+          Layers
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" id="__nav_7" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../../utilities/">Utilities</a>
+<label for="__nav_7">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="Utilities" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_7">
+<span class="md-nav__icon md-icon"></span>
+          Utilities
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../utilities/visualisation/">
+        Visualisation
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../utilities/alignment/">
+        Alignment
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" id="__nav_8" type="checkbox"/>
+<label class="md-nav__link" for="__nav_8">
+          Code Reference
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-label="Code Reference" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_8">
+<span class="md-nav__icon md-icon"></span>
+          Code Reference
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--active md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1" id="__nav_8_1" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../">edspdf</a>
+<label for="__nav_8_1">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="edspdf" class="md-nav" data-md-level="2">
+<label class="md-nav__title" for="__nav_8_1">
+<span class="md-nav__icon md-icon"></span>
+          edspdf
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../cli/">
+        cli
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../component/">
+        component
+      </a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1_4" id="__nav_8_1_4" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../components/">components</a>
+<label for="__nav_8_1_4">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="components" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_8_1_4">
+<span class="md-nav__icon md-icon"></span>
+          components
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1_4_2" id="__nav_8_1_4_2" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../components/aggregators/">aggregators</a>
+<label for="__nav_8_1_4_2">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="aggregators" class="md-nav" data-md-level="4">
+<label class="md-nav__title" for="__nav_8_1_4_2">
+<span class="md-nav__icon md-icon"></span>
+          aggregators
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../components/aggregators/simple/">
+        simple
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../components/aggregators/styled/">
+        styled
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1_4_3" id="__nav_8_1_4_3" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../components/classifiers/">classifiers</a>
+<label for="__nav_8_1_4_3">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="classifiers" class="md-nav" data-md-level="4">
+<label class="md-nav__title" for="__nav_8_1_4_3">
+<span class="md-nav__icon md-icon"></span>
+          classifiers
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../components/classifiers/deep_classifier/">
+        deep_classifier
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../components/classifiers/dummy/">
+        dummy
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../components/classifiers/harmonized_classifier/">
+        harmonized_classifier
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../components/classifiers/mask/">
+        mask
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../components/classifiers/random/">
+        random
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1_4_4" id="__nav_8_1_4_4" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../components/extractors/">extractors</a>
+<label for="__nav_8_1_4_4">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="extractors" class="md-nav" data-md-level="4">
+<label class="md-nav__title" for="__nav_8_1_4_4">
+<span class="md-nav__icon md-icon"></span>
+          extractors
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../components/extractors/pdfminer/">
+        pdfminer
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../config/">
+        config
+      </a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1_6" id="__nav_8_1_6" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../layers/">layers</a>
+<label for="__nav_8_1_6">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="layers" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_8_1_6">
+<span class="md-nav__icon md-icon"></span>
+          layers
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../layers/box_embedding/">
+        box_embedding
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../layers/box_layout_embedding/">
+        box_layout_embedding
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../layers/box_layout_preprocessor/">
+        box_layout_preprocessor
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../layers/box_text_embedding/">
+        box_text_embedding
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../layers/box_transformer/">
+        box_transformer
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../layers/cnn_pooler/">
+        cnn_pooler
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../layers/relative_attention/">
+        relative_attention
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../layers/sinusoidal_embedding/">
+        sinusoidal_embedding
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../layers/vocabulary/">
+        vocabulary
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../model/">
+        model
+      </a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1_8" id="__nav_8_1_8" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../models/">models</a>
+<label for="__nav_8_1_8">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="models" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_8_1_8">
+<span class="md-nav__icon md-icon"></span>
+          models
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../models/box/">
+        box
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../models/doc/">
+        doc
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../models/style/">
+        style
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../models/text_box/">
+        text_box
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" data-md-toggle="toc" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+          pipeline
+          <span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+        pipeline
+      </a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline">
+    Pipeline
+  </a>
+<nav aria-label="Pipeline" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.cfg">
+    cfg
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.trainable_components">
+    trainable_components
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.__init__">
+    __init__()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.add_pipe">
+    add_pipe()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.reset_cache">
+    reset_cache()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.__call__">
+    __call__()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.pipe">
+    pipe()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.initialize">
+    initialize()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.score">
+    score()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.preprocess">
+    preprocess()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.preprocess_many">
+    preprocess_many()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.collate">
+    collate()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.train">
+    train()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.no_cache">
+    no_cache()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.parameters">
+    parameters()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.__iter__">
+    __iter__()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.__len__">
+    __len__()
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1_10" id="__nav_8_1_10" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../recipes/">recipes</a>
+<label for="__nav_8_1_10">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="recipes" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_8_1_10">
+<span class="md-nav__icon md-icon"></span>
+          recipes
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../recipes/train/">
+        train
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../registry/">
+        registry
+      </a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1_12" id="__nav_8_1_12" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../utils/">utils</a>
+<label for="__nav_8_1_12">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="utils" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_8_1_12">
+<span class="md-nav__icon md-icon"></span>
+          utils
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../utils/alignment/">
+        alignment
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../utils/collections/">
+        collections
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../utils/optimization/">
+        optimization
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../utils/random/">
+        random
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../utils/torch/">
+        torch
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_1_13" id="__nav_8_1_13" type="checkbox"/>
+<div class="md-nav__link md-nav__link--index">
+<a href="../visualization/">visualization</a>
+<label for="__nav_8_1_13">
+<span class="md-nav__icon md-icon"></span>
+</label>
+</div>
+<nav aria-label="visualization" class="md-nav" data-md-level="3">
+<label class="md-nav__title" for="__nav_8_1_13">
+<span class="md-nav__icon md-icon"></span>
+          visualization
+        </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../visualization/annotations/">
+        annotations
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../visualization/merge/">
+        merge
+      </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../alternatives/">
+        Alternatives &amp; Comparison
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../contributing/">
+        Contributing to EDS-PDF
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../changelog/">
+        Changelog
+      </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../roadmap/">
+        Roadmap
+      </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline">
+    Pipeline
+  </a>
+<nav aria-label="Pipeline" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.cfg">
+    cfg
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.trainable_components">
+    trainable_components
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.__init__">
+    __init__()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.add_pipe">
+    add_pipe()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.reset_cache">
+    reset_cache()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.__call__">
+    __call__()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.pipe">
+    pipe()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.initialize">
+    initialize()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.score">
+    score()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.preprocess">
+    preprocess()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.preprocess_many">
+    preprocess_many()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.collate">
+    collate()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.train">
+    train()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.no_cache">
+    no_cache()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.parameters">
+    parameters()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.__iter__">
+    __iter__()
+  </a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#edspdf.pipeline.Pipeline.__len__">
+    __len__()
+  </a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<a class="md-content__button md-icon" href="https://github.com/aphp/edspdf/edit/master/docs/edspdf/pipeline.py" title="Edit this page">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"></path></svg>
+</a>
+<h1 id="edspdfpipeline"><code>edspdf.pipeline</code></h1>
+<div class="doc doc-object doc-module">
+<div class="doc doc-contents first">
+<div class="doc doc-children">
+<div class="doc doc-object doc-class">
+<h2 class="doc doc-heading" id="edspdf.pipeline.Pipeline">
+<code>Pipeline</code>
+</h2>
+<div class="doc doc-contents">
+<p>The Pipeline is the core object of EDS-PDF. It is responsible for the
+orchestration of the components and processing PDF documents end-to-end.</p>
+<p>A pipeline is usually created empty and then populated with components via the
+<code>add_pipe</code> method. Here is an example :</p>
+<div class="highlight"><pre><span></span><code><span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">()</span>
+<span class="n">pipeline</span><span class="o">.</span><span class="n">add_pipe</span><span class="p">(</span><span class="s2">"pdfminer-extractor"</span><span class="p">)</span>
+<span class="n">pipeline</span><span class="o">.</span><span class="n">add_pipe</span><span class="p">(</span><span class="s2">"mask-classifier"</span><span class="p">)</span>
+<span class="n">pipeline</span><span class="o">.</span><span class="n">add_pipe</span><span class="p">(</span><span class="s2">"simple-aggregator"</span><span class="p">)</span>
+</code></pre></div>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span>
+<span class="normal">397</span>
+<span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span>
+<span class="normal">409</span>
+<span class="normal">410</span>
+<span class="normal">411</span>
+<span class="normal">412</span>
+<span class="normal">413</span>
+<span class="normal">414</span>
+<span class="normal">415</span>
+<span class="normal">416</span>
+<span class="normal">417</span>
+<span class="normal">418</span>
+<span class="normal">419</span>
+<span class="normal">420</span>
+<span class="normal">421</span>
+<span class="normal">422</span>
+<span class="normal">423</span>
+<span class="normal">424</span>
+<span class="normal">425</span>
+<span class="normal">426</span>
+<span class="normal">427</span>
+<span class="normal">428</span>
+<span class="normal">429</span>
+<span class="normal">430</span>
+<span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span>
+<span class="normal">434</span>
+<span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@validate_arguments</span>
+<span class="k">class</span> <span class="nc">Pipeline</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    The Pipeline is the core object of EDS-PDF. It is responsible for the</span>
+<span class="sd">    orchestration of the components and processing PDF documents end-to-end.</span>
+
+<span class="sd">    A pipeline is usually created empty and then populated with components via the</span>
+<span class="sd">    `add_pipe` method. Here is an example :</span>
+
+<span class="sd">    ```python</span>
+<span class="sd">    pipeline = Pipeline()</span>
+<span class="sd">    pipeline.add_pipe("pdfminer-extractor")</span>
+<span class="sd">    pipeline.add_pipe("mask-classifier")</span>
+<span class="sd">    pipeline.add_pipe("simple-aggregator")</span>
+<span class="sd">    ```</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">components</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">components_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Component</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initializes the pipeline. The pipeline is empty by default and can be</span>
+<span class="sd">        populated with components via the `add_pipe` method.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        components: Optional[List[str]]</span>
+<span class="sd">            List of component names</span>
+<span class="sd">        components_config: Optional[Dict[str, Component]]</span>
+<span class="sd">            Dictionary of component configurations. The keys of the dictionary must</span>
+<span class="sd">            match the component names. The values are the component configurations,</span>
+<span class="sd">            which can contain unresolved configuration for nested components or</span>
+<span class="sd">            instances of components.</span>
+<span class="sd">        batch_size: int</span>
+<span class="sd">            The default number of documents to process in parallel when running the</span>
+<span class="sd">            pipeline</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">components</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">components</span> <span class="o">=</span> <span class="n">ComponentsMap</span><span class="p">({})</span>
+        <span class="k">if</span> <span class="n">components_config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">components_config</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">ComponentsMap</span><span class="p">({})</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+            <span class="n">component</span> <span class="o">=</span> <span class="n">components_config</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">component</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">add_pipe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Adds a component to the pipeline. The component can be either a factory name or</span>
+<span class="sd">        an instantiated component. If a factory name is provided, the component will be</span>
+<span class="sd">        instantiated with the class from the registry matching the factory name and</span>
+<span class="sd">        using the provided config as arguments.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        factory_name: Union[str, Callable]</span>
+<span class="sd">            Either a factory name or an instantiated component</span>
+<span class="sd">        name: str</span>
+<span class="sd">            Name of the component</span>
+<span class="sd">        config: Dict</span>
+<span class="sd">            Configuration of the component. The configuration can contain unresolved</span>
+<span class="sd">            configuration for nested components such as</span>
+<span class="sd">            `{"@factory_name": "my-sub-component", ...}`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Component</span>
+<span class="sd">            The added component</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">factory_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">config</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="c1"># config = Config(config).resolve()</span>
+            <span class="bp">cls</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">factory_name</span><span class="p">)</span>
+            <span class="n">component</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">factory_name</span><span class="p">,</span> <span class="s2">"__call__"</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">factory_name</span><span class="p">,</span> <span class="s2">"process"</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">"Cannot provide both an instantiated component and its config"</span>
+                <span class="p">)</span>
+            <span class="n">component</span> <span class="o">=</span> <span class="n">factory_name</span>
+            <span class="n">factory_name</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+                <span class="n">k</span>
+                <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">registry</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">==</span> <span class="n">v</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">"`add_pipe` first argument must either be a factory name "</span>
+                <span class="sa">f</span><span class="s2">"or an instantiated component. You passed a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">factory_name</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">factory_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">"Could not automatically assign a name for component </span><span class="si">{}</span><span class="s2">: either"</span>
+                    <span class="s2">"provide a name explicitly to the add_pipe function, or define a "</span>
+                    <span class="s2">"factory_name field on this component."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">factory_name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span>
+        <span class="n">component</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="s2">"process"</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="s2">"__call__"</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Component must have a process method or be callable"</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">component</span>
+
+    <span class="k">def</span> <span class="nf">reset_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CacheEnum</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Reset the caches of the components in this pipeline</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cache: Optional[CacheEnum]</span>
+<span class="sd">            The cache to reset (either `preprocess`, `collate` or `forward`)</span>
+<span class="sd">            If None, all caches are reset</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">component</span><span class="o">.</span><span class="n">reset_cache</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">InputT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OutputT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Applies the pipeline on a sample</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        doc: InputT</span>
+<span class="sd">            The document to process</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        OutputT</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_cache</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">doc</span> <span class="o">=</span> <span class="n">component</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">doc</span>
+
+    <span class="k">def</span> <span class="nf">pipe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">InputT</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Apply the pipeline on a collection of documents</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        docs: Iterable[InputT]</span>
+<span class="sd">            The documents to process</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Iterable</span>
+<span class="sd">            An iterable collection of processed documents</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">batchify</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reset_cache</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">batch</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">batch_process</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+            <span class="k">yield from</span> <span class="n">batch</span>
+
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">InputT</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initialize the components of the pipeline</span>
+<span class="sd">        Each component must be initialized before the next components are run.</span>
+<span class="sd">        Since a component might need the full training data to be initialized, all</span>
+<span class="sd">        data may be fed to the component, making it impossible to enable batch caching.</span>
+
+<span class="sd">        Therefore, we disable cache during the entire operation, so heavy computation</span>
+<span class="sd">        (such as embeddings) that is usually shared will be repeated for each</span>
+<span class="sd">        initialized component.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data: SupervisedData</span>
+
+<span class="sd">        """</span>
+        <span class="c1"># Component initialization</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Initializing components"</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">multi_tee</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_cache</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">component</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+                    <span class="n">component</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Component </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2"> initialized"</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">InputT</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Scores a pipeline against a sequence of annotated documents</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        docs: Sequence[InputT]</span>
+<span class="sd">            The documents to score</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict[str, Any]</span>
+<span class="sd">            A dictionary containing the metrics of the pipeline, as well as the speed of</span>
+<span class="sd">            the pipeline. Each component that has a scorer will also be scored and its</span>
+<span class="sd">            metrics will be included in the returned dictionary under a key named after</span>
+<span class="sd">            each component.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">InputT</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+        <span class="n">golds</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">InputT</span><span class="p">]]</span> <span class="o">=</span> <span class="n">docs</span>
+
+        <span class="n">scored_components</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Predicting intermediate steps</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+        <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">batchify</span><span class="p">(</span>
+            <span class="n">tqdm</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="s2">"Scoring components"</span><span class="p">),</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reset_cache</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="n">scorer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">scored_components</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span>
+                    <span class="n">batch</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">batch_process</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+                    <span class="n">preds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">batch</span><span class="p">))</span>
+
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="n">inputs</span><span class="p">),</span> <span class="s2">"Scoring pipeline"</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)):</span>
+            <span class="k">pass</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
+
+        <span class="c1"># Scoring</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"speed"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">/</span> <span class="n">duration</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">scored_components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">preds</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">golds</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">metrics</span>
+
+    <span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">InputT</span><span class="p">,</span> <span class="n">supervision</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Runs the preprocessing methods of each component in the pipeline</span>
+<span class="sd">        on a document and returns a dictionary containing the results, with the</span>
+<span class="sd">        component names as keys.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        doc: InputT</span>
+<span class="sd">            The document to preprocess</span>
+<span class="sd">        supervision: bool</span>
+<span class="sd">            Whether to include supervision information in the preprocessing</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict[str, Any]</span>
+<span class="sd">        """</span>
+        <span class="n">prep</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">TrainableComponent</span><span class="p">):</span>
+                <span class="n">prep</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">supervision</span><span class="o">=</span><span class="n">supervision</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">prep</span>
+
+    <span class="k">def</span> <span class="nf">preprocess_many</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">InputT</span><span class="p">],</span> <span class="n">compress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">supervision</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Runs the preprocessing methods of each component in the pipeline on</span>
+<span class="sd">        a collection of documents and returns an iterable of dictionaries containing</span>
+<span class="sd">        the results, with the component names as keys.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        docs: Iterable[InputT]</span>
+<span class="sd">        compress: bool</span>
+<span class="sd">            Whether to deduplicate identical preprocessing outputs of the results</span>
+<span class="sd">            if multiple documents share identical subcomponents. This step is required</span>
+<span class="sd">            to enable the cache mechanism when training or running the pipeline over a</span>
+<span class="sd">            tabular datasets such as pyarrow tables that do not store referential</span>
+<span class="sd">            equality information.</span>
+<span class="sd">        supervision: bool</span>
+<span class="sd">            Whether to include supervision information in the preprocessing</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Iterable[OutputT]</span>
+<span class="sd">        """</span>
+        <span class="n">preprocessed</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">,</span> <span class="n">supervision</span><span class="o">=</span><span class="n">supervision</span><span class="p">),</span> <span class="n">docs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">compress</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">batch_compress_dict</span><span class="p">(</span><span class="n">preprocessed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">preprocessed</span>
+
+    <span class="k">def</span> <span class="nf">collate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Collates a batch of preprocessed samples into a single (maybe nested)</span>
+<span class="sd">        dictionary of tensors by calling the collate method of each component.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        batch: Dict[str, Any]</span>
+<span class="sd">            The batch of preprocessed samples</span>
+<span class="sd">        device: Optional[torch.device]</span>
+<span class="sd">            The device to move the tensors to before returning them</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict[str, Any]</span>
+<span class="sd">            The collated batch</span>
+<span class="sd">        """</span>
+        <span class="n">batch</span> <span class="o">=</span> <span class="n">decompress_dict</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">device</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">device</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">:</span>
+                <span class="n">component</span><span class="p">:</span> <span class="n">TrainableComponent</span>
+                <span class="n">component_inputs</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                <span class="n">batch</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">collate</span><span class="p">(</span><span class="n">component_inputs</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">batch</span>
+
+    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Enables training mode on pytorch modules</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mode: bool</span>
+<span class="sd">            Whether to enable training or not</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="s2">"train"</span><span class="p">):</span>
+                <span class="n">component</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cfg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Returns the initial configuration of the pipeline"""</span>
+        <span class="k">return</span> <span class="n">Config</span><span class="p">(</span>
+            <span class="n">components</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="n">components_config</span><span class="o">=</span><span class="n">Config</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">,</span> <span class="n">__path__</span><span class="o">=</span><span class="p">(</span><span class="s2">"components"</span><span class="p">,)),</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span> <span class="nf">no_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Disable caching for all (trainable) components in the pipeline"""</span>
+        <span class="n">saved</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">TrainableComponent</span><span class="p">):</span>
+                <span class="n">saved</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">component</span><span class="p">,</span> <span class="n">component</span><span class="o">.</span><span class="n">enable_cache</span><span class="p">(</span><span class="kc">False</span><span class="p">)))</span>
+        <span class="k">yield</span>
+        <span class="k">for</span> <span class="n">component</span><span class="p">,</span> <span class="n">do_cache</span> <span class="ow">in</span> <span class="n">saved</span><span class="p">:</span>
+            <span class="n">component</span><span class="o">.</span><span class="n">enable_cache</span><span class="p">(</span><span class="n">do_cache</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Returns an iterator over the Pytorch parameters of the components in the</span>
+<span class="sd">        pipeline"""</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">component</span><span class="o">.</span><span class="n">parameters</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                    <span class="k">yield</span> <span class="n">param</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">"Pipeline(</span><span class="si">{}</span><span class="s2">)"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">"</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">indent</span><span class="p">(</span><span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">): "</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">component</span><span class="p">),</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">"  "</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">)</span>
+            <span class="k">else</span> <span class="s2">""</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">trainable_components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TrainableComponent</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Returns the list of trainable components in the pipeline."""</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">c</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">TrainableComponent</span><span class="p">)</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">needs_training</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Returns an iterator over the components in the pipeline."""</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Returns the number of components in the pipeline."""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<div class="doc doc-children">
+<div class="doc doc-object doc-attribute">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.cfg">
+<code class="highlight language-python"><span class="n">cfg</span></code>
+<span class="doc doc-labels">
+<small class="doc doc-label doc-label-property"><code>property</code></small>
+</span>
+</h3>
+<div class="doc doc-contents">
+<p>Returns the initial configuration of the pipeline</p>
+</div>
+</div>
+<div class="doc doc-object doc-attribute">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.trainable_components">
+<code class="highlight language-python"><span class="n">trainable_components</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TrainableComponent</span><span class="p">]</span></code>
+<span class="doc doc-labels">
+<small class="doc doc-label doc-label-property"><code>property</code></small>
+</span>
+</h3>
+<div class="doc doc-contents">
+<p>Returns the list of trainable components in the pipeline.</p>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.__init__">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">components</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">components_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Initializes the pipeline. The pipeline is empty by default and can be
+populated with components via the <code>add_pipe</code> method.</p>
+<table>
+<thead>
+<tr>
+<th><b>PARAMETER</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>components</code></td>
+<td class="doc-param-details">
+<p>List of component names</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[str]]</code>
+</span>
+<span class="doc-param-default">
+<b>DEFAULT:</b>
+<code>None</code>
+</span>
+</p>
+</td>
+</tr>
+<tr>
+<td><code>components_config</code></td>
+<td class="doc-param-details">
+<p>Dictionary of component configurations. The keys of the dictionary must
+match the component names. The values are the component configurations,
+which can contain unresolved configuration for nested components or
+instances of components.</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code><span title="typing.Optional">Optional</span>[<span title="typing.Dict">Dict</span>[str, <a class="autorefs autorefs-internal" href="../component/#edspdf.component.Component" title="edspdf.component.Component">Component</a>]]</code>
+</span>
+<span class="doc-param-default">
+<b>DEFAULT:</b>
+<code>None</code>
+</span>
+</p>
+</td>
+</tr>
+<tr>
+<td><code>batch_size</code></td>
+<td class="doc-param-details">
+<p>The default number of documents to process in parallel when running the
+pipeline</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code>int</code>
+</span>
+<span class="doc-param-default">
+<b>DEFAULT:</b>
+<code>4</code>
+</span>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">components</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">components_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Component</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Initializes the pipeline. The pipeline is empty by default and can be</span>
+<span class="sd">    populated with components via the `add_pipe` method.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    components: Optional[List[str]]</span>
+<span class="sd">        List of component names</span>
+<span class="sd">    components_config: Optional[Dict[str, Component]]</span>
+<span class="sd">        Dictionary of component configurations. The keys of the dictionary must</span>
+<span class="sd">        match the component names. The values are the component configurations,</span>
+<span class="sd">        which can contain unresolved configuration for nested components or</span>
+<span class="sd">        instances of components.</span>
+<span class="sd">    batch_size: int</span>
+<span class="sd">        The default number of documents to process in parallel when running the</span>
+<span class="sd">        pipeline</span>
+<span class="sd">    """</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">components</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="n">ComponentsMap</span><span class="p">({})</span>
+    <span class="k">if</span> <span class="n">components_config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">components_config</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">ComponentsMap</span><span class="p">({})</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+        <span class="n">component</span> <span class="o">=</span> <span class="n">components_config</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">component</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="p">{}</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.add_pipe">
+<code class="highlight language-python"><span class="n">add_pipe</span><span class="p">(</span><span class="n">factory_name</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Adds a component to the pipeline. The component can be either a factory name or
+an instantiated component. If a factory name is provided, the component will be
+instantiated with the class from the registry matching the factory name and
+using the provided config as arguments.</p>
+<table>
+<thead>
+<tr>
+<th><b>PARAMETER</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>factory_name</code></td>
+<td class="doc-param-details">
+<p>Either a factory name or an instantiated component</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code><span title="typing.Union">Union</span>[str, <span title="typing.Callable">Callable</span>]</code>
+</span>
+</p>
+</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td class="doc-param-details">
+<p>Name of the component</p>
+<p>
+<span class="doc-param-default">
+<b>DEFAULT:</b>
+<code>None</code>
+</span>
+</p>
+</td>
+</tr>
+<tr>
+<td><code>config</code></td>
+<td class="doc-param-details">
+<p>Configuration of the component. The configuration can contain unresolved
+configuration for nested components such as
+<code>{"@factory_name": "my-sub-component", ...}</code></p>
+<p>
+<span class="doc-param-default">
+<b>DEFAULT:</b>
+<code>None</code>
+</span>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><b>RETURNS</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<span class="doc-returns-annotation">
+<code><a class="autorefs autorefs-internal" href="../component/#edspdf.component.Component" title="edspdf.component.Component">Component</a></code>
+</span>
+</td>
+<td class="doc-returns-details">
+<p>The added component</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_pipe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Adds a component to the pipeline. The component can be either a factory name or</span>
+<span class="sd">    an instantiated component. If a factory name is provided, the component will be</span>
+<span class="sd">    instantiated with the class from the registry matching the factory name and</span>
+<span class="sd">    using the provided config as arguments.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    factory_name: Union[str, Callable]</span>
+<span class="sd">        Either a factory name or an instantiated component</span>
+<span class="sd">    name: str</span>
+<span class="sd">        Name of the component</span>
+<span class="sd">    config: Dict</span>
+<span class="sd">        Configuration of the component. The configuration can contain unresolved</span>
+<span class="sd">        configuration for nested components such as</span>
+<span class="sd">        `{"@factory_name": "my-sub-component", ...}`</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Component</span>
+<span class="sd">        The added component</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">factory_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># config = Config(config).resolve()</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">factory_name</span><span class="p">)</span>
+        <span class="n">component</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">factory_name</span><span class="p">,</span> <span class="s2">"__call__"</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">factory_name</span><span class="p">,</span> <span class="s2">"process"</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">"Cannot provide both an instantiated component and its config"</span>
+            <span class="p">)</span>
+        <span class="n">component</span> <span class="o">=</span> <span class="n">factory_name</span>
+        <span class="n">factory_name</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="n">k</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">registry</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">get_all</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">==</span> <span class="n">v</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">"`add_pipe` first argument must either be a factory name "</span>
+            <span class="sa">f</span><span class="s2">"or an instantiated component. You passed a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">factory_name</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">factory_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">"Could not automatically assign a name for component </span><span class="si">{}</span><span class="s2">: either"</span>
+                <span class="s2">"provide a name explicitly to the add_pipe function, or define a "</span>
+                <span class="s2">"factory_name field on this component."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">factory_name</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span>
+    <span class="n">component</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="s2">"process"</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="s2">"__call__"</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"Component must have a process method or be callable"</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">component</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.reset_cache">
+<code class="highlight language-python"><span class="n">reset_cache</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Reset the caches of the components in this pipeline</p>
+<table>
+<thead>
+<tr>
+<th><b>PARAMETER</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cache</code></td>
+<td class="doc-param-details">
+<p>The cache to reset (either <code>preprocess</code>, <code>collate</code> or <code>forward</code>)
+If None, all caches are reset</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code><span title="typing.Optional">Optional</span>[<span title="edspdf.component.CacheEnum">CacheEnum</span>]</code>
+</span>
+<span class="doc-param-default">
+<b>DEFAULT:</b>
+<code>None</code>
+</span>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">reset_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cache</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CacheEnum</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Reset the caches of the components in this pipeline</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cache: Optional[CacheEnum]</span>
+<span class="sd">        The cache to reset (either `preprocess`, `collate` or `forward`)</span>
+<span class="sd">        If None, all caches are reset</span>
+<span class="sd">    """</span>
+    <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">component</span><span class="o">.</span><span class="n">reset_cache</span><span class="p">(</span><span class="n">cache</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.__call__">
+<code class="highlight language-python"><span class="fm">__call__</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Applies the pipeline on a sample</p>
+<table>
+<thead>
+<tr>
+<th><b>PARAMETER</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>doc</code></td>
+<td class="doc-param-details">
+<p>The document to process</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code><span title="edspdf.pipeline.InputT">InputT</span></code>
+</span>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><b>RETURNS</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<span class="doc-returns-annotation">
+<code><span title="edspdf.pipeline.OutputT">OutputT</span></code>
+</span>
+</td>
+<td class="doc-returns-details">
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">InputT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OutputT</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Applies the pipeline on a sample</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    doc: InputT</span>
+<span class="sd">        The document to process</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    OutputT</span>
+<span class="sd">    """</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">reset_cache</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">doc</span> <span class="o">=</span> <span class="n">component</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">doc</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.pipe">
+<code class="highlight language-python"><span class="n">pipe</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Apply the pipeline on a collection of documents</p>
+<table>
+<thead>
+<tr>
+<th><b>PARAMETER</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docs</code></td>
+<td class="doc-param-details">
+<p>The documents to process</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code><span title="typing.Iterable">Iterable</span>[<span title="edspdf.pipeline.InputT">InputT</span>]</code>
+</span>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><b>RETURNS</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<span class="doc-returns-annotation">
+<code><span title="typing.Iterable">Iterable</span></code>
+</span>
+</td>
+<td class="doc-returns-details">
+<p>An iterable collection of processed documents</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">pipe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">InputT</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Apply the pipeline on a collection of documents</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    docs: Iterable[InputT]</span>
+<span class="sd">        The documents to process</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Iterable</span>
+<span class="sd">        An iterable collection of processed documents</span>
+<span class="sd">    """</span>
+    <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">batchify</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_cache</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">batch</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">batch_process</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+        <span class="k">yield from</span> <span class="n">batch</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.initialize">
+<code class="highlight language-python"><span class="n">initialize</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Initialize the components of the pipeline
+Each component must be initialized before the next components are run.
+Since a component might need the full training data to be initialized, all
+data may be fed to the component, making it impossible to enable batch caching.</p>
+<p>Therefore, we disable cache during the entire operation, so heavy computation
+(such as embeddings) that is usually shared will be repeated for each
+initialized component.</p>
+<table>
+<thead>
+<tr>
+<th><b>PARAMETER</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data</code></td>
+<td class="doc-param-details">
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code><span title="typing.Iterable">Iterable</span>[<span title="edspdf.pipeline.InputT">InputT</span>]</code>
+</span>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">InputT</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Initialize the components of the pipeline</span>
+<span class="sd">    Each component must be initialized before the next components are run.</span>
+<span class="sd">    Since a component might need the full training data to be initialized, all</span>
+<span class="sd">    data may be fed to the component, making it impossible to enable batch caching.</span>
+
+<span class="sd">    Therefore, we disable cache during the entire operation, so heavy computation</span>
+<span class="sd">    (such as embeddings) that is usually shared will be repeated for each</span>
+<span class="sd">    initialized component.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data: SupervisedData</span>
+
+<span class="sd">    """</span>
+    <span class="c1"># Component initialization</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Initializing components"</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">multi_tee</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_cache</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">component</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+                <span class="n">component</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Component </span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2"> initialized"</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.score">
+<code class="highlight language-python"><span class="n">score</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Scores a pipeline against a sequence of annotated documents</p>
+<table>
+<thead>
+<tr>
+<th><b>PARAMETER</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docs</code></td>
+<td class="doc-param-details">
+<p>The documents to score</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code><span title="typing.Sequence">Sequence</span>[<span title="edspdf.pipeline.InputT">InputT</span>]</code>
+</span>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><b>RETURNS</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<span class="doc-returns-annotation">
+<code><span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]</code>
+</span>
+</td>
+<td class="doc-returns-details">
+<p>A dictionary containing the metrics of the pipeline, as well as the speed of
+the pipeline. Each component that has a scorer will also be scored and its
+metrics will be included in the returned dictionary under a key named after
+each component.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">InputT</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Scores a pipeline against a sequence of annotated documents</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    docs: Sequence[InputT]</span>
+<span class="sd">        The documents to score</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Dict[str, Any]</span>
+<span class="sd">        A dictionary containing the metrics of the pipeline, as well as the speed of</span>
+<span class="sd">        the pipeline. Each component that has a scorer will also be scored and its</span>
+<span class="sd">        metrics will be included in the returned dictionary under a key named after</span>
+<span class="sd">        each component.</span>
+<span class="sd">    """</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">InputT</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+    <span class="n">golds</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">InputT</span><span class="p">]]</span> <span class="o">=</span> <span class="n">docs</span>
+
+    <span class="n">scored_components</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Predicting intermediate steps</span>
+    <span class="n">preds</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+    <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">batchify</span><span class="p">(</span>
+        <span class="n">tqdm</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="s2">"Scoring components"</span><span class="p">),</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_cache</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="n">scorer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">scored_components</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span>
+                <span class="n">batch</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">batch_process</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+                <span class="n">preds</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">batch</span><span class="p">))</span>
+
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="n">inputs</span><span class="p">),</span> <span class="s2">"Scoring pipeline"</span><span class="p">,</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)):</span>
+        <span class="k">pass</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
+
+    <span class="c1"># Scoring</span>
+    <span class="n">metrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"speed"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">/</span> <span class="n">duration</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">scored_components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">metrics</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">preds</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">golds</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">metrics</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.preprocess">
+<code class="highlight language-python"><span class="n">preprocess</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">supervision</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Runs the preprocessing methods of each component in the pipeline
+on a document and returns a dictionary containing the results, with the
+component names as keys.</p>
+<table>
+<thead>
+<tr>
+<th><b>PARAMETER</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>doc</code></td>
+<td class="doc-param-details">
+<p>The document to preprocess</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code><span title="edspdf.pipeline.InputT">InputT</span></code>
+</span>
+</p>
+</td>
+</tr>
+<tr>
+<td><code>supervision</code></td>
+<td class="doc-param-details">
+<p>Whether to include supervision information in the preprocessing</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code>bool</code>
+</span>
+<span class="doc-param-default">
+<b>DEFAULT:</b>
+<code>False</code>
+</span>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><b>RETURNS</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<span class="doc-returns-annotation">
+<code><span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]</code>
+</span>
+</td>
+<td class="doc-returns-details">
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">:</span> <span class="n">InputT</span><span class="p">,</span> <span class="n">supervision</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Runs the preprocessing methods of each component in the pipeline</span>
+<span class="sd">    on a document and returns a dictionary containing the results, with the</span>
+<span class="sd">    component names as keys.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    doc: InputT</span>
+<span class="sd">        The document to preprocess</span>
+<span class="sd">    supervision: bool</span>
+<span class="sd">        Whether to include supervision information in the preprocessing</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Dict[str, Any]</span>
+<span class="sd">    """</span>
+    <span class="n">prep</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">TrainableComponent</span><span class="p">):</span>
+            <span class="n">prep</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">preprocess</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">supervision</span><span class="o">=</span><span class="n">supervision</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">prep</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.preprocess_many">
+<code class="highlight language-python"><span class="n">preprocess_many</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">compress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">supervision</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Runs the preprocessing methods of each component in the pipeline on
+a collection of documents and returns an iterable of dictionaries containing
+the results, with the component names as keys.</p>
+<table>
+<thead>
+<tr>
+<th><b>PARAMETER</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docs</code></td>
+<td class="doc-param-details">
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code><span title="typing.Iterable">Iterable</span>[<span title="edspdf.pipeline.InputT">InputT</span>]</code>
+</span>
+</p>
+</td>
+</tr>
+<tr>
+<td><code>compress</code></td>
+<td class="doc-param-details">
+<p>Whether to deduplicate identical preprocessing outputs of the results
+if multiple documents share identical subcomponents. This step is required
+to enable the cache mechanism when training or running the pipeline over a
+tabular datasets such as pyarrow tables that do not store referential
+equality information.</p>
+<p>
+<span class="doc-param-default">
+<b>DEFAULT:</b>
+<code>True</code>
+</span>
+</p>
+</td>
+</tr>
+<tr>
+<td><code>supervision</code></td>
+<td class="doc-param-details">
+<p>Whether to include supervision information in the preprocessing</p>
+<p>
+<span class="doc-param-default">
+<b>DEFAULT:</b>
+<code>True</code>
+</span>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><b>RETURNS</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<span class="doc-returns-annotation">
+<code><span title="typing.Iterable">Iterable</span>[<span title="edspdf.pipeline.OutputT">OutputT</span>]</code>
+</span>
+</td>
+<td class="doc-returns-details">
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">preprocess_many</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">InputT</span><span class="p">],</span> <span class="n">compress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">supervision</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Runs the preprocessing methods of each component in the pipeline on</span>
+<span class="sd">    a collection of documents and returns an iterable of dictionaries containing</span>
+<span class="sd">    the results, with the component names as keys.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    docs: Iterable[InputT]</span>
+<span class="sd">    compress: bool</span>
+<span class="sd">        Whether to deduplicate identical preprocessing outputs of the results</span>
+<span class="sd">        if multiple documents share identical subcomponents. This step is required</span>
+<span class="sd">        to enable the cache mechanism when training or running the pipeline over a</span>
+<span class="sd">        tabular datasets such as pyarrow tables that do not store referential</span>
+<span class="sd">        equality information.</span>
+<span class="sd">    supervision: bool</span>
+<span class="sd">        Whether to include supervision information in the preprocessing</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Iterable[OutputT]</span>
+<span class="sd">    """</span>
+    <span class="n">preprocessed</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span><span class="p">,</span> <span class="n">supervision</span><span class="o">=</span><span class="n">supervision</span><span class="p">),</span> <span class="n">docs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">compress</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">batch_compress_dict</span><span class="p">(</span><span class="n">preprocessed</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">preprocessed</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.collate">
+<code class="highlight language-python"><span class="n">collate</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Collates a batch of preprocessed samples into a single (maybe nested)
+dictionary of tensors by calling the collate method of each component.</p>
+<table>
+<thead>
+<tr>
+<th><b>PARAMETER</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>batch</code></td>
+<td class="doc-param-details">
+<p>The batch of preprocessed samples</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code><span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]</code>
+</span>
+</p>
+</td>
+</tr>
+<tr>
+<td><code>device</code></td>
+<td class="doc-param-details">
+<p>The device to move the tensors to before returning them</p>
+<p>
+<span class="doc-param-annotation">
+<b>TYPE:</b>
+<code><span title="typing.Optional">Optional</span>[torch.<span title="torch.device">device</span>]</code>
+</span>
+<span class="doc-param-default">
+<b>DEFAULT:</b>
+<code>None</code>
+</span>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th><b>RETURNS</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<span class="doc-returns-annotation">
+<code><span title="typing.Dict">Dict</span>[str, <span title="typing.Any">Any</span>]</code>
+</span>
+</td>
+<td class="doc-returns-details">
+<p>The collated batch</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">collate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Collates a batch of preprocessed samples into a single (maybe nested)</span>
+<span class="sd">    dictionary of tensors by calling the collate method of each component.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    batch: Dict[str, Any]</span>
+<span class="sd">        The batch of preprocessed samples</span>
+<span class="sd">    device: Optional[torch.device]</span>
+<span class="sd">        The device to move the tensors to before returning them</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Dict[str, Any]</span>
+<span class="sd">        The collated batch</span>
+<span class="sd">    """</span>
+    <span class="n">batch</span> <span class="o">=</span> <span class="n">decompress_dict</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">device</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">:</span>
+            <span class="n">component</span><span class="p">:</span> <span class="n">TrainableComponent</span>
+            <span class="n">component_inputs</span> <span class="o">=</span> <span class="n">batch</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">batch</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">collate</span><span class="p">(</span><span class="n">component_inputs</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">batch</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.train">
+<code class="highlight language-python"><span class="n">train</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Enables training mode on pytorch modules</p>
+<table>
+<thead>
+<tr>
+<th><b>PARAMETER</b></th>
+<th><b>DESCRIPTION</b></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code></td>
+<td class="doc-param-details">
+<p>Whether to enable training or not</p>
+<p>
+<span class="doc-param-default">
+<b>DEFAULT:</b>
+<code>True</code>
+</span>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Enables training mode on pytorch modules</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mode: bool</span>
+<span class="sd">        Whether to enable training or not</span>
+<span class="sd">    """</span>
+    <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="s2">"train"</span><span class="p">):</span>
+            <span class="n">component</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.no_cache">
+<code class="highlight language-python"><span class="n">no_cache</span><span class="p">()</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Disable caching for all (trainable) components in the pipeline</p>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">no_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Disable caching for all (trainable) components in the pipeline"""</span>
+    <span class="n">saved</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">TrainableComponent</span><span class="p">):</span>
+            <span class="n">saved</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">component</span><span class="p">,</span> <span class="n">component</span><span class="o">.</span><span class="n">enable_cache</span><span class="p">(</span><span class="kc">False</span><span class="p">)))</span>
+    <span class="k">yield</span>
+    <span class="k">for</span> <span class="n">component</span><span class="p">,</span> <span class="n">do_cache</span> <span class="ow">in</span> <span class="n">saved</span><span class="p">:</span>
+        <span class="n">component</span><span class="o">.</span><span class="n">enable_cache</span><span class="p">(</span><span class="n">do_cache</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.parameters">
+<code class="highlight language-python"><span class="n">parameters</span><span class="p">()</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Returns an iterator over the Pytorch parameters of the components in the
+pipeline</p>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">398</span>
+<span class="normal">399</span>
+<span class="normal">400</span>
+<span class="normal">401</span>
+<span class="normal">402</span>
+<span class="normal">403</span>
+<span class="normal">404</span>
+<span class="normal">405</span>
+<span class="normal">406</span>
+<span class="normal">407</span>
+<span class="normal">408</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Returns an iterator over the Pytorch parameters of the components in the</span>
+<span class="sd">    pipeline"""</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">component</span><span class="o">.</span><span class="n">parameters</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="n">param</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.__iter__">
+<code class="highlight language-python"><span class="fm">__iter__</span><span class="p">()</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Returns an iterator over the components in the pipeline.</p>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">431</span>
+<span class="normal">432</span>
+<span class="normal">433</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Returns an iterator over the components in the pipeline."""</span>
+    <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+<div class="doc doc-object doc-function">
+<h3 class="doc doc-heading" id="edspdf.pipeline.Pipeline.__len__">
+<code class="highlight language-python"><span class="fm">__len__</span><span class="p">()</span></code>
+</h3>
+<div class="doc doc-contents">
+<p>Returns the number of components in the pipeline.</p>
+<details class="quote">
+<summary>Source code in <code>edspdf/pipeline.py</code></summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">435</span>
+<span class="normal">436</span>
+<span class="normal">437</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Returns the number of components in the pipeline."""</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+<footer class="md-footer">
+<nav aria-label="Footer" class="md-footer__inner md-grid">
+<a aria-label="Previous: text_box" class="md-footer__link md-footer__link--prev" href="../models/text_box/" rel="prev">
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"></path></svg>
+</div>
+<div class="md-footer__title">
+<div class="md-ellipsis">
+<span class="md-footer__direction">
+                Previous
+              </span>
+              text_box
+            </div>
+</div>
+</a>
+<a aria-label="Next: `edspdf.recipes`" class="md-footer__link md-footer__link--next" href="../recipes/" rel="next">
+<div class="md-footer__title">
+<div class="md-ellipsis">
+<span class="md-footer__direction">
+                Next
+              </span>
+              `edspdf.recipes`
+            </div>
+</div>
+<div class="md-footer__button md-icon">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"></path></svg>
+</div>
+</a>
+</nav>
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tracking", "navigation.instant", "navigation.indexes", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.5bf1dace.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "version": {"provider": "mike"}}</script>
+<script src="../../assets/javascripts/bundle.078830c0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+<script src="../../assets/termynal/termynal.js"></script>
+<script>document$.subscribe(() => {const lightbox = GLightbox({"touchNavigation": true, "loop": false, "width": "100%", "height": "auto", "zoomable": true, "draggable": true, "openEffect": "none", "closeEffect": "none"});})</script></body>
+</html>
