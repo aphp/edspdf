@@ -107,6 +107,7 @@ def validate_arguments(
             @wraps(vd.raw_function)
             def wrapper_function(*args: Any, **kwargs: Any) -> Any:
                 values = vd.build_values(args, kwargs)
+                returned = vd.execute(vd.model(**resolve_non_dict(vd.model, values)))
                 if save_params is not None:
                     if set(values.keys()) & {
                         ALT_V_ARGS,
@@ -116,15 +117,15 @@ def validate_arguments(
                         "args",
                         "kwargs",
                     }:
-                        print("VALUES", values.keys(), values["kwargs"])
                         raise Exception(
                             f"{func} must not have positional only args, "
-                            f"kwargs or duplicated kwargs"
+                            f"kwargs or duplicated kwargs : call params are "
+                            f"{values}"
                         )
                     params = dict(values)
                     resolved = params.pop("self")
                     RESOLVED[resolved] = {**save_params, **params}
-                return vd.execute(vd.model(**resolve_non_dict(vd.model, values)))
+                return returned
 
             _func.vd = vd  # type: ignore
             # _func.validate = vd.init_model_instance  # type: ignore
