@@ -1,79 +1,89 @@
-[tool.poetry]
+[project]
 name = "edspdf"
-version = "0.6.3"
 description = "Smart text extraction from PDF documents"
 authors = [
-    "Perceval Wajsburt <perceval.wajsburt-ext@aphp.fr>",
-    "Alice Calliger <alice.calliger-ext@aphp.fr>",
-    "Basile Dura <basile.dura-ext@aphp.fr>",
+    {name = "Perceval Wajsburt", email = "perceval.wajsburt-ext@aphp.fr"},
+    {name = "Alice Calliger", email = "alice.calliger-ext@aphp.fr"},
+    {name = "Basile Dura", email = "basile.dura-ext@aphp.fr"},
 ]
-license = "BSD-3"
-readme = "README.md"
-homepage = "https://github.com/aphp/edspdf/"
-repository = "https://github.com/aphp/edspdf/"
-documentation = "https://aphp.github.io/edspdf/"
+license = {file="LICENSE"}
+readme="README.md"
+urls.homepage="https://github.com/aphp/edspdf/"
+urls.repository="https://github.com/aphp/edspdf/"
+urls.documentation="https://aphp.github.io/edspdf/"
+dynamic = ["version"]
+requires-python=">3.7.6,<4.0,!=3.8.1"
 
-[tool.poetry.dependencies]
-python = ">3.7.6,<4.0,!=3.8.1"
-loguru = "^0.6.0"
-pandas = "^1.2"
-scikit-learn = ">=1.0.2,<2.0.0"
-pydantic = "^1.2"
-catalogue = "^2.0.7"
-networkx = "^2.6"
-typer = "^0.6.1"
-torch = "<1.13.0"
+dependencies=[
+    "loguru>=0.6.0,<1.0.0",
+    "pandas>=1.2,<2.0.0",
+    "scikit-learn>=1.0.2,<2.0.0",
+    "pydantic>=1.2,<2.0.0",
+    "catalogue~=2.0",
+    "networkx~=2.6",
+    "typer>=0.6.1,<1.0.0",
+    "torch<1.13.0",
 
-accelerate = "^0.12.0"
-Unidecode = "^1.3.4"
-tqdm = "^4.64.1"
-srsly = "^2.4.4"
-regex = "<=2022.3.2"
+    "accelerate>=0.12.0,<1.0.0",
+    "Unidecode~=1.3",
+    "tqdm~=4.64.1",
+    "srsly~=2.4.4",
+    "regex",
 
-"pdfminer.six" = "^20220319"
-pypdfium2 = "^2.7.1"
-rich-logger = ">=0.3.0"
+    "pdfminer.six>=20220319",
+    "pypdfium2~=2.7",
+    "rich-logger>=0.3.0,<1.0.0",
+]
 
+[project.optional-dependencies]
+dev=[
+    "black==22.6.0",
+    "flake8>=3.0",
+    "pre-commit>=2.18",
+    "pytest==7.1.1",
+    "pytest-cov==3.0.0",
+    "mypy>=1.0.0",
+    "streamlit>=1.19",
+    "coverage>=6.5.0",
+    "datasets~=2.10",
+    "huggingface_hub>=0.8.1",
+]
+docs=[
+    "mike~=1.1.2",
+    "mkdocs-bibtex~=2.8.14",
+    "mkdocs-gen-files~=0.4.0",
+    "mkdocs-literate-nav~=0.6.0",
+    "mkdocs-material~=9.1.0",
+    "mkdocstrings~=0.20.0",
+    "mkdocstrings-python~=0.8.3",
+    "mkdocs-glightbox~=0.3.1",
+    "mkdocs-autorefs~=0.4.1",
+]
 
-[tool.poetry.group.dev.dependencies]
-black = "22.6.0"
-flake8 = ">=3.0"
-pre-commit = "^2.18.1"
-pytest = "^7.1.1"
-pytest-cov = "^3.0.0"
-mike = "^1.1.2"
-mkdocs-bibtex = "^2.0.3"
-mkdocs-gen-files = "^0.3.4"
-mkdocs-literate-nav = "^0.4.1"
-mkdocs-material = "^8.2.8"
-mkdocstrings = "^0.18.1"
-mkdocstrings-python = "^0.6.6"
-streamlit = "^1.8.1"
-mypy = "^0.950"
-mkdocs-glightbox = "^0.1.6"
-mkdocs-autorefs = "^0.4.1"
-coverage = "^6.5.0"
-rich-logger = ">=0.3.0"
-datasets = "^2.7.1"
+[tool.setuptools.dynamic]
+version = { attr = "edspdf.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["."]
 
 [tool.interrogate]
-ignore-init-method = true
-ignore-init-module = true
-ignore-magic = false
-ignore-semiprivate = false
-ignore-private = false
-ignore-property-decorators = false
-ignore-module = true
-ignore-nested-functions = false
-ignore-nested-classes = true
-ignore-setters = false
-fail-under = 10
-exclude = ["docs", "build", "tests"]
-verbose = 0
-quiet = false
-whitelist-regex = []
-color = true
-omit-covered-files = false
+ignore-init-method=true
+ignore-init-module=true
+ignore-magic=false
+ignore-semiprivate=false
+ignore-private=false
+ignore-property-decorators=false
+ignore-module=true
+ignore-nested-functions=false
+ignore-nested-classes=true
+ignore-setters=false
+fail-under=10
+exclude=["docs", "build", "tests"]
+verbose=0
+quiet=false
+whitelist-regex=[]
+color=true
+omit-covered-files=false
 
 [tool.pytest.ini_options]
 testpaths = [
@@ -84,9 +94,5 @@ testpaths = [
 plugins = "pydantic.mypy"
 
 [build-system]
-requires = ["poetry-core", "cython", "setuptools<=63"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.dephell.main]
-from = {format = "poetry", path = "pyproject.toml"}
-to = {format = "setuppy", path = "setup.py"}
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

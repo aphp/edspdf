@@ -1,4 +1,4 @@
-import collections
+import collections.abc
 import re
 from ast import literal_eval
 from configparser import ConfigParser
@@ -364,7 +364,7 @@ class Config(dict):
                 o, (str, int, float, bool, tuple, list, Reference)
             ):
                 return o
-            if isinstance(o, collections.Mapping):
+            if isinstance(o, collections.abc.Mapping):
                 serialized = {k: rec(v, (*path, k)) for k, v in o.items()}
                 if isinstance(o, Config):
                     serialized = Config(serialized)
@@ -393,7 +393,7 @@ class Config(dict):
         additional_sections = {}
 
         def rec(o, path=()):
-            if isinstance(o, collections.Mapping):
+            if isinstance(o, collections.abc.Mapping):
                 if isinstance(o, Config) and o.__path__ is not None:
                     res = {k: rec(v, (*o.__path__, k)) for k, v in o.items()}
                     current = additional_sections
