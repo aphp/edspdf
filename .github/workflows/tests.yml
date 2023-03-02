@@ -41,23 +41,12 @@ jobs:
       - name: Set PY variable
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
 
-      - name: Install Poetry
-        run: |
-          python -m pip install --upgrade pip
-          pip install poetry
-          poetry config cache-dir ~/.cache/poetry
-
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/poetry
-          key: poetry|${{ env.PY }}|${{ hashFiles('poetry.lock') }}
-
       - name: Install dependencies
         run: |
-          poetry install
+          pip install -e '.[dev]'
 
       - name: Test with Pytest on Python ${{ matrix.python-version }}
-        run: poetry run pytest --cov edspdf --cov-report xml
+        run: python -m pytest --cov edspdf --cov-report xml
 
       - name: Upload coverage
         uses: codecov/codecov-action@v2
@@ -74,24 +63,13 @@ jobs:
       - name: Set PY variable
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
 
-      - name: Install Poetry
-        run: |
-          python -m pip install --upgrade pip
-          pip install poetry
-          poetry config cache-dir ~/.cache/poetry
-
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/poetry
-          key: poetry|${{ env.PY }}|${{ hashFiles('poetry.lock') }}
-
       - name: Install dependencies
         run: |
-          poetry install
+          pip install -e '.[docs]'
 
       - name: Build documentation
         run: |
-          poetry run mkdocs build --clean
+          mkdocs build --clean
 
   Installation:
     runs-on: ubuntu-latest

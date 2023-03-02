@@ -29,20 +29,13 @@ Linting:
 
 Running Pytest:
   stage: test
-  cache:
-    - key:
-        files:
-          - poetry.lock
-      paths:
-        - .venv
   before_script:
-    - pip install poetry
-    - poetry run pip install cython setuptools # because `poetry install` does not correctly build the package
-    - poetry install -v
+    - pip install cython setuptools # because `poetry install` does not correctly build the package
+    - pip install -e '.[dev]'
   script:
-    - poetry run pytest tests --cov edspdf --junitxml=report.xml
+    - pytest tests --cov edspdf --junitxml=report.xml
   after_script:
-    - poetry run coverage xml -o coverage.xml
+    - coverage xml -o coverage.xml
   coverage: "/TOTAL.+ ([0-9]{1,3}%)/"
   artifacts:
     when: always
@@ -72,17 +65,10 @@ Installation:
 
 Test documentation:
   stage: test
-  cache:
-    - key:
-        files:
-          - poetry.lock
-      paths:
-        - .venv
   before_script:
-    - pip install poetry
-    - poetry install
+    - pip install -e '.[docs]'
   script:
-    - poetry run mkdocs build --site-dir documentation
+    - mkdocs build --site-dir documentation
   artifacts:
     paths:
       - documentation
@@ -92,17 +78,10 @@ Test documentation:
 
 pages:
   stage: pages
-  cache:
-    - key:
-        files:
-          - poetry.lock
-      paths:
-        - .venv
   before_script:
-    - pip install poetry
-    - poetry install
+    - pip install -e '.[docs]'
   script:
-    - poetry run mkdocs build --site-dir public
+    - mkdocs build --site-dir public
   artifacts:
     paths:
       - public
@@ -112,10 +91,9 @@ pages:
 Package:
   stage: package
   before_script:
-    - pip install poetry
-    - poetry config repositories.gitlab "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi"
-    - poetry config http-basic.gitlab gitlab-ci-token "${CI_JOB_TOKEN}"
+    - pip install build twine
+    - python -m build
   script:
-    - poetry publish --build -r gitlab
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
   only:
     - tags
