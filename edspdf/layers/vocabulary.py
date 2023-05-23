@@ -3,12 +3,9 @@ from typing import Generic, Sequence, TypeVar
 
 import torch
 
-from edspdf import registry
-
-T = TypeVar("InputT")
+T = TypeVar("T")
 
 
-@registry.factory.register("vocabulary")
 class Vocabulary(torch.nn.Module, Generic[T]):
     """
     Vocabulary layer.
@@ -29,12 +26,8 @@ class Vocabulary(torch.nn.Module, Generic[T]):
             Defaults to -100
         """
         super().__init__()
-        if items is None:
-            self.indices = {}
-            self.initialized = False
-        else:
-            self.indices = {v: i for i, v in enumerate(items)}
-            self.initialized = True
+        self.indices = {} if items is None else {v: i for i, v in enumerate(items)}
+        self.initialized = True
         self.default = default
 
     def __len__(self):

@@ -5,7 +5,7 @@ import pypdfium2 as pdfium
 from PIL import Image, ImageDraw
 from PIL.PpmImagePlugin import PpmImageFile
 
-from edspdf.models import Box
+from edspdf.structures import Box
 
 CATEGORY20 = [
     "#1f77b4",

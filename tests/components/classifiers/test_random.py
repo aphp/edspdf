@@ -1,16 +1,22 @@
-from edspdf import Component, Config
-from edspdf.models import PDFDoc
+from confit import Config
+
+import edspdf
+from edspdf.structures import PDFDoc
 
 configuration = """
-[classifier]
-@factory = "random-classifier"
+[pipeline]
+pipeline = ["classifier"]
+components = ${components}
+
+[components.classifier]
+@factory = "random_classifier"
 labels = [ "body", "header" ]
 """
 
 
 def test_random_classifier(single_page_doc: PDFDoc):
-    classifier = Config.from_str(configuration).resolve()["classifier"]
+    model = edspdf.load(Config.from_str(configuration))
 
-    single_page_doc = classifier(single_page_doc)
+    single_page_doc = model(single_page_doc)
 
-    assert set(b.label for b in single_page_doc.lines) == {"body", "header"}
+    assert set(b.label for b in single_page_doc.text_boxes) == {"body", "header"}

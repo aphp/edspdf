@@ -22,7 +22,7 @@ model to decrease a given loss. The process of training a pipeline with EDS-PDF 
   model = Pipeline()
   model.add_pipe("pdfminer-extractor", name="extractor")
   model.add_pipe(
-      "deep-classifier",
+      "trainable-classifier",
       name="classifier",
       config={
           "embedding": {
@@ -201,7 +201,7 @@ Let's wrap the training code in a function, and make it callable from the comman
         # We define the model
         model = Pipeline()
         model.add_pipe("pdfminer-extractor", name="extractor")
-        model.add_pipe("deep-classifier", name="classifier", config={
+        model.add_pipe("trainable-classifier", name="classifier", config={
             "embedding": {
                 "@factory": "box-embedding",
                 "size": 72,
@@ -328,7 +328,7 @@ components_config = ${components}
 @factory = pdfminer-extractor
 
 [components.classifier]
-@factory = deep-classifier
+@factory = trainable-classifier
 
 [components.classifier.embedding]
 @factory = box-embedding
@@ -383,7 +383,7 @@ def train_my_model(
 -    # We define the model
 -    model = Pipeline()
 -    model.add_pipe("pdfminer-extractor", name="extractor")
--    model.add_pipe("deep-classifier", name="classifier", config={
+-    model.add_pipe("trainable-classifier", name="classifier", config={
 -        "embedding": {
 -            "@factory": "box-embedding",
 -            "size": 72,

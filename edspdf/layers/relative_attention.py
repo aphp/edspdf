@@ -8,8 +8,6 @@ import torch
 from torch import FloatTensor
 from torch.nn import Parameter
 
-from edspdf import registry
-
 IMPOSSIBLE = -10000
 
 
@@ -72,7 +70,6 @@ class RelativeAttentionMode(str, enum.Enum):
     p2c = "p2c"
 
 
-@registry.factory.register("relative-attention")
 class RelativeAttention(torch.nn.Module):
     """
     A self/cross-attention layer that takes relative position of elements into
@@ -183,10 +180,12 @@ class RelativeAttention(torch.nn.Module):
         self.mode = mode
         n_query_heads = n_heads + n_additional_heads
         self.content_key_proj = torch.nn.Linear(key_size, n_query_heads * head_size)
-        if isinstance(position_embedding, torch.nn.Parameter):
-            self.position_embedding = position_embedding
-        else:
+        if isinstance(position_embedding, torch.Tensor) and not isinstance(
+            position_embedding, torch.nn.Parameter
+        ):
             self.register_buffer("position_embedding", position_embedding)
+        else:
+            self.position_embedding = position_embedding
 
         if same_key_query_proj:
             self.content_query_proj = self.content_key_proj
@@ -200,20 +199,21 @@ class RelativeAttention(torch.nn.Module):
                 value_size, value_head_size * n_heads
             )
 
-        pos_size = self.position_embedding.shape[-1]
-        self.position_key_proj = GroupedLinear(
-            pos_size // n_coordinates,
-            head_size * n_query_heads // n_coordinates,
-            n_groups=n_coordinates,
-        )
-        if same_key_query_proj or same_positional_key_query_proj:
-            self.position_query_proj = self.position_key_proj
-        else:
-            self.position_query_proj = GroupedLinear(
+        if position_embedding is not None:
+            pos_size = self.position_embedding.shape[-1]
+            self.position_key_proj = GroupedLinear(
                 pos_size // n_coordinates,
                 head_size * n_query_heads // n_coordinates,
                 n_groups=n_coordinates,
             )
+            if same_key_query_proj or same_positional_key_query_proj:
+                self.position_query_proj = self.position_key_proj
+            else:
+                self.position_query_proj = GroupedLinear(
+                    pos_size // n_coordinates,
+                    head_size * n_query_heads // n_coordinates,
+                    n_groups=n_coordinates,
+                )
 
         self.dropout = torch.nn.Dropout(dropout_p)
         if head_bias:
@@ -274,8 +274,7 @@ class RelativeAttention(torch.nn.Module):
             - the attention logits
               Shape: n_sample * n_keys * n_queries * (n_heads + n_additional_heads)
         """
-        if content_keys is None:
-            content_keys = content_queries
+        content_keys = content_queries if content_keys is None else content_keys
 
         attn = (
             torch.zeros(

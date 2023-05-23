@@ -2,11 +2,15 @@ from pathlib import Path
 
 import datasets
 import pytest
+from confit import Config
+from confit.registry import validate_arguments
 
-from edspdf import Config, Pipeline, TrainableComponent
-from edspdf.cli import validate_arguments
-from edspdf.components import PdfMinerExtractor, SimpleAggregator
-from edspdf.models import Box
+import edspdf
+from edspdf.components.aggregators.simple import SimpleAggregator
+from edspdf.components.extractors.pdfminer import PdfMinerExtractor
+from edspdf.pipeline import Pipeline
+from edspdf.registry import registry
+from edspdf.structures import Box, PDFDoc
 from edspdf.utils.alignment import align_box_labels
 
 
@@ -17,194 +21,175 @@ class CustomClass:
 @pytest.fixture(scope="session")
 def frozen_pipeline():
     model = Pipeline()
-    model.add_pipe("pdfminer-extractor")
+    model.add_pipe("pdfminer_extractor", name="extractor")
     model.add_pipe(
-        "deep-classifier",
+        "trainable_classifier",
+        name="classifier",
         config=dict(
             embedding={
-                "@factory": "box-embedding",
-                "size": "96",
-                "layout_encoder": {
-                    "@factory": "box-layout-embedding",
-                    "n_positions": 32,
-                },
+                "@factory": "box_layout_embedding",
+                "n_positions": 32,
+                "size": "48",
             },
             labels=["first", "second"],
         ),
     )
-    model.add_pipe("simple-aggregator")
-    model.initialize([])
+    model.add_pipe("simple_aggregator")
+    model.post_init([])
     return model
 
 
 @pytest.fixture()
 def pipeline():
     model = Pipeline()
-    model.add_pipe("pdfminer-extractor", name="extractor")
+    model.add_pipe("pdfminer_extractor", name="extractor")
     model.add_pipe(
-        "deep-classifier",
+        "trainable_classifier",
         name="classifier",
         config=dict(
             embedding={
-                "@factory": "box-embedding",
-                "size": "96",
-                "layout_encoder": {
-                    "@factory": "box-layout-embedding",
-                    "n_positions": 32,
-                },
+                "@factory": "box_layout_embedding",
+                "n_positions": 32,
+                "size": "48",
             },
             labels=["first", "second"],
         ),
     )
-    model.add_pipe("simple-aggregator")
-    model.initialize([])
+    model.add_pipe("simple_aggregator")
+    model.post_init([])
     return model
 
 
 def test_add_pipe_factory():
     model = Pipeline()
-    model.add_pipe("pdfminer-extractor")
-    assert "pdfminer-extractor" in model.components
+    model.add_pipe("pdfminer_extractor")
+    assert "pdfminer_extractor" in model.pipe_names
 
-    model.add_pipe("simple-aggregator", name="aggregator")
-    assert "aggregator" in model.components
+    model.add_pipe("simple_aggregator", name="aggregator")
+    assert "aggregator" in model.pipe_names
 
 
 def test_add_pipe_component():
     model = Pipeline()
-    model.add_pipe(PdfMinerExtractor())
-    assert "pdfminer-extractor" in model.components
+    model.add_pipe(PdfMinerExtractor(pipeline=model, name="pdfminer_extractor"))
+    assert "pdfminer_extractor" in model.pipe_names
 
-    model.add_pipe(SimpleAggregator(), name="aggregator")
-    assert "aggregator" in model.components
+    model.add_pipe(SimpleAggregator(pipeline=model, name="aggregator"))
+    assert "aggregator" in model.pipe_names
 
-    with pytest.raises(TypeError):
-        model.add_pipe(SimpleAggregator(), config={"label_map": {"table": "body"}})
+    with pytest.raises(ValueError):
+        model.add_pipe(
+            SimpleAggregator(pipeline=model, name="aggregator"),
+            config={"label_map": {"table": "body"}},
+        )
 
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         model.add_pipe(CustomClass())
 
 
 def test_sequence(frozen_pipeline: Pipeline):
-    assert len(frozen_pipeline) == 3
-    assert list(frozen_pipeline) == [
-        frozen_pipeline.components["pdfminer-extractor"],
-        frozen_pipeline.components["deep-classifier"],
-        frozen_pipeline.components["simple-aggregator"],
+    assert len(frozen_pipeline.pipeline) == 3
+    assert list(frozen_pipeline.pipeline) == [
+        ("extractor", frozen_pipeline.get_pipe("extractor")),
+        ("classifier", frozen_pipeline.get_pipe("classifier")),
+        ("simple_aggregator", frozen_pipeline.get_pipe("simple_aggregator")),
     ]
-    assert frozen_pipeline.trainable_components == [
-        frozen_pipeline.components["deep-classifier"],
+    assert list(frozen_pipeline.torch_components()) == [
+        ("classifier", frozen_pipeline.get_pipe("classifier")),
     ]
 
 
 def test_serialization(frozen_pipeline: Pipeline):
     assert (
-        repr(frozen_pipeline)
+        frozen_pipeline.config.to_str()
         == """\
-Pipeline(
-  (pdfminer-extractor): PdfMinerExtractor()
-  (deep-classifier): DeepClassifier(
-    (label_vocabulary): Vocabulary(n=3)
-    (embedding): BoxEmbedding(
-      (layout_encoder): BoxLayoutEmbedding(
-        (box_preprocessor): BoxLayoutPreprocessor()
-        (x_embedding): SinusoidalEmbedding(32, 16)
-        (y_embedding): SinusoidalEmbedding(32, 16)
-        (w_embedding): SinusoidalEmbedding(32, 16)
-        (h_embedding): SinusoidalEmbedding(32, 16)
-      )
-      (dropout): Dropout(p=0.2, inplace=False)
-    )
-    (linear): Linear(in_features=96, out_features=96, bias=True)
-    (dropout): Dropout(p=0.15, inplace=False)
-    (classifier): Linear(in_features=96, out_features=3, bias=True)
-  )
-  (simple-aggregator): SimpleAggregator()
-)"""
-    )
-
-    assert (
-        Config(model=frozen_pipeline).to_str()
-        == """\
-[model]
-components = ["pdfminer-extractor","deep-classifier","simple-aggregator"]
-components_config = ${components}
+[pipeline]
+pipeline = ["extractor", "classifier", "simple_aggregator"]
+disabled = []
+components = ${components}
 
 [components]
 
-[components.pdfminer-extractor]
-@factory = pdfminer-extractor
+[components.extractor]
+@factory = "pdfminer_extractor"
 
-[components.deep-classifier]
-@factory = deep-classifier
-labels = ["first","second"]
+[components.classifier]
+@factory = "trainable_classifier"
+labels = ["first", "second"]
 
-[components.deep-classifier.embedding]
-@factory = box-embedding
-size = "96"
-
-[components.deep-classifier.embedding.layout_encoder]
-@factory = box-layout-embedding
+[components.classifier.embedding]
+@factory = "box_layout_embedding"
 n_positions = 32
+size = "48"
 
-[components.simple-aggregator]
-@factory = simple-aggregator
+[components.simple_aggregator]
+@factory = "simple_aggregator"
 
 """
     )  # noqa: E501
 
 
-def test_load_config():
-    config_str = """[model]
-components = ['pdfminer-extractor', \
-'deep-classifier', 'simple-aggregator']
-components_config = ${components}
+config_str = """
+[model]
+pipeline = ['pdfminer_extractor', 'trainable_classifier', 'simple_aggregator']
+components = ${components}
 
 [components]
 
-[components.'pdfminer-extractor']
-@factory = 'pdfminer-extractor'
+[components.'pdfminer_extractor']
+@factory = 'pdfminer_extractor'
 
-[components.'deep-classifier']
-@factory = 'deep-classifier'
+[components.'trainable_classifier']
+@factory = 'trainable_classifier'
 labels = ['first', 'second']
 
-[components.'deep-classifier'.embedding]
-@factory = 'box-embedding'
+[components.'trainable_classifier'.embedding]
+@factory = 'box_layout_embedding'
 size = 96
-layout_encoder = {"@factory": "box-layout-embedding", "n_positions": 32}
+n_positions = 32
 
-[components.'simple-aggregator']
-@factory = 'simple-aggregator'"""  # noqa: E501
+[components.'simple_aggregator']
+@factory = 'simple_aggregator'"""
 
+
+def test_validate_config():
     @validate_arguments
     def function(model: Pipeline):
-        assert len(model) == 3
+        print(model.pipe_names)
+        assert len(model.pipe_names) == 3
 
-    function(Config().from_str(config_str).resolve()["model"])
+    function(Config.from_str(config_str).resolve(registry=registry)["model"])
+
+
+def test_load_config(change_test_dir):
+    pipeline = edspdf.load("config.cfg")
+    assert pipeline.pipe_names == ["extractor", "classifier"]
 
 
 def test_torch_module(frozen_pipeline: Pipeline):
-    frozen_pipeline.train(True)
-    for component in frozen_pipeline.trainable_components:
-        assert component.training is True
+    with frozen_pipeline.train(True):
+        for name, component in frozen_pipeline.torch_components():
+            assert component.training is True
 
-    frozen_pipeline.train(False)
-    for component in frozen_pipeline.trainable_components:
-        assert component.training is False
+    with frozen_pipeline.train(False):
+        for name, component in frozen_pipeline.torch_components():
+            assert component.training is False
+
+    frozen_pipeline.to("cpu")
 
 
 def make_segmentation_adapter(path: str):
     def adapt(model):
         for sample in datasets.load_from_disk(path):
-            doc = model.components.extractor(sample["content"])
-            doc.lines = [
+            doc = model.get_pipe("extractor")(sample["content"])
+            doc.content_boxes = [
                 b
-                for page in sorted(set(b.page for b in doc.lines))
+                for page_num in sorted(set(b.page_num for b in doc.lines))
                 for b in align_box_labels(
                     src_boxes=[
                         Box(
-                            page=b["page"],
+                            doc=doc,
+                            page_num=b["page"],
                             x0=b["x0"],
                             x1=b["x1"],
                             y0=b["y0"],
@@ -214,7 +199,7 @@ def make_segmentation_adapter(path: str):
                             else "body",
                         )
                         for b in sample["bboxes"]
-                        if b["page"] == page
+                        if b["page"] == page_num
                     ],
                     dst_boxes=doc.lines,
                     pollution_label=None,
@@ -227,7 +212,7 @@ def make_segmentation_adapter(path: str):
 
 
 def test_pipeline_on_data(pipeline: Pipeline, dummy_dataset: str, pdf: bytes):
-    assert type(pipeline(pdf)) == dict
+    assert type(pipeline(pdf)) == PDFDoc
     assert len(list(pipeline.pipe([pdf] * 4))) == 4
 
     data = list(make_segmentation_adapter(dummy_dataset)(pipeline))
@@ -236,23 +221,28 @@ def test_pipeline_on_data(pipeline: Pipeline, dummy_dataset: str, pdf: bytes):
 
 
 def test_cache(pipeline: Pipeline, dummy_dataset: Path, pdf: bytes):
-    pipeline.reset_cache()
-
     pipeline(pdf)
-    embedding: TrainableComponent = pipeline.components.classifier.embedding
-    assert len(embedding._collate_cache) == 1, "collate"
-    assert len(embedding._preprocess_cache) == 1, "preprocess"
-    assert len(embedding._forward_cache) == 1, "forward"
 
-    pipeline.reset_cache()
-
-    assert len(embedding._collate_cache) == 0, "collate"
-    assert len(embedding._preprocess_cache) == 0, "preprocess"
-    assert len(embedding._forward_cache) == 0, "forward"
-
-    with pipeline.no_cache():
+    with pipeline.cache():
         pipeline(pdf)
-        embedding: TrainableComponent = pipeline.components.classifier.embedding
-        assert len(embedding._collate_cache) == 0, "collate"
-        assert len(embedding._preprocess_cache) == 0, "preprocess"
-        assert len(embedding._forward_cache) == 0, "forward"
+        assert len(pipeline._cache) > 0
+
+    assert pipeline._cache is None
+
+
+def test_select_pipes(pipeline: Pipeline, pdf: bytes):
+    with pipeline.select_pipes(enable=["extractor", "classifier"]):
+        assert pipeline(pdf).aggregated_texts == {}
+
+
+def test_different_names(pipeline: Pipeline):
+    pipeline = Pipeline()
+
+    extractor = PdfMinerExtractor(pipeline=pipeline, name="custom_name")
+
+    with pytest.raises(ValueError) as exc_info:
+        pipeline.add_pipe(extractor, name="extractor")
+
+    assert "The provided name does not match the name of the component." in str(
+        exc_info.value
+    )

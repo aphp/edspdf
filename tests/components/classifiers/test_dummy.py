@@ -1,19 +1,12 @@
-from edspdf import Component, Config
-from edspdf.models import PDFDoc
-
-configuration = """
-[classifier]
-@factory = "dummy-classifier"
-label = "body"
-"""
+from edspdf.components.classifiers.dummy import DummyClassifier
 
 
 def test_dummy(single_page_doc):
-    classifier = Config.from_str(configuration).resolve()["classifier"]
+    classifier = DummyClassifier(label="body")
 
     single_page_doc = classifier(single_page_doc)
 
-    p1, p2, p3 = [b.label for b in single_page_doc.lines]
+    p1, p2, p3 = [b.label for b in single_page_doc.text_boxes]
 
     assert p1 == "body"
     assert p2 == "body"

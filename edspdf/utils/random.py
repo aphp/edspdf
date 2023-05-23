@@ -63,8 +63,7 @@ class set_seed:
         """
         # if seed is True:
         #     seed = random.randint(1, 2**16)
-        if seed is True:
-            seed = random.randint(1, 2**16)
+        seed = random.randint(1, 2**16) if seed is True else seed
         self.state = get_random_generator_state(cuda)
         if seed is not None:
             random.seed(seed)

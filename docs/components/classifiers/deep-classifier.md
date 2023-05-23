@@ -25,7 +25,7 @@ a `box-transformer`.
 
     ```python
     pipeline.add_pipe(
-        "deep-classifier",
+        "trainable-classifier",
         name="classifier",
         config={
             "embedding": {
@@ -71,7 +71,7 @@ a `box-transformer`.
 
     ```ini
     [components.classifier]
-    @factory = "deep-classifier"
+    @factory = "trainable-classifier"
     labels = []
     activation = "relu"
 

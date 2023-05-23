@@ -14,7 +14,7 @@ EDS-PDF provides easy-to-use components for defining PDF processing pipelines.
 
     | Pipeline                | Description                             |
     |-------------------------|-----------------------------------------|
-    | `deep-classifier`       | Trainable box classification model      |
+    | `trainable-classifier`       | Trainable box classification model      |
     | `mask-classifier`       | Simple rule-based classification        |
     | `multi-mask-classifier` | Simple rule-based classification        |
     | `dummy-classifier`      | Dummy classifier, for testing purposes. |

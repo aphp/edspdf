@@ -1,9 +1,14 @@
-from edspdf import Component, Config
-from edspdf.models import PDFDoc
+from confit import Config
+
+import edspdf
 
 configuration = """
-[classifier]
-@factory = "mask-classifier"
+[pipeline]
+pipeline = ["classifier"]
+components = ${components}
+
+[components.classifier]
+@factory = "mask_classifier"
 x0 = 0
 y0 = 0.5
 x1 = 0.5
@@ -12,11 +17,15 @@ threshold = 0.4
 """
 
 configuration_custom = """
-[classifier]
-@factory = "multi-mask-classifier"
+[pipeline]
+pipeline = ["classifier"]
+components = ${components}
+
+[components.classifier]
+@factory = "multi_mask_classifier"
 threshold = 0.9
 
-[classifier.body]
+[components.classifier.body]
 label = "body"
 x0 = 0
 y0 = 0.5
@@ -25,32 +34,12 @@ y1 = 1
 """
 
 
-# def test_create_mask():
-#
-#     with raises(ValueError):
-#         Mask(label="", x0=1, x1=0)
-#
-#     with raises(ValueError):
-#         Mask(label="", x0=0.5, x1=0.5)
-#
-#     with raises(ValueError):
-#         Mask(label="", y0=0.5, y1=0.5)
-#
-#     with raises(ValueError):
-#         Mask(label="", y1=0)
-#
-#     with raises(ValueError):
-#         Mask(label="", y0=1, y1=0)
-#
-#     Mask(label="")
-
-
 def test_simple_mask(single_page_doc):
-    classifier = Config.from_str(configuration).resolve()["classifier"]
+    model = edspdf.load(Config.from_str(configuration))
 
-    single_page_doc = classifier(single_page_doc)
+    single_page_doc = model(single_page_doc)
 
-    p1, p2, p3 = [b.label for b in single_page_doc.lines]
+    p1, p2, p3 = [b.label for b in single_page_doc.text_boxes]
 
     assert p1 == "pollution"
     assert p2 == "body"
@@ -58,12 +47,11 @@ def test_simple_mask(single_page_doc):
 
 
 def test_custom_mask(single_page_doc):
+    model = edspdf.load(Config.from_str(configuration_custom))
 
-    classifier = Config.from_str(configuration_custom).resolve()["classifier"]
+    single_page_doc = model(single_page_doc)
 
-    single_page_doc = classifier(single_page_doc)
-
-    p1, p2, p3 = [b.label for b in single_page_doc.lines]
+    p1, p2, p3 = [b.label for b in single_page_doc.text_boxes]
 
     assert p1 == "pollution"
     assert p2 == "body"

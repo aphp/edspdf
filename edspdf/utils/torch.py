@@ -82,3 +82,41 @@ def log_einsum_exp(formula, *ops):
     res = torch.einsum(formula, *(op.exp() for op in ops)).log()
     res = res + sum(maxes)
     return res
+
+
+def convert_flattened_to_padded(
+    inputs: torch.FloatTensor,
+    lengths: torch.LongTensor,
+    return_mask: bool = False,
+    return_nesting_indices: bool = False,
+):
+    n_samples, seq_size, dim = inputs.shape
+    lengths_mask = lengths != -1
+    keep_list = lengths_mask.view(-1).tolist()
+    device = inputs.device
+
+    flat_offsets = (
+        lengths.cumsum(1).masked_fill(~lengths_mask, -1)
+        + seq_size * torch.arange(n_samples, device=device).unsqueeze(1)
+    ).view(-1)
+
+    embedding_views = torch.tensor_split(inputs.view(-1, dim), flat_offsets)[:-1]
+    embedding_padded = torch.nn.utils.rnn.pad_sequence(
+        [x for x, keep in zip(embedding_views, keep_list) if keep],
+        batch_first=True,
+    )
+
+    nesting_indices = lengths_mask.view(-1).long().cumsum(0).roll(1)
+    nesting_indices[0] = 0
+    nesting_indices = nesting_indices.view(lengths_mask.shape)
+
+    if return_mask:
+        positions = torch.arange(embedding_padded.size(1), device=device)
+        mask_padded = positions.unsqueeze(0) < lengths[lengths_mask].unsqueeze(1)
+        if return_nesting_indices:
+            return embedding_padded, nesting_indices, mask_padded
+        else:
+            return embedding_padded, mask_padded
+    if return_nesting_indices:
+        return embedding_padded, nesting_indices
+    return embedding_padded

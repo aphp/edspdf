@@ -1,27 +1,27 @@
 from itertools import groupby
-from typing import Dict, List, Tuple
+from typing import List
 
 import numpy as np
 
 from edspdf import registry
-from edspdf.models import PDFDoc, TextBox
+from edspdf.structures import PDFDoc, Text, TextBox
 
 from .simple import SimpleAggregator
 
 
-@registry.factory.register("styled-aggregator")
+@registry.factory.register("styled_aggregator")
 class StyledAggregator(SimpleAggregator):
     """
     Aggregator that returns text and styles.
     """
 
-    def __call__(self, doc: PDFDoc) -> Tuple[Dict[str, str], Dict[str, List[Dict]]]:
-
-        row_height = sum(b.y1 - b.y0 for b in doc.lines) / max(1, len(doc.lines))
+    def __call__(self, doc: PDFDoc) -> PDFDoc:
+        all_lines = doc.text_boxes
+        row_height = sum(b.y1 - b.y0 for b in all_lines) / max(1, len(doc.text_boxes))
         all_lines = sorted(
             [
                 line
-                for line in doc.lines
+                for line in all_lines
                 if len(line.text) > 0 and line.label is not None
             ],
             key=lambda b: (b.label, b.page, b.y1 // row_height, b.x0),
@@ -42,11 +42,13 @@ class StyledAggregator(SimpleAggregator):
             ]
             height = np.median(np.asarray([line.y1 - line.y0 for line in lines]))
             for (line, next_box), dy in zip(pairs, dys):
-                for style in line.styles:
-                    style_dict = style.dict()
-                    style_dict["begin"] += len(text)
-                    style_dict["end"] += len(text)
-                    styles[label].append(style_dict)
+                for style in line.props:
+                    styles[label].append(
+                        style.evolve(
+                            begin=style.begin + len(text),
+                            end=style.end + len(text),
+                        )
+                    )
                 text = text + line.text
                 if next_box is None:
                     continue
@@ -58,6 +60,10 @@ class StyledAggregator(SimpleAggregator):
                     text = text + "\n"
                 else:
                     text = text + " "
-            texts[label] = "".join(text)
+            texts[label] = Text(
+                text="".join(text),
+                properties=styles[label],
+            )
 
-        return texts, styles
+        doc.aggregated_texts.update(texts)
+        return doc

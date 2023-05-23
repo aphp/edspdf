@@ -7,7 +7,7 @@ any PyTorch model.
 | Layer                                                                                    | Description                                                                                |
 |------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
 | [`box-embedding`][edspdf.layers.box_embedding.BoxEmbedding]                              | High level layer combining multiple box embedding layers together                          |
-| [`box-layout-embedding`][edspdf.layers.box_layout_embedding.BoxLayoutEmbedding]          | Embeds the layout features (x/y/w/h) features of a box                                     |
+| [`box-layout-embedding`][edspdf.layers.box_layout_embedding.BoxLayoutEmbedding]             | Embeds the layout features (x/y/w/h) features of a box                                     |
 | [`box-text-embedding`][edspdf.layers.box_text_embedding.BoxTextEmbedding]                | Embeds the textual features (shape/prefix/suffix) features of a box                        |
 | [`box-layout-preprocessor`][edspdf.layers.box_layout_preprocessor.BoxLayoutPreprocessor] | Performs common preprocessing of box layout features to be used / shared by other components |
 | [`box-transformer`][edspdf.layers.box_transformer.BoxTransformer]                        | Contextualize box embeddings with a 2d Transformer with relative position representations  |

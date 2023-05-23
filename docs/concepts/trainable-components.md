@@ -88,7 +88,7 @@ class MyComponent(TrainableComponent):
 
 ## Nesting trainable components
 
-Like pytorch modules, you can compose trainable components together to build complex architectures. For instance, a deep classifier component may delegate some of its logic to an embedding component, which will only be responsible for converting PDF lines into multidimensional arrays of numbers.
+Like pytorch modules, you can compose trainable components together to build complex architectures. For instance, a trainable classifier component may delegate some of its logic to an embedding component, which will only be responsible for converting PDF lines into multidimensional arrays of numbers.
 
 Nesting components allows switching parts of the neural networks to test various architectures and keeping the modelling logic modular.
 

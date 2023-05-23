@@ -1,35 +1,38 @@
 from itertools import cycle
 
-from edspdf.components import PdfMinerExtractor, StyledAggregator
+from edspdf.components.aggregators.styled import StyledAggregator
+from edspdf.components.extractors.pdfminer import PdfMinerExtractor
 
 
 def test_styled_pdfminer_aggregation(styles_pdf):
-    extractor = PdfMinerExtractor(extract_style=True)
+    extractor = PdfMinerExtractor(extract_properties=True)
     aggregator = StyledAggregator()
 
     doc = extractor(styles_pdf)
-    for b, label in zip(doc.lines, cycle(["header", "body"])):
+    for b, label in zip(doc.text_boxes, cycle(["header", "body"])):
         b.label = label
-    texts, styles = aggregator(doc)
+    doc = aggregator(doc)
+    texts = {k: v.text for k, v in doc.aggregated_texts.items()}
+    props = {k: v.properties for k, v in doc.aggregated_texts.items()}
 
     assert set(texts.keys()) == {"body", "header"}
-    assert isinstance(styles["body"], list)
+    assert isinstance(props["body"], list)
 
-    for value in styles.values():
-        assert value[0]["begin"] == 0
+    for value in props.values():
+        assert value[0].begin == 0
 
     pairs = set()
     for label in texts.keys():
-        for style in styles[label]:
+        for prop in props[label]:
             pairs.add(
                 (
-                    texts[label][style["begin"] : style["end"]],
+                    texts[label][prop.begin : prop.end],
                     " ".join(
                         filter(
                             bool,
                             (
-                                ("italic" if style["italic"] else ""),
-                                ("bold" if style["bold"] else ""),
+                                ("italic" if prop.italic else ""),
+                                ("bold" if prop.bold else ""),
                             ),
                         )
                     ),
@@ -51,32 +54,34 @@ def test_styled_pdfminer_aggregation(styles_pdf):
 
 
 def test_styled_pdfminer_aggregation_letter(letter_pdf):
-    extractor = PdfMinerExtractor(extract_style=True)
+    extractor = PdfMinerExtractor(extract_properties=True)
     aggregator = StyledAggregator()
 
     doc = extractor(letter_pdf)
-    for b, label in zip(doc.lines, cycle(["header", "body"])):
+    for b, label in zip(doc.content_boxes, cycle(["header", "body"])):
         b.label = label
-    texts, styles = aggregator(doc)
+    doc = aggregator(doc)
+    texts = {k: v.text for k, v in doc.aggregated_texts.items()}
+    props = {k: v.properties for k, v in doc.aggregated_texts.items()}
 
     assert set(texts.keys()) == {"body", "header"}
-    assert isinstance(styles["body"], list)
+    assert isinstance(props["body"], list)
 
-    for value in styles.values():
-        assert value[0]["begin"] == 0
+    for value in props.values():
+        assert value[0].begin == 0
 
     pairs = set()
     for label in texts.keys():
-        for style in styles[label]:
+        for prop in props[label]:
             pairs.add(
                 (
-                    texts[label][style["begin"] : style["end"]],
+                    texts[label][prop.begin : prop.end],
                     " ".join(
                         filter(
                             bool,
                             (
-                                ("italic" if style["italic"] else ""),
-                                ("bold" if style["bold"] else ""),
+                                ("italic" if prop.italic else ""),
+                                ("bold" if prop.bold else ""),
                             ),
                         )
                     ),

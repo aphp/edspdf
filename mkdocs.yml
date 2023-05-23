@@ -44,7 +44,7 @@ nav:
         - components/extractors/poppler.md
       - Classifiers:
         - components/classifiers/index.md
-        - components/classifiers/deep-classifier.md
+        - components/classifiers/trainable-classifier.md
         - components/classifiers/mask.md
       - Aggregators:
         - components/aggregators/index.md

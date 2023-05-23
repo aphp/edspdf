@@ -1,9 +1,10 @@
-from edspdf import Component, registry
-from edspdf.models import PDFDoc
+from edspdf.pipeline import Pipeline
+from edspdf.registry import registry
+from edspdf.structures import PDFDoc
 
 
-@registry.factory.register("dummy-classifier")
-class DummyClassifier(Component):
+@registry.factory.register("dummy_classifier")
+class DummyClassifier:
     """
     Dummy classifier, for chaos purposes. Classifies each line to a random element.
     """
@@ -11,9 +12,10 @@ class DummyClassifier(Component):
     def __init__(
         self,
         label: str,
+        pipeline: Pipeline = None,
+        name: str = "dummy_classifier",
     ) -> None:
-        super().__init__()
-
+        self.name = name
         self.label = label
 
     def __call__(self, doc: PDFDoc) -> PDFDoc:

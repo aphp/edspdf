@@ -3,10 +3,7 @@ import math
 import torch
 import torch.nn.functional as F
 
-from edspdf import registry
 
-
-@registry.factory.register("sinusoidal-embedding")
 class SinusoidalEmbedding(torch.nn.Module):
     """
     A position embedding lookup table that stores embeddings for a fixed number
