@@ -3,7 +3,7 @@ from typing import List, Sequence
 import networkx as nx
 import numpy as np
 
-from edspdf.models import Box
+from edspdf.structures import Box
 
 INF = 1000000
 
@@ -11,7 +11,20 @@ INF = 1000000
 def merge_boxes(
     boxes: Sequence[Box],
 ) -> List[Box]:
-    pages = np.asarray([b.page for b in boxes])
+    """
+    Recursively merge boxes that have the same label to form larger non-overlapping
+    boxes.
+
+    Parameters
+    ----------
+    boxes: Sequence[Box]
+        List of boxes to merge
+
+    Returns
+    -------
+    List[Box]
+        List of merged boxes
+    """
     labels = np.asarray([b.label for b in boxes])
 
     coords = np.asarray([(b.x0, b.x1, b.y0, b.y1) for b in boxes])
@@ -23,36 +36,33 @@ def merge_boxes(
     while True:
         adj = np.zeros((len(boxes), len(boxes)), dtype=bool)
 
-        for page in set(pages):
-            page_filter = pages == page
+        # Split boxes between those that belong to a label (and could be merged),
+        # and those that do not belong to that label and will prevent the mergers
+        for key in np.unique(merge_keys):
+            key_filter = merge_keys == key
 
-            # Split boxes between those that belong to a label (and could be merged),
-            # and those that do not belong to that label and will prevent the mergers
-            for key in np.unique(merge_keys[page_filter]):
-                key_filter = merge_keys == key
+            x0, x1, y0, y1 = coords[key_filter].T
+            obs_x0, obs_x1, obs_y0, obs_y1 = coords[~key_filter].T
 
-                x0, x1, y0, y1 = coords[page_filter & key_filter].T
-                obs_x0, obs_x1, obs_y0, obs_y1 = coords[page_filter & ~key_filter].T
+            A = (slice(None), None, None)
+            B = (None, slice(None), None)
 
-                A = (slice(None), None, None)
-                B = (None, slice(None), None)
+            # Find the bbox of the hypothetical merged boxes
+            merged_x0 = np.minimum(x0[A], x0[B])
+            merged_x1 = np.maximum(x1[A], x1[B])
+            merged_y0 = np.minimum(y0[A], y0[B])
+            merged_y1 = np.maximum(y1[A], y1[B])
 
-                # Find the bbox of the hypothetical merged boxes
-                merged_x0 = np.minimum(x0[A], x0[B])
-                merged_x1 = np.maximum(x1[A], x1[B])
-                merged_y0 = np.minimum(y0[A], y0[B])
-                merged_y1 = np.maximum(y1[A], y1[B])
+            # And detect if it overlaps existing box of a different label
+            dx = np.minimum(merged_x1, obs_x1) - np.maximum(merged_x0, obs_x0)
+            dy = np.minimum(merged_y1, obs_y1) - np.maximum(merged_y0, obs_y0)
+            merged_overlap_with_other = (dx > 0) & (dy > 0)
+            no_box_inbetween = (~merged_overlap_with_other).all(-1)
 
-                # And detect if it overlaps existing box of a different label
-                dx = np.minimum(merged_x1, obs_x1) - np.maximum(merged_x0, obs_x0)
-                dy = np.minimum(merged_y1, obs_y1) - np.maximum(merged_y0, obs_y0)
-                merged_overlap_with_other = (dx > 0) & (dy > 0)
-                no_box_inbetween = (~merged_overlap_with_other).all(-1)
-
-                # Update the adjacency matrix to 1 if two boxes can be merged
-                # (ie no box of a different label lie inbetween)
-                adj_indices = np.flatnonzero(page_filter & key_filter)
-                adj[adj_indices[:, None], adj_indices[None, :]] = no_box_inbetween
+            # Update the adjacency matrix to 1 if two boxes can be merged
+            # (ie no box of a different label lie inbetween)
+            adj_indices = np.flatnonzero(key_filter)
+            adj[adj_indices[:, None], adj_indices[None, :]] = no_box_inbetween
 
         # Build the cliques of boxes that can be merged
         cliques = nx.find_cliques(nx.from_numpy_array(adj))

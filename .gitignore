@@ -66,5 +66,6 @@ report.xml
 data/
 
 # MkDocs output
+docs/reference
 site/
 public/

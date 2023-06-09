@@ -3,10 +3,7 @@ import math
 import torch
 import torch.nn.functional as F
 
-from edspdf import registry
 
-
-@registry.factory.register("sinusoidal-embedding")
 class SinusoidalEmbedding(torch.nn.Module):
     """
     A position embedding lookup table that stores embeddings for a fixed number
@@ -64,12 +61,12 @@ class SinusoidalEmbedding(torch.nn.Module):
         Parameters
         ----------
         indices: torch.LongTensor
-            Shape: ...
+            Shape: any
 
         Returns
         -------
         torch.FloatTensor
-        Shape: `... * embedding_dim`
+            Shape: `(*input_shape, embedding_dim)`
         """
         res = F.embedding(indices.clamp(0, len(self.weight) - 1), self.weight)
         return res

@@ -1,32 +1,32 @@
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import torch
+from foldedtensor import FoldedTensor
 
+from edspdf.layers.relative_attention import RelativeAttention
 from edspdf.utils.torch import (
     ActivationFunction,
     compute_pdf_relative_positions,
     get_activation_function,
 )
 
-from .. import Module, registry
-from .relative_attention import RelativeAttention, RelativeAttentionMode
-
 
 class BoxTransformerLayer(torch.nn.Module):
     """
     BoxTransformerLayer combining a self attention layer and a
-    linear->activation->linear transformation.
+    linear->activation->linear transformation. This layer is used in the
+    [BoxTransformerModule][edspdf.layers.box_transformer.BoxTransformerModule] module.
     """
 
     def __init__(
         self,
         input_size: int,
         num_heads: int = 2,
-        dropout_p: float = 0.15,
+        dropout_p: float = 0.0,
         head_size: Optional[int] = None,
         activation: ActivationFunction = "gelu",
         init_resweight: float = 0.0,
-        attention_mode: Sequence[RelativeAttentionMode] = ("c2c", "c2p", "p2c"),
+        attention_mode: Sequence[Literal["c2c", "c2p", "p2c"]] = ("c2c", "c2p", "p2c"),
         position_embedding: Optional[
             Union[torch.FloatTensor, torch.nn.Parameter]
         ] = None,
@@ -49,10 +49,11 @@ class BoxTransformerLayer(torch.nn.Module):
             At 0, the layer acts (initially) as an identity function, and at 1 as
             a standard Transformer layer.
             Initializing with a value close to 0 can help the training converge.
-        attention_mode: Sequence[RelativeAttentionMode]
+        attention_mode: Sequence[Literal["c2c", "c2p", "p2c"]]
             Mode of relative position infused attention layer.
-            See the [relative attention](relative_attention) documentation for more
-            information.
+            See the
+            [relative attention][edspdf.layers.relative_attention.RelativeAttention]
+            documentation for more information.
         position_embedding: torch.FloatTensor
             Position embedding to use as key/query position embedding in the attention
             computation.
@@ -132,22 +133,24 @@ class BoxTransformerLayer(torch.nn.Module):
         return embeds, attn
 
 
-@registry.factory.register("box-transformer")
-class BoxTransformer(Module):
+class BoxTransformerModule(torch.nn.Module):
     def __init__(
         self,
         input_size: Optional[int] = None,
         num_heads: int = 2,
-        dropout_p: float = 0.15,
+        dropout_p: float = 0.0,
         head_size: Optional[int] = None,
         activation: ActivationFunction = "gelu",
         init_resweight: float = 0.0,
         n_relative_positions: Optional[int] = None,
-        attention_mode: Sequence[RelativeAttentionMode] = ("c2c", "c2p", "p2c"),
+        attention_mode: Sequence[Literal["c2c", "c2p", "p2c"]] = ("c2c", "c2p", "p2c"),
         n_layers: int = 2,
     ):
         """
-        BoxTransformer combining a multiple BoxTransformerLayer
+        Box Transformer architecture combining a multiple
+        [BoxTransformerLayer][edspdf.layers.box_transformer.BoxTransformerLayer]
+        modules. It is mainly used in
+        [BoxTransformer][edspdf.pipes.embeddings.box_transformer.BoxTransformer].
 
         Parameters
         ----------
@@ -169,58 +172,51 @@ class BoxTransformer(Module):
             At 0, the layer acts (initially) as an identity function, and at 1 as
             a standard Transformer layer.
             Initializing with a value close to 0 can help the training converge.
-        attention_mode: Sequence[RelativeAttentionMode]
+        attention_mode: Sequence[Literal["c2c", "c2p", "p2c"]]
             Mode of relative position infused attention layer.
-            See the [relative attention](relative_attention) documentation for more
-            information.
+            See the
+            [relative attention][edspdf.layers.relative_attention.RelativeAttention]
+            documentation for more information.
         n_layers: int
             Number of layers in the Transformer
         """
 
         super().__init__()
 
-        self.dropout = torch.nn.Dropout(dropout_p)
-        self.input_size = input_size
-        self.num_heads = num_heads
-        self.dropout_p = dropout_p
-        self.head_size = head_size
-        self.activation = activation
-        self.init_resweight = init_resweight
         self.n_relative_positions = n_relative_positions
-        self.attention_mode = attention_mode
-        self.n_layers = n_layers
-
-    def initialize(self, gold_data: Iterable, input_size: int = None, **kwargs):
-        super().initialize(gold_data, input_size=input_size, **kwargs)
-
-        self.empty_embed = torch.nn.Parameter(torch.randn(self.input_size))
-        self.position_embedding = torch.nn.Parameter(
-            torch.randn(
-                (
-                    self.n_relative_positions,
-                    self.input_size,
+        self.dropout = torch.nn.Dropout(dropout_p)
+        self.empty_embed = torch.nn.Parameter(torch.randn(input_size))
+        position_embedding = (
+            torch.nn.Parameter(
+                torch.randn(
+                    (
+                        n_relative_positions,
+                        input_size,
+                    )
                 )
             )
+            if n_relative_positions is not None
+            else None
         )
         self.layers = torch.nn.ModuleList(
             [
                 BoxTransformerLayer(
-                    input_size=self.input_size,
-                    num_heads=self.num_heads,
-                    head_size=self.head_size,
-                    dropout_p=self.dropout_p,
-                    activation=self.activation,
-                    init_resweight=self.init_resweight,
-                    attention_mode=self.attention_mode,
-                    position_embedding=self.position_embedding,
+                    input_size=input_size,
+                    num_heads=num_heads,
+                    head_size=head_size,
+                    dropout_p=dropout_p,
+                    activation=activation,
+                    init_resweight=init_resweight,
+                    attention_mode=attention_mode,
+                    position_embedding=position_embedding,
                 )
-                for _ in range(self.n_layers)
+                for _ in range(n_layers)
             ]
         )
 
     def forward(
         self,
-        embeds: torch.FloatTensor,
+        embeds: FoldedTensor,
         boxes: Dict,
     ) -> Tuple[torch.FloatTensor, List[torch.FloatTensor]]:
         """
@@ -242,51 +238,55 @@ class BoxTransformer(Module):
             - Attention logits of all layers
               Shape: `n_samples * n_queries * n_keys * n_heads`
         """
+        embeds = embeds.refold("page", "line")
+        mask = embeds.mask
+        data = embeds.as_tensor()
 
-        page_boxes = boxes["page_ids"]
-        mask = page_boxes != -1
-        n_samples, n_boxes_per_sample = mask.shape
-
-        n_pages = page_boxes.shape[0]
-        device = page_boxes.device
-        embeds_with_cls = torch.cat(
+        n_pages, seq_size, dim = data.shape
+        device = data.device
+        data_with_cls = torch.cat(
             [
                 self.empty_embed * torch.ones(n_pages, 1, 1, device=device),
-                embeds[page_boxes],
+                data,
             ],
             dim=1,
         )
         mask_with_cls = torch.cat(
             [
-                torch.ones(n_samples, 1, dtype=torch.bool, device=device),
+                torch.ones(n_pages, 1, dtype=torch.bool, device=device),
                 mask,
             ],
             dim=1,
         )
-        n = n_boxes_per_sample + 1
-        relative_positions = torch.zeros(
-            n_pages, n, n, 2, dtype=torch.long, device=device
-        )
-        relative_positions[:, 1:, 1:, :] = compute_pdf_relative_positions(
-            x0=boxes["xmin"][page_boxes],
-            x1=boxes["xmax"][page_boxes],
-            y0=boxes["ymin"][page_boxes],
-            y1=boxes["ymax"][page_boxes],
-            width=boxes["width"][page_boxes],
-            height=boxes["height"][page_boxes],
-            n_relative_positions=self.n_relative_positions,
-        )
-        no_position_mask = torch.ones(n_pages, n, n, dtype=torch.bool, device=device)
-        no_position_mask[:, 1:, 1:] = 0
+        n = seq_size + 1
+        relative_positions = None
+        no_position_mask = None
+        if self.n_relative_positions is not None:
+            relative_positions = torch.zeros(
+                n_pages, n, n, 2, dtype=torch.long, device=device
+            )
+            relative_positions[:, 1:, 1:, :] = compute_pdf_relative_positions(
+                x0=boxes["xmin"].refold("page", "line"),
+                x1=boxes["xmax"].refold("page", "line"),
+                y0=boxes["ymin"].refold("page", "line"),
+                y1=boxes["ymax"].refold("page", "line"),
+                width=boxes["width"].refold("page", "line"),
+                height=boxes["height"].refold("page", "line"),
+                n_relative_positions=self.n_relative_positions,
+            )
+            no_position_mask = torch.ones(
+                n_pages, n, n, dtype=torch.bool, device=device
+            )
+            no_position_mask[:, 1:, 1:] = 0
 
         attention = []
         for layer in self.layers:
-            embeds, attn = layer(
-                embeds_with_cls,
+            data_with_cls, attn = layer(
+                data_with_cls,
                 mask_with_cls,
                 relative_positions=relative_positions,
                 no_position_mask=no_position_mask,
             )
             attention.append(attn)
 
-        return embeds[:, 1:][mask]
+        return embeds.with_data(data_with_cls[:, 1:])

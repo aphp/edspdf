@@ -5,16 +5,6 @@ import torch
 from edspdf.utils.collections import get_deep_attr, set_deep_attr
 
 
-def split_name(names):
-    _names = []
-    for part in names.split("."):
-        try:
-            _names.append(int(part))
-        except ValueError:
-            _names.append(part)
-    return _names
-
-
 class ScheduledOptimizer(torch.optim.Optimizer):
     def __init__(self, optim):
         self.optim = optim
@@ -82,11 +72,6 @@ class ScheduledOptimizer(torch.optim.Optimizer):
             if "schedules" in group:
                 for schedule in group["schedules"]:
                     schedule.step(group)
-
-
-class OptimizerGroupsProxy:
-    def __init__(self, groups):
-        self.param_groups = groups
 
 
 class LinearSchedule:

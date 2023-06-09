@@ -5,7 +5,7 @@ import pypdfium2 as pdfium
 from PIL import Image, ImageDraw
 from PIL.PpmImagePlugin import PpmImageFile
 
-from edspdf.models import Box
+from edspdf.structures import Box
 
 CATEGORY20 = [
     "#1f77b4",
@@ -36,6 +36,27 @@ def show_annotations(
     annotations: Sequence[Box],
     colors: Optional[Union[Dict[str, str], List[str]]] = None,
 ) -> List[PpmImageFile]:
+    """
+    Show Box annotations on a PDF document.
+
+    Parameters
+    ----------
+    pdf: bytes
+        Bytes content of the PDF document
+    annotations: Sequence[Box]
+        List of Box annotations to show
+    colors: Optional[Union[Dict[str, str], List[str]]]
+        Colors to use for each label. If a list is provided, it will be used to color
+        the first `len(colors)` unique labels. If a dictionary is provided, it will be
+        used to color the labels in the dictionary. If None, a default color scheme will
+        be used.
+
+    Returns
+    -------
+    List[PpmImageFile]
+        List of PIL images with the annotations. You can display them in a notebook
+        with `display(*pages)`.
+    """
 
     pdf_doc = pdfium.PdfDocument(pdf)
     pages = list(pdf_doc.render_topil(scale=2))
@@ -44,15 +65,15 @@ def show_annotations(
     if colors is None:
         colors = {key: color for key, color in zip(unique_labels, CATEGORY20)}
     elif isinstance(colors, list):
-        colors = {label: color for label, color in zip(colors, CATEGORY20)}
+        colors = {label: color for label, color in zip(unique_labels, colors)}
 
-    for page, img in enumerate(pages):
+    for page_num, img in enumerate(pages):
 
         w, h = img.size
         draw = ImageDraw.Draw(img)
 
         for bloc in annotations:
-            if bloc.page == page:
+            if bloc.page_num == page_num:
                 draw.rectangle(
                     [(bloc.x0 * w, bloc.y0 * h), (bloc.x1 * w, bloc.y1 * h)],
                     outline=colors[bloc.label],
@@ -68,14 +89,34 @@ def compare_results(
     gold: Sequence[Box],
     colors: Optional[Union[Dict[str, str], List[str]]] = None,
 ) -> List[PpmImageFile]:
+    """
+    Compare two sets of annotations on a PDF document.
 
+    Parameters
+    ----------
+    pdf: bytes
+        Bytes content of the PDF document
+    pred: Sequence[Box]
+        List of Box annotations to show on the left side
+    gold: Sequence[Box]
+        List of Box annotations to show on the right side
+    colors: Optional[Union[Dict[str, str], List[str]]]
+        Colors to use for each label. If a list is provided, it will be used to color
+        the first `len(colors)` unique labels. If a dictionary is provided, it will be
+        used to color the labels in the dictionary. If None, a default color scheme will
+        be used.
+
+    Returns
+    -------
+    List[PpmImageFile]
+        List of PIL images with the annotations. You can display them in a notebook
+        with `display(*pages)`.
+    """
     if colors is None:
-        colors = list(
-            {
-                **dict.fromkeys([b.label for b in pred]),
-                **dict.fromkeys([b.label for b in gold]),
-            }
-        )
+        colors = {
+            **dict.fromkeys([b.label for b in pred]),
+            **dict.fromkeys([b.label for b in gold]),
+        }
 
     pages_pred = show_annotations(pdf, pred, colors)
     pages_gold = show_annotations(pdf, gold, colors)
