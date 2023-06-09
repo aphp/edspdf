@@ -2,14 +2,14 @@ import base64
 
 import pandas as pd
 import streamlit as st
+from confit import Config
 
-from edspdf import Config, load
+import edspdf
 from edspdf.visualization import merge_boxes, show_annotations
 
 CONFIG = """\
 [pipeline]
-    components = ["extractor", "classifier", "aggregator"]
-    components_config = ${components}
+    pipeline = ["extractor", "classifier", "aggregator"]
 
 [components]
 
@@ -26,7 +26,7 @@ y1 = 0.9
 threshold = 0.1
 
 [components.aggregator]
-@factory = "styled-aggregator"
+@factory = "simple-aggregator"
 """
 
 
@@ -58,7 +58,7 @@ config = st.text_area(label="Change the config", value=CONFIG, height=200)
 
 model_load_state = st.info("Loading model...")
 
-reader = load(Config.from_str(config))
+reader = edspdf.load(Config.from_str(config))
 
 model_load_state.empty()
 
@@ -71,10 +71,10 @@ if upload:
 
     base64_pdf = base64.b64encode(pdf).decode("utf-8")
 
-    text, styles = reader(pdf)
+    doc = reader(pdf)
 
-    body = text.get("body")
-    body_styles = styles.get("body")
+    body = doc.aggregated_texts["body"].text
+    styles = doc.aggregated_texts["body"].properties
 
     pdf_display = f"""\
     <iframe
@@ -88,13 +88,7 @@ if upload:
 
     with st.expander("Visualisation"):
 
-        doc = reader.components.extractor(pdf)  # noqa
-        doc = reader.components.classifier(doc)  # noqa
-        merged = merge_boxes(sorted(doc.lines, key=lambda b: (b.y0, b.x0)))
-
-        texts, styles = reader.components.aggregator(doc)  # noqa
-        body = texts.get("body", "")
-        styles = texts.get("styles", "")
+        merged = merge_boxes(sorted(doc.text_boxes))
 
         imgs = show_annotations(pdf=pdf, annotations=merged)
 
@@ -115,10 +109,10 @@ if upload:
             st.markdown("```\n" + body + "\n```")
 
     with st.expander("Styles"):
-        if body_styles is None:
+        if styles is None:
             st.warning(
                 "No text detected... Are you sure this is a text-based PDF?\n\n"
                 "There is no support for OCR within EDS-PDF (for now?)."
             )
         else:
-            st.dataframe(pd.DataFrame.from_records(body_styles))
+            st.dataframe(pd.DataFrame(styles))
