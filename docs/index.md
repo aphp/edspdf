@@ -80,7 +80,7 @@ the pipeline API.
     model.add_pipe("simple-aggregator")
     ```
 
-This pipeline can then be applied (for instance with this [PDF](https://github.com/aphp/edspdf/raw/master/tests/resources/letter.pdf)):
+This pipeline can then be applied (for instance with this [PDF](https://github.com/aphp/edspdf/raw/main/tests/resources/letter.pdf)):
 
 ```python
 # Get a PDF
