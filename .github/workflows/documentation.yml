@@ -2,7 +2,7 @@ name: Documentation
 
 on:
   push:
-    branches: [master]
+    branches: [main]
 
 jobs:
   Documentation:
@@ -25,5 +25,5 @@ jobs:
       - name: Build documentation
         run: |
           git fetch origin gh-pages
-          mike delete master
-          mike deploy --push master
+          mike delete main
+          mike deploy --push main
