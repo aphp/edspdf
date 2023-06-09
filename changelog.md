@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.7.0
+
+Major refactoring of the library:
+
+### Core features
+- new pipeline system whose API is inspired by spaCy
+- first-class support for pytorch
+- hybrid model inference and training (rules + deep learning)
+- moved from pandas DataFrame to attrs dataclasses (`PDFDoc`, `Page`, `Box`, ...) for representing PDF documents
+- new configuration system based on [config][https://github.com/aphp/config], with support for instantiation of complex deep learning models, off-the-shelf CLI, ...
+
+### Functional features
+- new extractors: pymupdf and poppler (separate packages for licensing reasons)
+- many deep learning layers (box-transformer, 2d attention with relative position information, ...)
+- trainable deep learning classifier
+- training recipes for deep learning models
+
 ## v0.6.3 - 2023-01-23
 
 ### Fixed
