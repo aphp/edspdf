@@ -1,6 +1,7 @@
+import attr
 from pytest import approx as pytest_approx
 
-from edspdf import BaseModel
+from edspdf.structures import BaseModel
 
 
 def is_primitive(x):
@@ -15,8 +16,12 @@ def nested_approx(A, B, abs=1e-6, rel=1e-6, enforce_same_type=False):
         # I use `not is_primitive(A)` to enforce the same type only for data structures
         return False
     if isinstance(A, BaseModel):
+        names = [field.name for field in attr.fields(type(A)) if field.eq]
         return type(A) == type(B) and nested_approx(
-            A.dict(), B.dict(), abs=abs, rel=rel
+            A.dict(filter=lambda a, v: a.name in names),
+            B.dict(filter=lambda a, v: a.name in names),
+            abs=abs,
+            rel=rel,
         )
 
     elif isinstance(A, set) or isinstance(B, set):
@@ -50,7 +55,7 @@ def nested_approx(A, B, abs=1e-6, rel=1e-6, enforce_same_type=False):
         try:
             assert A == pytest_approx(B, rel=rel, abs=abs)
             is_approx_equal = A == pytest_approx(B, rel=rel, abs=abs)
-        except TypeError:
+        except (AssertionError, TypeError):
             is_approx_equal = False
 
         return is_approx_equal
