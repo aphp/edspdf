@@ -25,37 +25,52 @@ theme:
 nav:
   - index.md
   - Demo 🚀: https://share.streamlit.io/aphp/edspdf/demo/app.py" target="_blank
-  - Concepts:
-      - concepts/index.md
-      - concepts/pipeline.md
-      - concepts/configuration.md
-      - concepts/trainable-components.md
+      # - concepts/index.md
+  - pipeline.md
+  - configuration.md
+  - data-structures.md
+  - trainable-pipes.md
   - Recipes:
       - recipes/index.md
       - recipes/rule-based.md
       - recipes/training.md
       - recipes/extension.md
       - recipes/annotation.md
-  - Components:
+  - Pipes:
+      - Embeddings:
+        - pipes/embeddings/index.md
+        - pipes/embeddings/simple-text-embedding.md
+        - pipes/embeddings/embedding-combiner.md
+        - pipes/embeddings/sub-box-cnn-pooler.md
+        - pipes/embeddings/box-layout-embedding.md
+        - pipes/embeddings/box-transformer.md
       - Extractors:
-        - components/extractors/index.md
-        - components/extractors/pdfminer.md
-        - components/extractors/mupdf.md
-        - components/extractors/poppler.md
+        - pipes/extractors/index.md
+        - pipes/extractors/pdfminer.md
+        - MuPDF Extractor: https://aphp.github.io/edspdf-mupdf/latest
+        - Poppler Extractor: https://aphp.github.io/edspdf-poppler/latest
       - Classifiers:
-        - components/classifiers/index.md
-        - components/classifiers/deep-classifier.md
-        - components/classifiers/mask.md
+        - pipes/box-classifiers/index.md
+        - pipes/box-classifiers/trainable.md
+        - pipes/box-classifiers/mask.md
+        - pipes/box-classifiers/dummy.md
+        - pipes/box-classifiers/random.md
       - Aggregators:
-        - components/aggregators/index.md
-      - components/index.md
+        - pipes/aggregators/index.md
+        - pipes/aggregators/simple-aggregator.md
+      - pipes/index.md
   - Layers:
       - layers/index.md
+      - layers/box-transformer.md
+      - layers/box-transformer-layer.md
+      - layers/relative-attention.md
+      - layers/sinusoidal-embedding.md
+      - layers/vocabulary.md
   - Utilities:
       - utilities/index.md
       - utilities/visualisation.md
       - utilities/alignment.md
-  - Code Reference: reference/
+  - Code Reference: reference/edspdf/
   - alternatives.md
   - contributing.md
   - changelog.md
@@ -76,32 +91,36 @@ watch:
   - roadmap.md
   - changelog.md
   - edspdf
+  - docs/scripts
+
 
 extra:
   version:
     provider: mike
 
+hooks:
+    - docs/scripts/plugin.py
+
 plugins:
   - search
-  - bibtex:
-      bib_file: "docs/references.bib"
-  - gen-files:
-      scripts:
-        - docs/scripts/generate_reference.py
-        - docs/scripts/generate_development.py
-  - literate-nav:
-      nav_file: SUMMARY.md
-  - autorefs
+  - autorefs:
+      priority:
+        - '*'
+        - reference
+
   - mkdocstrings:
+      enable_inventory: true
+      custom_templates: docs/assets/templates
       handlers:
         python:
           options:
             docstring_style: numpy
             docstring_section_style: spacy
-            separate_signature: false
             heading_level: 2
             members_order: source
             show_root_toc_entry: false
+            show_signature: false
+            merge_init_into_class: true
   - glightbox:
       touchNavigation: true
       loop: false
@@ -110,6 +129,9 @@ plugins:
       height: auto
       zoomable: true
       draggable: true
+  - bibtex:
+      bibtex_file: "docs/references.bib"
+
   - mike
 
 markdown_extensions:
