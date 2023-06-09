@@ -3,17 +3,14 @@ from typing import Generic, Sequence, TypeVar
 
 import torch
 
-from edspdf import registry
-
-T = TypeVar("InputT")
+T = TypeVar("T")
 
 
-@registry.factory.register("vocabulary")
 class Vocabulary(torch.nn.Module, Generic[T]):
     """
     Vocabulary layer.
-    This is not meant to be used as torch.nn.Module but subclassing torch.nn.Module
-    makes the instances appear when printing a model, which is nice.
+    This is not meant to be used as a `torch.nn.Module` but subclassing
+    `torch.nn.Module` makes the instances appear when printing a model, which is nice.
     """
 
     def __init__(self, items: Sequence[T] = None, default: int = -100):
@@ -29,12 +26,8 @@ class Vocabulary(torch.nn.Module, Generic[T]):
             Defaults to -100
         """
         super().__init__()
-        if items is None:
-            self.indices = {}
-            self.initialized = False
-        else:
-            self.indices = {v: i for i, v in enumerate(items)}
-            self.initialized = True
+        self.indices = {} if items is None else {v: i for i, v in enumerate(items)}
+        self.initialized = True
         self.default = default
 
     def __len__(self):
