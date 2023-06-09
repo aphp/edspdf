@@ -122,10 +122,6 @@ def decompress_dict(seq):
     return res
 
 
-def dedup(seq: Iterable["T"]) -> List["T"]:
-    return list(dict.fromkeys(seq).keys())
-
-
 class batchify(Iterable[List[T]]):
     def __init__(self, iterable: Iterable[T], batch_size: int):
         self.iterable = iter(iterable)
@@ -206,19 +202,20 @@ def set_deep_attr(base, names, val):
 def list_factorize(values, reference_values=None, freeze_reference=None):
     if freeze_reference is None:
         freeze_reference = reference_values is not None
-    if reference_values is not None:
-        reference_values = dict(
-            zip(list(reference_values), range(len(reference_values)))
-        )
-    else:
-        reference_values = dict()
+    reference_values = (
+        dict(zip(list(reference_values), range(len(reference_values))))
+        if reference_values is not None
+        else {}
+    )
 
     def rec(obj):
         if hasattr(obj, "__len__") and not isinstance(obj, str):
             return list(item for item in (rec(item) for item in obj) if item != -1)
-        if not freeze_reference:
-            return reference_values.setdefault(obj, len(reference_values))
-        return reference_values.get(obj, -1)
+        return (
+            reference_values.get(obj, -1)
+            if freeze_reference
+            else reference_values.setdefault(obj, len(reference_values))
+        )
 
     return rec(values), list(reference_values.keys())
 
@@ -244,3 +241,73 @@ class multi_tee:
             self.copy = None
             return it
         return copy.copy(self.main)
+
+
+class FrozenDict(dict):
+    """
+    Copied from `spacy.util.SimpleFrozenDict` to ensure compatibility.
+
+
+    """
+
+    def __init__(self, *args, error: str = None, **kwargs) -> None:
+        """Initialize the frozen dict. Can be initialized with pre-defined
+        values.
+
+        error (str): The error message when user tries to assign to dict.
+        """
+
+        if error is None:
+            error = "Cannot mutate this frozen dict"
+        super().__init__(*args, **kwargs)
+        self.error = error
+
+    def __setitem__(self, key, value):  # pragma: no cover
+        raise NotImplementedError(self.error)
+
+    def pop(self, key, default=None):  # pragma: no cover
+        raise NotImplementedError(self.error)
+
+    def update(self, other):  # pragma: no cover
+        raise NotImplementedError(self.error)
+
+
+class FrozenList(list):
+    """
+    Copied from `spacy.util.SimpleFrozenDict` to ensure compatibility
+    """
+
+    def __init__(self, *args, error: str = None) -> None:
+        """Initialize the frozen list.
+
+        error (str): The error message when user tries to mutate the list.
+        """
+
+        if error is None:
+            error = "Cannot mutate this frozen list"
+        self.error = error
+        super().__init__(*args)
+
+    def append(self, *args, **kwargs):  # pragma: no cover
+        raise NotImplementedError(self.error)
+
+    def clear(self, *args, **kwargs):  # pragma: no cover
+        raise NotImplementedError(self.error)
+
+    def extend(self, *args, **kwargs):  # pragma: no cover
+        raise NotImplementedError(self.error)
+
+    def insert(self, *args, **kwargs):  # pragma: no cover
+        raise NotImplementedError(self.error)
+
+    def pop(self, *args, **kwargs):  # pragma: no cover
+        raise NotImplementedError(self.error)
+
+    def remove(self, *args, **kwargs):  # pragma: no cover
+        raise NotImplementedError(self.error)
+
+    def reverse(self, *args, **kwargs):  # pragma: no cover
+        raise NotImplementedError(self.error)
+
+    def sort(self, *args, **kwargs):  # pragma: no cover
+        raise NotImplementedError(self.error)

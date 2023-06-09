@@ -1,1 +1,0 @@
-from .pdfminer import PdfMinerExtractor

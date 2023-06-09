@@ -1,4 +1,3 @@
-import enum
 import math
 import operator
 from functools import reduce
@@ -7,8 +6,7 @@ from typing import Optional, Sequence, Tuple, Union
 import torch
 from torch import FloatTensor
 from torch.nn import Parameter
-
-from edspdf import registry
+from typing_extensions import Literal
 
 IMPOSSIBLE = -10000
 
@@ -66,13 +64,6 @@ class GroupedLinear(torch.nn.Module):
         return x.reshape(*base_shape, x.shape[-1] * self.n_groups)
 
 
-class RelativeAttentionMode(str, enum.Enum):
-    c2c = "c2c"
-    c2p = "c2p"
-    p2c = "p2c"
-
-
-@registry.factory.register("relative-attention")
 class RelativeAttention(torch.nn.Module):
     """
     A self/cross-attention layer that takes relative position of elements into
@@ -91,13 +82,13 @@ class RelativeAttention(torch.nn.Module):
         value_size: Optional[int] = None,
         head_size: Optional[int] = None,
         position_embedding: Optional[Union[FloatTensor, Parameter]] = None,
-        dropout_p: float = 0.1,
+        dropout_p: float = 0.0,
         same_key_query_proj: bool = False,
         same_positional_key_query_proj: bool = False,
         n_coordinates: int = 1,
         head_bias: bool = True,
         do_pooling: bool = True,
-        mode: Sequence[RelativeAttentionMode] = ("c2c", "p2c", "c2p"),
+        mode: Sequence[Literal["c2c", "c2p", "p2c"]] = ("c2c", "p2c", "c2p"),
         n_additional_heads: int = 0,
     ):
         """
@@ -142,18 +133,19 @@ class RelativeAttention(torch.nn.Module):
             Whether to compute the output embedding.
             If you only plan to use attention logits, you should disable this parameter.
             Default: True
-        mode: Sequence[RelativeAttentionMode]
+        mode: Sequence[Literal["c2c", "c2p", "p2c"]]
             Whether to compute content to content (c2c), content to position (c2p)
             or position to content (p2c) attention terms.
             Setting `mode=('c2c")` disable relative position attention terms: this is
             the standard attention layer.
             To get a better intuition about these different types of attention, here is
             a formulation as fictitious search samples from a word in a (1D) text:
-            — content-content : "my content is ’ultrasound’ so I’m looking for other
+
+            - content-content : "my content is ’ultrasound’ so I’m looking for other
               words whose content contains information about temporality"
-            — content-position: "my content is ’ultrasound’ so I’m looking for other
+            - content-position: "my content is ’ultrasound’ so I’m looking for other
               words that are 3 positions after of me"
-            — position-content : "regardless of my content, I will attend to the word
+            - position-content : "regardless of my content, I will attend to the word
               one position after from me if it contains information about temporality,
               two words after me if it contains information about location, etc."
         n_additional_heads: int
@@ -183,10 +175,12 @@ class RelativeAttention(torch.nn.Module):
         self.mode = mode
         n_query_heads = n_heads + n_additional_heads
         self.content_key_proj = torch.nn.Linear(key_size, n_query_heads * head_size)
-        if isinstance(position_embedding, torch.nn.Parameter):
-            self.position_embedding = position_embedding
-        else:
+        if isinstance(position_embedding, torch.Tensor) and not isinstance(
+            position_embedding, torch.nn.Parameter
+        ):
             self.register_buffer("position_embedding", position_embedding)
+        else:
+            self.position_embedding = position_embedding
 
         if same_key_query_proj:
             self.content_query_proj = self.content_key_proj
@@ -200,20 +194,21 @@ class RelativeAttention(torch.nn.Module):
                 value_size, value_head_size * n_heads
             )
 
-        pos_size = self.position_embedding.shape[-1]
-        self.position_key_proj = GroupedLinear(
-            pos_size // n_coordinates,
-            head_size * n_query_heads // n_coordinates,
-            n_groups=n_coordinates,
-        )
-        if same_key_query_proj or same_positional_key_query_proj:
-            self.position_query_proj = self.position_key_proj
-        else:
-            self.position_query_proj = GroupedLinear(
+        if position_embedding is not None:
+            pos_size = self.position_embedding.shape[-1]
+            self.position_key_proj = GroupedLinear(
                 pos_size // n_coordinates,
                 head_size * n_query_heads // n_coordinates,
                 n_groups=n_coordinates,
             )
+            if same_key_query_proj or same_positional_key_query_proj:
+                self.position_query_proj = self.position_key_proj
+            else:
+                self.position_query_proj = GroupedLinear(
+                    pos_size // n_coordinates,
+                    head_size * n_query_heads // n_coordinates,
+                    n_groups=n_coordinates,
+                )
 
         self.dropout = torch.nn.Dropout(dropout_p)
         if head_bias:
@@ -274,8 +269,7 @@ class RelativeAttention(torch.nn.Module):
             - the attention logits
               Shape: n_sample * n_keys * n_queries * (n_heads + n_additional_heads)
         """
-        if content_keys is None:
-            content_keys = content_queries
+        content_keys = content_queries if content_keys is None else content_keys
 
         attn = (
             torch.zeros(
