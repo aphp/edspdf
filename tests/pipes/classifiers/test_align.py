@@ -1,15 +1,14 @@
-from edspdf.models import TextBox
+from edspdf.structures import Box
 from edspdf.utils.alignment import align_box_labels
 
 
 def test_align_multi_page(multi_page_doc):
-
     annotations = [
-        TextBox(x0=0.0, y0=0.0, x1=1.0, y1=1.0, page=0, label="big"),
-        TextBox(x0=0.1, y0=0.1, x1=0.9, y1=0.9, page=1, label="small"),
+        Box(x0=0.0, y0=0.0, x1=1.0, y1=1.0, page_num=0, label="big"),
+        Box(x0=0.1, y0=0.1, x1=0.9, y1=0.9, page_num=1, label="small"),
     ]
 
-    labelled = align_box_labels(annotations, multi_page_doc.lines)
+    labelled = align_box_labels(annotations, multi_page_doc.text_boxes)
     assert [b.label for b in labelled] == [
         "big",
         "big",
@@ -21,13 +20,12 @@ def test_align_multi_page(multi_page_doc):
 
 
 def test_align_cross_page(multi_page_doc):
-
     annotations = [
-        TextBox(x0=0.0, y0=0.0, x1=1.0, y1=1.0, label="big"),
-        TextBox(x0=0.1, y0=0.1, x1=0.9, y1=0.9, label="small"),
+        Box(x0=0.0, y0=0.0, x1=1.0, y1=1.0, label="big"),
+        Box(x0=0.1, y0=0.1, x1=0.9, y1=0.9, label="small"),
     ]
 
-    labelled = align_box_labels(annotations, multi_page_doc.lines)
+    labelled = align_box_labels(annotations, multi_page_doc.text_boxes)
     assert [b.label for b in labelled] == [
         "small",
         "small",
