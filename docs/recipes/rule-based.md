@@ -12,7 +12,7 @@ First, download this example [PDF](https://github.com/aphp/edspdf/raw/master/tes
 
 We will use the following configuration:
 
-```ini title="config.cfg"
+```toml title="config.cfg"
 [pipeline]
 components = ["extractor", "classifier", "aggregator"]
 components_config = ${components}
@@ -44,15 +44,21 @@ threshold = 0.1
 Save the configuration as `config.cfg` and run the following snippet:
 
 ```python
-from edspdf import Config
+import edspdf
+import pandas as pd
 from pathlib import Path
 
-model = Config.from_disk("config.cfg").resolve()["pipeline"]  # (1)
+model = edspdf.load("config.cfg")  # (1)
 
 # Get a PDF
-pdf = Path("letter.pdf").read_bytes()
+pdf = Path("/Users/perceval/Development/edspdf/tests/resources/letter.pdf").read_bytes()
+pdf = model(pdf)
 
-texts, styles = model(pdf)
+body = pdf.aggregated_texts["body"]
+
+text, style = body.text, body.properties
+print(text)
+print(pd.DataFrame(style))
 ```
 
 This code will output the following results:

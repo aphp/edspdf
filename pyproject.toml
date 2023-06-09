@@ -47,11 +47,13 @@ dev = [
 ]
 docs = [
     "mike~=1.1.2",
+    "mkdocs@git+https://github.com/mkdocs/mkdocs.git@5af8bd30538ff8f0cfb698c8b90c3020da319f92",
+    "mkdocstrings@git+https://github.com/percevalw/mkdocstrings.git@7c50413ebdffdcbfad40b69d1574f55ba4f88a5c",
+    "mkdocs-autorefs@git+https://github.com/percevalw/mkdocs-autorefs.git@e19b9fa47dac136a529c2be0d7969106ca5d5106",
     "mkdocs-bibtex~=2.8.14",
     "mkdocs-gen-files~=0.4.0",
     "mkdocs-literate-nav~=0.6.0",
     "mkdocs-material~=9.1.0",
-    "mkdocstrings~=0.20.0",
     "mkdocstrings-python~=0.8.3",
     "mkdocs-glightbox~=0.3.1",
     "mkdocs-autorefs~=0.4.1",

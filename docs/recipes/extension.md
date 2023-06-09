@@ -13,20 +13,20 @@ text in Markdown format.
 
 ## Developing the new aggregator
 
-Our aggregator will inherit from the [`StyledAggregator`][edspdf.components.aggregators.styled.StyledAggregator],
+Our aggregator will inherit from the [`SimpleAggregator`][edspdf.pipes.aggregators.simple.SimpleAggregator],
 and use the style to detect italics and bold sections.
 
 ```python title="markdown_aggregator.py"
 from typing import Dict, Tuple
 
 from edspdf import registry
-from edspdf.components.aggregators.styled import StyledAggregator
-from edspdf.models import PDFDoc
+from edspdf.pipes.aggregators.simple import SimpleAggregator
+from edspdf.structures import PDFDoc, Text
 
 
 @registry.factory.register("markdown-aggregator")  # (1)
-class MarkdownAggregator(StyledAggregator):
-   def __call__(self, doc: PDFDoc) -> Tuple[Dict[str, str]]:
+class MarkdownAggregator(SimpleAggregator):
+   def __call__(self, doc: PDFDoc) -> PDFDoc:
 
       texts, styles = super(self).aggregate(doc)
 
@@ -45,7 +45,8 @@ class MarkdownAggregator(StyledAggregator):
 
          fragments.append(text)
 
-      return "".join(fragments)
+      doc.aggregated_texts["body"] = Text(text="".join(fragments))
+      return doc
 ```
 
 1. The new aggregator is registered via this line
@@ -86,10 +87,10 @@ import `mardown_aggregator.py` just so that the module is registered as a side-e
 
 Catalogue solves this problem by using Python _entry points_.
 
-=== "pyproject.toml (Poetry)"
+=== "pyproject.toml"
 
     ```toml
-    [tool.poetry.plugins."edspdf_factory"]
+    [project.entry-points."edspdf_factories"]
     "markdown-aggregator" = "markdown_aggregator:MarkdownAggregator"
     ```
 
@@ -101,7 +102,7 @@ Catalogue solves this problem by using Python _entry points_.
     setup(
         name="edspdf-markdown-aggregator",
         entry_points={
-            "edspdf_factory": [
+            "edspdf_factories": [
                 "markdown-aggregator = markdown_aggregator:MarkdownAggregator"
             ]
         },

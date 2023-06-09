@@ -22,49 +22,77 @@ color:green Installation successful
 
 ### Extracting text
 
-Let's build a simple PDF extractor that uses a rule-based classifier,
-using the following configuration:
+Let's build a simple PDF extractor that uses a rule-based classifier. There are two
+ways to do this, either by using the [configuration system](#configuration) or by using
+the pipeline API.
 
-```toml title="config.cfg"
-[pipeline]
-components = ["extractor", "classifier", "aggregator"]
-components_config = ${components}
+=== "Configuration based pipeline"
 
-[components.extractor]
-@factory = "pdfminer-extractor"
+    Create a configuration file:
 
-[components.classifier]
-@factory = "mask-classifier"
-x0 = 0.2
-x1 = 0.9
-y0 = 0.3
-y1 = 0.6
-threshold = 0.1
+    ```toml title="config.cfg"
+    [pipeline]
+    pipeline = ["extractor", "classifier", "aggregator"]
 
-[components.aggregator]
-@factory = "simple-aggregator"
-```
+    [components.extractor]
+    @factory = "pdfminer-extractor"
 
-The PDF Pipeline can be instantiated and applied (for instance with this [PDF](https://github.com/aphp/edspdf/raw/master/tests/resources/letter.pdf)):
+    [components.classifier]
+    @factory = "mask-classifier"
+    x0 = 0.2
+    x1 = 0.9
+    y0 = 0.3
+    y1 = 0.6
+    threshold = 0.1
+
+    [components.aggregator]
+    @factory = "simple-aggregator"
+    ```
+
+    and load it from Python:
+
+    ```python
+    import edspdf
+    from pathlib import Path
+
+    model = edspdf.load("config.cfg")  # (1)
+    ```
+
+=== "API based pipeline"
+
+    Or create a pipeline directly from Python:
+
+    ```python
+    from edspdf import Pipeline
+
+    model = Pipeline()
+    model.add_pipe("pdfminer-extractor")
+    model.add_pipe(
+        "mask-classifier",
+        config=dict(
+            x0=0.2,
+            x1=0.9,
+            y0=0.3,
+            y1=0.6,
+            threshold=0.1,
+        ),
+    )
+    model.add_pipe("simple-aggregator")
+    ```
+
+This pipeline can then be applied (for instance with this [PDF](https://github.com/aphp/edspdf/raw/master/tests/resources/letter.pdf)):
 
 ```python
-import edspdf
-from pathlib import Path
-
-model = edspdf.load("config.cfg")  # (1)
-
 # Get a PDF
-pdf = Path("letter.pdf").read_bytes()
+pdf = Path("/Users/perceval/Development/edspdf/tests/resources/letter.pdf").read_bytes()
+pdf = model(pdf)
 
-texts = model(pdf)
+body = pdf.aggregated_texts["body"]
 
-texts["body"]
-# Out: Cher Pr ABC, Cher DEF,\n...
+text, style = body.text, body.properties
 ```
 
-1. The `Pipeline` instance is loaded from the configuration directly.
-
-See the [rule-based recipe](recipes/rules.md) for a step-by-step explanation of what is happening.
+See the [rule-based recipe](recipes/rule-based.md) for a step-by-step explanation of what is happening.
 
 ## Citation
 

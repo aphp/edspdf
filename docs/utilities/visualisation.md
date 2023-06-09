@@ -7,14 +7,14 @@ EDS-PDF provides utilities to help you visualise the output of the pipeline.
 You can use EDS-PDF to overlay labelled bounding boxes on top of a PDF document.
 
 ```python
-from edspdf import Config, load
+import edspdf
+from confit import Config
 from pathlib import Path
-from edspdf.visualization.annotations import show_annotations
+from edspdf.visualization import show_annotations
 
 config = """
 [pipeline]
-    components = ["extractor", "classifier", "aggregator"]
-    components_config = ${components}
+pipeline = ["extractor", "classifier"]
 
 [components]
 
@@ -31,17 +31,17 @@ y1 = 0.9
 threshold = 0.1
 """
 
-model = load(Config.from_str(config).resolve()["pipeline"])
+model = edspdf.load(Config.from_str(config))
 
 # Get a PDF
-pdf = Path("letter.pdf").read_bytes()
+pdf = Path("/Users/perceval/Development/edspdf/tests/resources/letter.pdf").read_bytes()
 
 # Construct the DataFrame of blocs
 doc = model(pdf)
 
 # Compute an image representation of each page of the PDF
 # overlaid with the predicted bounding boxes
-imgs = show_annotations(pdf=pdf, annotations=doc.lines)
+imgs = show_annotations(pdf=pdf, annotations=doc.text_boxes)
 
 imgs[0]
 ```
@@ -58,9 +58,9 @@ that does just that.
 
 ```python
 # ↑ Omitted code above ↑
-from edspdf.visualization.merge import merge_boxes
+from edspdf.visualization import merge_boxes, show_annotations
 
-merged = merge_boxes(doc.lines)
+merged = merge_boxes(doc.text_boxes)
 
 imgs = show_annotations(pdf=pdf, annotations=merged)
 imgs[0]

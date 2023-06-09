@@ -1,26 +1,25 @@
 # Configuration
 
-Following the example of spaCy, EDS-PDF is organised a powerful configuration system and registries organised with Explosion's
-[`catalogue`](https://github.com/explosion/catalogue) library.
+EDS-PDF is built on top of the [`confit`](https://github.com/aphp/confit) configuration system.
 
-The following catalogues are included within EDS-PDF:
+The following [catalogue](https://github.com/explosion/catalogue) registries are included within EDS-PDF:
 
 | Section       | Description                               |
 |---------------|-------------------------------------------|
 | `factory`     | Components factories (most often classes) |
 | `adapter`     | Raw data preprocessing functions          |
 
-Much like spaCy pipelines, EDS-PDF pipelines are meant to be reproducible and serialisable, such that you can always define a pipeline through the configuration system.
+EDS-PDF pipelines are meant to be reproducible and serializable, such that you can always define a pipeline through the configuration system.
 
 To wit, compare the API-based approach to the configuration-based approach (the two are strictly equivalent):
 
 === "API-based"
 
     ```python hl_lines="4-13"
-    from edspdf import aggregation, reading, extraction, classification
+    import edspdf
     from pathlib import Path
 
-    model = spacy.Pipeline()
+    model = edspdf.Pipeline()
     model.add_pipe("pdfminer-extractor", name="extractor")
     model.add_pipe("mask-classifier", name="classifier", config=dict(
         x0=0.2,
@@ -34,9 +33,9 @@ To wit, compare the API-based approach to the configuration-based approach (the 
     # Get a PDF
     pdf = Path("letter.pdf").read_bytes()
 
-    texts = model(pdf)
+    pdf = model(pdf)
 
-    texts["body"]
+    str(pdf.aggregated_texts["body"])
     # Out: Cher Pr ABC, Cher DEF,\n...
     ```
 
@@ -44,8 +43,7 @@ To wit, compare the API-based approach to the configuration-based approach (the 
 
     ```toml title="config.cfg"
     [pipeline]
-    components = ["extractor", "classifier", "aggregator"]
-    components_config = ${components}
+    pipeline = ["extractor", "classifier", "aggregator"]
 
     [components.extractor]
     @factory = "pdfminer-extractor"
@@ -59,29 +57,24 @@ To wit, compare the API-based approach to the configuration-based approach (the 
     threshold = 0.1
 
     [components.aggregator]
-    @aggregators = "simple-extractor"
+    @factory = "simple-aggregator"
     ```
 
-    ```python hl_lines="4-5"
-    from edspdf import registry, Config
+    ```python hl_lines="4"
+    import edspdf
     from pathlib import Path
 
-    config = Config().from_disk("config.cfg")
-    pipeline = config.resolve()["pipeline"]
+    pipeline = edspdf.load("config.cfg")
 
     # Get a PDF
     pdf = Path("letter.pdf").read_bytes()
 
-    texts = pipeline(pdf)
+    pdf = pipeline(pdf)
 
-    texts["body"]
+    str(pdf.aggregated_texts["body"])
     # Out: Cher Pr ABC, Cher DEF,\n...
     ```
 
 The configuration-based approach strictly separates the definition of the pipeline
 to its application and avoids tucking away important configuration details.
 Changes to the pipeline are transparent as there is a single source of truth: the configuration file.
-
-## Interpolation
-
-Our configuration system relies heavily on interpolation to make it easier to define complex architectures within a single configuration file. However, unlike [confection](https://github.com/explosion/confection), EDS-PDF replaces interpolated variables after they are resolved using registries, which allows sharing model parts between components when defining pipelines.
