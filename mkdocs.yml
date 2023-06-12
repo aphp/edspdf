@@ -113,6 +113,9 @@ plugins:
       custom_templates: docs/assets/templates
       handlers:
         python:
+          import:
+            - https://aphp.github.io/edspdf-poppler/latest/objects.inv
+            - https://aphp.github.io/edspdf-mupdf/latest/objects.inv
           options:
             docstring_style: numpy
             docstring_section_style: spacy
