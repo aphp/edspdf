@@ -24,8 +24,7 @@ theme:
 
 nav:
   - index.md
-  - Demo 🚀: https://share.streamlit.io/aphp/edspdf/demo/app.py" target="_blank
-      # - concepts/index.md
+  - Demo 🚀: https://aphp.github.io/edspdf/demo" target="_blank
   - pipeline.md
   - configuration.md
   - data-structures.md
