@@ -17,8 +17,6 @@ Our aggregator will inherit from the [`SimpleAggregator`][edspdf.pipes.aggregato
 and use the style to detect italics and bold sections.
 
 ```python title="markdown_aggregator.py"
-from typing import Dict, Tuple
-
 from edspdf import registry
 from edspdf.pipes.aggregators.simple import SimpleAggregator
 from edspdf.structures import PDFDoc, Text
@@ -26,27 +24,35 @@ from edspdf.structures import PDFDoc, Text
 
 @registry.factory.register("markdown-aggregator")  # (1)
 class MarkdownAggregator(SimpleAggregator):
-   def __call__(self, doc: PDFDoc) -> PDFDoc:
+    def __call__(self, doc: PDFDoc) -> PDFDoc:
+        doc = super().__call__(doc)
 
-      texts, styles = super(self).aggregate(doc)
+        for label in doc.aggregated_texts.keys():
+            text = doc.aggregated_texts[label].text
 
-      body = texts.get("body", "")
-      style = styles.get("body", [])
+            fragments = []
 
-      fragments = []
+            offset = 0
+            for s in doc.aggregated_texts[label].properties:
+                if s.begin >= s.end:
+                    continue
+                if offset < s.begin:
+                    fragments.append(text[offset : s.begin])
 
-      for s in style:
-         text = body[s["begin"]:s["end"]]
+                offset = s.end
+                snippet = text[s.begin : s.end]
+                if s.bold:
+                    snippet = f"**{snippet}**"
+                if s.italic:
+                    snippet = f"_{snippet}_"
+                fragments.append(snippet)
 
-         if s["bold"]:
-            text = f"**{text}**"
-         if s["italic"]:
-            text = f"_{text}_"
+            if offset < len(text):
+                fragments.append(text[offset:])
 
-         fragments.append(text)
+            doc.aggregated_texts[label] = Text(text="".join(fragments))
 
-      doc.aggregated_texts["body"] = Text(text="".join(fragments))
-      return doc
+        return doc
 ```
 
 1. The new aggregator is registered via this line
@@ -68,10 +74,8 @@ model.add_pipe(
     ),
 )
 # classify everything inside the `body` bounding box as `body`
-model.add_pipe(
-    "mask-classifier", config=dict(body={"x0": 0.1, "y0": 0.1, "x1": 0.9, "y1": 0.9})
-)
-# aggregates the lines together to re-create the original text
+model.add_pipe("mask-classifier", config={"x0": 0.1, "y0": 0.1, "x1": 0.9, "y1": 0.9})
+# aggregates the lines together to generate the markdown formatted text
 model.add_pipe("markdown-aggregator")
 ```
 
