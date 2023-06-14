@@ -2383,7 +2383,7 @@ model to decrease a given loss. The process of training a pipeline with EDS-PDF 
     <span class="k">return</span> <span class="n">adapt_to</span>
 </code></pre></div>
 <h2 id="full-example">Full example</h2>
-<p>Let's wrap the training code in a function, and make it callable from the command line !</p>
+<p>Let's wrap the training code in a function, and make it callable from the command line using <a href="https://github.com/aphp/confit">confit</a> !</p>
 <details class="example" open="open">
 <summary>train.py</summary>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  1</span>
@@ -2567,19 +2567,19 @@ model to decrease a given loss. The process of training a pipeline with EDS-PDF 
 <span class="kn">from</span> <span class="nn">edspdf.utils.alignment</span> <span class="kn">import</span> <span class="n">align_box_labels</span>
 <span class="kn">from</span> <span class="nn">edspdf.utils.random</span> <span class="kn">import</span> <span class="n">set_seed</span>
 
-<span class="hll"><span class="n">app</span> <span class="o">=</span> <span class="n">Cli</span><span class="p">(</span><span class="n">pretty_exceptions_show_locals</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span class="hll">
-</span><span class="hll">
-</span><span class="hll"><span class="nd">@registry</span><span class="o">.</span><span class="n">adapter</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my-segmentation-adapter&quot;</span><span class="p">)</span>
-</span><span class="hll"><span class="k">def</span> <span class="nf">segmentation_adapter</span><span class="p">(</span>
-</span><span class="hll">    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span class="hll"><span class="p">):</span>
-</span><span class="hll">    <span class="k">def</span> <span class="nf">adapt_to</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
-</span><span class="hll">        <span class="k">for</span> <span class="n">anns_filepath</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.json&quot;</span><span class="p">)):</span>
-</span><span class="hll">            <span class="n">pdf_filepath</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">anns_filepath</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">)</span>
-</span><span class="hll">            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">anns_filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span class="hll">                <span class="n">sample</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-</span>            <span class="n">pdf</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pdf_filepath</span><span class="p">)</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">()</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Cli</span><span class="p">(</span><span class="n">pretty_exceptions_show_locals</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="nd">@registry</span><span class="o">.</span><span class="n">adapter</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;my-segmentation-adapter&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">segmentation_adapter</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">def</span> <span class="nf">adapt_to</span><span class="p">(</span><span class="n">model</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">anns_filepath</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.json&quot;</span><span class="p">)):</span>
+            <span class="n">pdf_filepath</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">anns_filepath</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="s2">&quot;.pdf&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">anns_filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">sample</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">pdf</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">pdf_filepath</span><span class="p">)</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">[</span><span class="s2">&quot;annotations&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">continue</span>
