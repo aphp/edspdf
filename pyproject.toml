@@ -67,6 +67,7 @@ docs = [
 "box-preprocessor" = "edspdf.pipes.embeddings.box_layout_preprocessor:BoxLayoutPreprocessor"
 
 # Embeddings
+"huggingface-embedding" = "edspdf.pipes.embeddings.huggingface_embedding:HuggingfaceEmbedding"
 "simple-text-embedding" = "edspdf.pipes.embeddings.simple_text_embedding:SimpleTextEmbedding"
 "sub-box-cnn-pooler" = "edspdf.pipes.embeddings.sub_box_cnn_pooler:SubBoxCNNPooler"
 "embedding-combiner" = "edspdf.pipes.embeddings.embedding_combiner:EmbeddingCombiner"
