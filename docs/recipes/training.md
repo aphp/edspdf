@@ -190,10 +190,10 @@ def segmentation_adapter(
 
 ## Full example
 
-Let's wrap the training code in a function, and make it callable from the command line !
+Let's wrap the training code in a function, and make it callable from the command line using [confit](https://github.com/aphp/confit) !
 
 ???+ example "train.py"
-    ```python linenums="1" hl_lines="16-27"
+    ```python linenums="1"
     import itertools
     import json
     from pathlib import Path

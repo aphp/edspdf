@@ -278,3 +278,53 @@ def test_script(change_test_dir, dummy_dataset):
     )
     assert result.exit_code == 0, result.stdout
     assert "Training model" in result.stdout
+
+
+def test_function_huggingface(pdf, error_pdf, change_test_dir, dummy_dataset, tmp_path):
+    model = Pipeline()
+    model.add_pipe("pdfminer-extractor", name="extractor")
+    model.add_pipe(
+        "huggingface-embedding",
+        name="embedding",
+        config={
+            "model": "microsoft/layoutlmv3-base",
+            "window": 128,
+            "stride": 64,
+            "use_image": False,
+        },
+    )
+    model.add_pipe(
+        "trainable-classifier",
+        name="classifier",
+        config={
+            "embedding": model.get_pipe("embedding"),
+            "labels": [],
+            "activation": "relu",
+        },
+    )
+    trf = model.get_pipe("embedding")
+    trf.hf_model.encoder.layer = trf.hf_model.encoder.layer[:1]
+
+    data_adapter = make_segmentation_adapter(dummy_dataset)
+
+    train(
+        model=model,
+        train_data=data_adapter,
+        val_data=data_adapter,
+        max_steps=10,
+        batch_size=2,
+        validation_interval=4,
+        output_dir=tmp_path,
+        lr=0.001,
+    )
+
+    docs = list(data_adapter(model))
+
+    model = edspdf.load(tmp_path / "last-model")
+
+    list(model.pipe([pdf] * 2 + [error_pdf] * 2))
+    output = model(PDFDoc(content=pdf))
+
+    assert model.score(docs)["classifier"]["accuracy"] > 0.5
+
+    assert type(output) == PDFDoc
