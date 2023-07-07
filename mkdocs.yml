@@ -43,6 +43,7 @@ nav:
         - pipes/embeddings/sub-box-cnn-pooler.md
         - pipes/embeddings/box-layout-embedding.md
         - pipes/embeddings/box-transformer.md
+        - pipes/embeddings/huggingface-embedding.md
       - Extractors:
         - pipes/extractors/index.md
         - pipes/extractors/pdfminer.md
