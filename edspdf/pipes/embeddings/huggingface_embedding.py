@@ -166,11 +166,12 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
         offset = 0
         window_max_size = 0
         window_count = 0
-        windows_per_page = []
+        windows = []
+        windows_count_per_page = []
         for sample_input_ids in batch["input_ids"]:
             for page_input_ids in sample_input_ids:
                 # fmt: off
-                windows_per_page.append([
+                windows.append([
                     [
                         offset + 0,
                         *range(1 + offset + window_i * self.stride,
@@ -179,15 +180,14 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
                     ]
                     for window_i in range(0, 1 + max(0, math.ceil((len(page_input_ids) - 2 - self.window) / self.stride)))  # noqa: E501
                 ])
+                windows_count_per_page.append(len(windows[-1]))
                 # fmt: on
                 offset += len(page_input_ids)
-                window_max_size = max(
-                    window_max_size, max(map(len, windows_per_page[-1]))
-                )
-                window_count += len(windows_per_page[-1])
+                window_max_size = max(window_max_size, max(map(len, windows[-1])))
+                window_count += len(windows[-1])
 
         windows = as_folded_tensor(
-            windows_per_page,
+            windows,
             full_names=("page", "window", "token"),
             data_dims=("window", "token"),
             dtype=torch.long,
@@ -261,15 +261,19 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
             "line_window_indices": indexer[line_window_indices].as_tensor(),
             "line_window_offsets_flat": line_window_offsets_flat,
         }
+        print(windows_count_per_page)
         if self.use_image:
-            collated["pixel_values"] = torch.stack(
-                [
-                    torch.as_tensor(x, device=device)
-                    for x in as_folded_tensor(
-                        batch["pixel_values"], **kw, dtype=torch.long
-                    )
-                ],
-                dim=0,
+            collated["pixel_values"] = (
+                torch.stack(
+                    [
+                        torch.from_numpy(page_pixels)
+                        for sample_pages in batch["pixel_values"]
+                        for page_pixels in sample_pages
+                    ],
+                    dim=0,
+                )
+                .repeat_interleave(torch.as_tensor(windows_count_per_page), dim=0)
+                .to(device)
             )
         return collated
 
@@ -278,10 +282,12 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
             input_ids=batch["input_ids"].as_tensor()[batch["windows"]],
             bbox=batch["bbox"].as_tensor()[batch["windows"]],
             attention_mask=batch["windows"].mask,
-        ).last_hidden_state
+            pixel_values=batch.get("pixel_values"),
+        ).last_hidden_state[:, : batch["windows"].shape[1]]
+        # TODO offset indices of line_window_indices instead of slicing token_embeddings
         line_embedding = torch.nn.functional.embedding_bag(
             input=batch["line_window_indices"],
-            weight=token_embeddings.view(-1, token_embeddings.size(-1)),
+            weight=token_embeddings.reshape(-1, token_embeddings.size(-1)),
             offsets=batch["line_window_offsets_flat"],
             mode=self.line_pooling,
         )

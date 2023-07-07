@@ -44,6 +44,7 @@ dev = [
     "coverage>=6.5.0",
     "datasets~=2.10",
     "huggingface_hub>=0.8.1",
+    "transformers~=4.30",
 ]
 docs = [
     "mike~=1.1.2",
