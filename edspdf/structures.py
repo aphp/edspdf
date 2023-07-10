@@ -201,7 +201,7 @@ class Box(BaseModel):
 
     @property
     def page(self):
-        return self.doc.pages[self.page_num]
+        return next(p for p in self.doc.pages if p.page_num == self.page_num)
 
     def __lt__(self, other):
         self_page_num = self.page_num or 0
