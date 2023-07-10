@@ -256,12 +256,11 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
         collated = {
             "input_ids": as_folded_tensor(batch["input_ids"], **kw, dtype=torch.long),
             "bbox": as_folded_tensor(batch["bbox"], **kw, dtype=torch.long),
-            "windows": windows,
-            "indexer": indexer[line_window_indices],
-            "line_window_indices": indexer[line_window_indices].as_tensor(),
-            "line_window_offsets_flat": line_window_offsets_flat,
+            "windows": windows.to(device),
+            "indexer": indexer[line_window_indices].to(device),
+            "line_window_indices": indexer[line_window_indices].as_tensor().to(device),
+            "line_window_offsets_flat": line_window_offsets_flat.to(device),
         }
-        print(windows_count_per_page)
         if self.use_image:
             collated["pixel_values"] = (
                 torch.stack(

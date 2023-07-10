@@ -590,14 +590,19 @@ class Pipeline:
     def parameters(self):
         """Returns an iterator over the Pytorch parameters of the components in the
         pipeline"""
+        return (p for n, p in self.named_parameters())
+
+    def named_parameters(self):
+        """Returns an iterator over the Pytorch parameters of the components in the
+        pipeline"""
         seen = set()
         for name, component in self.pipeline:
-            if hasattr(component, "parameters"):
-                for param in component.parameters():
+            if hasattr(component, "named_parameters"):
+                for param_name, param in component.named_parameters():
                     if param in seen:
                         continue
                     seen.add(param)
-                    yield param
+                    yield f"{name}.{param_name}", param
 
     def to(self, device: Optional[torch.device] = None):
         """Moves the pipeline to a given device"""
