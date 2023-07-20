@@ -290,7 +290,15 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
             attention_mask=windows.mask,
             pixel_values=batch.get("pixel_values"),
         )
-        num_windows_per_batch = self.max_tokens_per_device // windows.shape[1]
+        num_windows_per_batch = self.max_tokens_per_device // (
+            windows.shape[1]
+            + (
+                (self.hf_model.config.input_size // self.hf_model.config.patch_size)
+                ** 2
+                if self.use_image and hasattr(self.hf_model.config, "patch_size")
+                else 0
+            )
+        )
 
         token_embeddings = [
             self.hf_model.forward(
