@@ -88,6 +88,10 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
     line_pooling: Literal["mean", "max", "sum"]
         The pooling strategy to use when combining the embeddings of the tokens in a
         line into a single line embedding
+    max_tokens_per_device: int
+        The maximum number of tokens that can be processed by the model on a single
+        device. This does not affect the results but can be used to reduce the memory
+        usage of the model, at the cost of a longer processing time.
     """
 
     def __init__(
@@ -99,6 +103,7 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
         window: int = 510,
         stride: int = 255,
         line_pooling: Literal["mean", "max", "sum"] = "mean",
+        max_tokens_per_device: int = 128 * 128,
     ):
         super().__init__(pipeline, name)
         self.use_image = use_image
@@ -113,6 +118,7 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
         self.window = window
         self.stride = stride
         self.line_pooling = line_pooling
+        self.max_tokens_per_device = max_tokens_per_device
 
     def preprocess(self, doc: PDFDoc):
         res = {
@@ -127,7 +133,7 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
         for page in doc.pages:
             # Preprocess it using LayoutLMv3
             prep = self.tokenizer(
-                text=[line.text for line in doc.text_boxes],
+                text=[line.text for line in page.text_boxes],
                 boxes=[
                     (
                         int(line.x0 * line.page.width),
@@ -135,9 +141,9 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
                         int(line.x1 * line.page.width),
                         int(line.y1 * line.page.height),
                     )
-                    for line in doc.text_boxes
+                    for line in page.text_boxes
                 ],
-                word_labels=range(len(doc.text_boxes)),
+                word_labels=range(len(page.text_boxes)),
                 return_attention_mask=True,
             )
             if self.use_image:
@@ -240,9 +246,10 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
             data_dims=("token",),
             dtype=torch.long,
         )
+        last_after_one = max(1, len(line_window_offsets_flat) - 1)
         line_window_offsets_flat = as_folded_tensor(
             # discard the last offset, since we start from 0 and add each line length
-            data=torch.as_tensor(line_window_offsets_flat[:-1]),
+            data=torch.as_tensor(line_window_offsets_flat[:last_after_one]),
             data_dims=("line",),
             full_names=("sample", "page", "line"),
             lengths=line_window_indices.lengths[:-1],
@@ -277,13 +284,31 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
         return collated
 
     def forward(self, batch):
-        token_embeddings = self.hf_model.forward(
-            input_ids=batch["input_ids"].as_tensor()[batch["windows"]],
-            bbox=batch["bbox"].as_tensor()[batch["windows"]],
-            attention_mask=batch["windows"].mask,
+        windows = batch["windows"]
+        kwargs = dict(
+            input_ids=batch["input_ids"].as_tensor()[windows],
+            bbox=batch["bbox"].as_tensor()[windows],
+            attention_mask=windows.mask,
             pixel_values=batch.get("pixel_values"),
-        ).last_hidden_state[:, : batch["windows"].shape[1]]
-        # TODO offset indices of line_window_indices instead of slicing token_embeddings
+        )
+        num_windows_per_batch = self.max_tokens_per_device // windows.shape[1]
+
+        token_embeddings = [
+            self.hf_model.forward(
+                **{
+                    k: None if v is None else v[offset : offset + num_windows_per_batch]
+                    for k, v in kwargs.items()
+                }
+            ).last_hidden_state[:, : windows.shape[1]]
+            # TODO offset line_window_indices during collate
+            #      instead of slicing token_embeddings
+            for offset in range(0, len(windows), num_windows_per_batch)
+        ]
+        token_embeddings = (
+            torch.cat(token_embeddings, dim=0)
+            if len(token_embeddings) > 1
+            else token_embeddings[0]
+        )
         line_embedding = torch.nn.functional.embedding_bag(
             input=batch["line_window_indices"],
             weight=token_embeddings.reshape(-1, token_embeddings.size(-1)),
