@@ -15,12 +15,13 @@ dynamic = ["version"]
 requires-python = ">3.7.6,<4.0,!=3.8.1"
 
 dependencies = [
+    "anyascii>=0.3.2",
     "scikit-learn>=1.0.2,<2.0.0",
     "pydantic>=1.2,<2.0.0",
     "catalogue~=2.0",
     "networkx~=2.6",
     "confit>=0.2.1,<1.0.0",
-    "foldedtensor>=0.2.1,<1.0.0",
+    "foldedtensor>=0.3.0,<1.0.0",
     "torch>1.0.0",
     "accelerate>=0.12.0,<1.0.0",
     "tqdm~=4.64.1",

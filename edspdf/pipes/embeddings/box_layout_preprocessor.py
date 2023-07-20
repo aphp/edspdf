@@ -1,11 +1,11 @@
-from typing import Any, Dict, Sequence
+from typing import Any, Dict
 
 import torch
 from foldedtensor import FoldedTensor, as_folded_tensor
 from typing_extensions import TypedDict
 
 from edspdf import Pipeline, TrainablePipe, registry
-from edspdf.structures import PDFDoc, TextBox
+from edspdf.structures import PDFDoc
 
 BoxLayoutBatch = TypedDict(
     "BoxLayoutBatch",
@@ -60,27 +60,10 @@ class BoxLayoutPreprocessor(TrainablePipe[BoxLayoutBatch]):
     ):
         super().__init__(pipeline, name)
 
-    def preprocess_boxes(self, boxes: Sequence[TextBox]):
-        box_pages = [box.page.page_num for box in boxes]
-
-        last_page = max(box_pages, default=0)
-
-        return {
-            "page": box_pages,
-            "xmin": [b.x0 for b in boxes],
-            "ymin": [b.y0 for b in boxes],
-            "xmax": [b.x1 for b in boxes],
-            "ymax": [b.y1 for b in boxes],
-            "width": [(b.x1 - b.x0) for b in boxes],
-            "height": [(b.y1 - b.y0) for b in boxes],
-            "first_page": [b.page_num == 0 for b in boxes],
-            "last_page": [b.page_num == last_page for b in boxes],
-        }
-
     def preprocess(self, doc: PDFDoc, supervision: bool = False):
         pages = doc.pages
-        box_pages = [[b.page.page_num for b in page.text_boxes] for page in pages]
-        last_page = max(box_pages, default=0)
+        box_pages = [[b.page_num for b in page.text_boxes] for page in pages]
+        last_p = max((p for x in box_pages for p in x), default=0)
         return {
             "page": box_pages,
             "xmin": [[b.x0 for b in p.text_boxes] for p in pages],
@@ -89,10 +72,8 @@ class BoxLayoutPreprocessor(TrainablePipe[BoxLayoutBatch]):
             "ymax": [[b.y1 for b in p.text_boxes] for p in pages],
             "width": [[(b.x1 - b.x0) for b in p.text_boxes] for p in pages],
             "height": [[(b.y1 - b.y0) for b in p.text_boxes] for p in pages],
-            "first_page": [[b.page.page_num == 0 for b in p.text_boxes] for p in pages],
-            "last_page": [
-                [b.page.page_num == last_page for b in p.text_boxes] for p in pages
-            ],
+            "first_page": [[b.page_num == 0 for b in p.text_boxes] for p in pages],
+            "last_page": [[b.page_num == last_p for b in p.text_boxes] for p in pages],
         }
 
     def collate(self, batch, device: torch.device) -> BoxLayoutBatch:
@@ -103,13 +84,13 @@ class BoxLayoutPreprocessor(TrainablePipe[BoxLayoutBatch]):
         }
 
         return {
-            "page": as_folded_tensor(batch["page"], dtype=torch.long, **kw),
-            "xmin": as_folded_tensor(batch["xmin"], dtype=torch.long, **kw),
-            "ymin": as_folded_tensor(batch["ymin"], dtype=torch.long, **kw),
-            "xmax": as_folded_tensor(batch["xmax"], dtype=torch.long, **kw),
-            "ymax": as_folded_tensor(batch["ymax"], dtype=torch.long, **kw),
-            "width": as_folded_tensor(batch["width"], dtype=torch.long, **kw),
-            "height": as_folded_tensor(batch["height"], dtype=torch.long, **kw),
+            "page": as_folded_tensor(batch["page"], dtype=torch.float, **kw),
+            "xmin": as_folded_tensor(batch["xmin"], dtype=torch.float, **kw),
+            "ymin": as_folded_tensor(batch["ymin"], dtype=torch.float, **kw),
+            "xmax": as_folded_tensor(batch["xmax"], dtype=torch.float, **kw),
+            "ymax": as_folded_tensor(batch["ymax"], dtype=torch.float, **kw),
+            "width": as_folded_tensor(batch["width"], dtype=torch.float, **kw),
+            "height": as_folded_tensor(batch["height"], dtype=torch.float, **kw),
             "first_page": as_folded_tensor(batch["first_page"], dtype=torch.bool, **kw),
             "last_page": as_folded_tensor(batch["last_page"], dtype=torch.bool, **kw),
         }
