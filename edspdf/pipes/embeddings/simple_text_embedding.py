@@ -5,6 +5,7 @@ from typing import Set
 
 import regex
 import torch
+from anyascii import anyascii
 from foldedtensor import FoldedTensor, as_folded_tensor
 from typing_extensions import TypedDict
 
@@ -208,8 +209,7 @@ class SimpleTextEmbedding(TrainablePipe[EmbeddingOutput]):
                 words = [m.group(0) for m in self.word_regex.finditer(b.text)]
 
                 for word in words:
-                    # ascii_str = unidecode(word)
-                    ascii_str = word
+                    ascii_str = anyascii(word)
                     tokens_shape[-1][i].append(
                         self.shape_voc.encode(word_shape(ascii_str))
                     )
