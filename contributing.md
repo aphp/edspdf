@@ -10,7 +10,7 @@ We welcome contributions ! There are many ways to help. For example, you can:
 
 To be able to run the test suite and develop your own pipeline, you should clone the repo and install it locally.
 
-We use [Poetry](https://python-poetry.org) to manage dependencies. See the [installation instructions](https://python-poetry.org/docs/#installation).
+We use [setuptools](https://github.com/pypa/setuptools) to manage dependencies. Install with `pip install --upgrade setuptools`.
 
 <div class="termy">
 
@@ -21,8 +21,12 @@ $ git clone ssh://git@github.com/aphp/edspdf.git
 
 $ cd edspdf
 
+color:gray # Create and activate a virtual environment for build isolation
+$ virtualenv venv
+$ source venv/bin/activate
+
 color:gray # Install the dependencies
-$ poetry install
+$ pip install '.[dev]'
 ```
 
 </div>
@@ -66,7 +70,7 @@ We use the Pytest test suite.
 The following command will run the test suite. Writing your own tests is encouraged !
 
 ```shell
-poetry run pytest
+pytest
 ```
 
 Should your contribution propose a bug fix, we require the bug be thoroughly tested.
