@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.7.1 (Pending)
+
+### Fixed
+- Fixed `attrs` dependency only being installed in dev mode
+
 ## v0.7.0
 
 Major refactoring of the library:
