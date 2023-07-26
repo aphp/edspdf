@@ -610,7 +610,6 @@ class Pipeline:
             component.to(device)
         return self
 
-    @contextmanager
     def train(self, mode=True):
         """
         Enables training mode on pytorch modules
@@ -621,12 +620,19 @@ class Pipeline:
             Whether to enable training or not
         """
 
+        class context:
+            def __enter__(self):
+                pass
+
+            def __exit__(ctx_self, type, value, traceback):
+                for name, proc in self.trainable_pipes():
+                    proc.train(was_training[name])
+
         was_training = {name: proc.training for name, proc in self.trainable_pipes()}
         for name, proc in self.trainable_pipes():
             proc.train(mode)
-        yield
-        for name, proc in self.trainable_pipes():
-            proc.train(was_training[name])
+
+        return context()
 
     def score(self, docs: Sequence[PDFDoc], batch_size: int = None) -> Dict[str, Any]:
         """

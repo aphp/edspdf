@@ -98,10 +98,12 @@ class SubBoxCNNPooler(TrainablePipe[EmbeddingOutput]):
             dim=2,
         )
         pooled = box_token_embeddings.max(1).values
+        pooled = self.linear(pooled)
+        # print("TEXT EMBEDS", pooled.shape, pooled.sum())
 
         return {
             "embeddings": as_folded_tensor(
-                data=self.linear(pooled),
+                data=pooled,
                 lengths=embeddings.lengths[:-1],  # pooled on the last dim
                 data_dims=["line"],  # fully flattened
                 full_names=["sample", "page", "line"],

@@ -63,7 +63,6 @@ model to decrease a given loss. The process of training a pipeline with EDS-PDF 
         config={
             "embedding": model.get_pipe("embedding"),
             "labels": [],
-            "activation": "relu",
         },
     )
     ```
@@ -309,7 +308,6 @@ Let's wrap the training code in a function, and make it callable from the comman
             config={
                 "embedding": model.get_pipe("embedding"),
                 "labels": [],
-                "activation": "relu",
             },
         )
 
@@ -483,7 +481,6 @@ def train_my_model(
 -       config={
 -           "embedding": model.get_pipe("embedding"),
 -           "labels": [],
--           "activation": "relu",
 -       },
 -   )
 

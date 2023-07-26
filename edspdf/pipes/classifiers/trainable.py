@@ -15,7 +15,6 @@ from edspdf.pipes.embeddings import EmbeddingOutput
 from edspdf.registry import registry
 from edspdf.structures import PDFDoc
 from edspdf.trainable_pipe import Scorer, TrainablePipe
-from edspdf.utils.torch import ActivationFunction, get_activation_function
 
 
 def classifier_scorer(pairs):
@@ -70,7 +69,6 @@ class TrainableClassifier(TrainablePipe[Dict[str, Any]]):
                     },
                 },
                 "labels": ["body", "pollution"],
-                "activation": "relu",
             },
         )
         ```
@@ -81,7 +79,6 @@ class TrainableClassifier(TrainablePipe[Dict[str, Any]]):
         [components.classifier]
         @factory = "trainable-classifier"
         labels = ["body", "pollution"]
-        activation = "relu"
 
         [components.classifier.embedding]
         @factory = "sub-box-cnn-pooler"
@@ -99,8 +96,6 @@ class TrainableClassifier(TrainablePipe[Dict[str, Any]]):
         Initial labels of the classifier (will be completed during initialization)
     embedding: TrainablePipe[EmbeddingOutput]
         Embedding module to encode the PDF boxes
-    activation: ActivationFunction
-        Name of the activation function
     dropout_p: float
         Dropout probability used on the output of the box and textual encoders
     scorer: Scorer
@@ -111,8 +106,6 @@ class TrainableClassifier(TrainablePipe[Dict[str, Any]]):
         self,
         embedding: TrainablePipe[EmbeddingOutput],
         labels: Sequence[str] = ("pollution",),
-        activation: ActivationFunction = "gelu",
-        dropout_p: float = 0.0,
         scorer: Scorer = classifier_scorer,
         pipeline: Pipeline = None,
         name: str = "trainable-classifier",
@@ -128,9 +121,6 @@ class TrainableClassifier(TrainablePipe[Dict[str, Any]]):
             in_features=self.embedding.output_size,
             out_features=len(self.label_voc),
         )
-        self.activation = get_activation_function(activation)
-        self.dropout = torch.nn.Dropout(dropout_p)
-
         # Scoring function
         self.score = scorer
 

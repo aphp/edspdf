@@ -62,7 +62,6 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
         config={
             "embedding": model.get_pipe("embedding"),
             "labels": [],
-            "activation": "relu",
         },
     )
     ```

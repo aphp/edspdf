@@ -29,7 +29,8 @@ dependencies = [
     "pdfminer.six>=20220319",
     "pypdfium2~=2.7",
     "rich-logger>=0.3.0,<1.0.0",
-    "safetensors~=0.3.1"
+    "safetensors~=0.3.1",
+    "anyascii>=0.3.2",
 ]
 
 [project.optional-dependencies]
