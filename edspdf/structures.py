@@ -89,6 +89,7 @@ class PDFDoc(BaseModel):
 
     content: bytes = attrs.field(repr=lambda c: f"{len(c)} bytes")
     id: str = None
+    num_pages: int = 0
     pages: List["Page"] = attrs.field(factory=list)
     error: bool = False
     content_boxes: List[Union["TextBox"]] = attrs.field(factory=list)

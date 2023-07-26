@@ -209,7 +209,8 @@ class SimpleTextEmbedding(TrainablePipe[EmbeddingOutput]):
                 words = [m.group(0) for m in self.word_regex.finditer(b.text)]
 
                 for word in words:
-                    ascii_str = anyascii(word)
+                    # ascii_str = unidecode.unidecode(word)
+                    ascii_str = anyascii(word).strip()
                     tokens_shape[-1][i].append(
                         self.shape_voc.encode(word_shape(ascii_str))
                     )
@@ -253,7 +254,7 @@ class SimpleTextEmbedding(TrainablePipe[EmbeddingOutput]):
             self.shape_embedding(batch["tokens_shape"].as_tensor())
             + self.prefix_embedding(batch["tokens_prefix"].as_tensor())
             + self.suffix_embedding(batch["tokens_suffix"].as_tensor())
-            + self.norm_embedding(batch["tokens_norm"].as_tensor())
+            # + self.norm_embedding(batch["tokens_norm"].as_tensor())
         )
 
         return {"embeddings": batch["tokens_shape"].with_data(text_embeds)}

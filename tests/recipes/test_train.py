@@ -230,7 +230,6 @@ def test_function(pdf, error_pdf, change_test_dir, dummy_dataset, tmp_path):
         config={
             "embedding": model.get_pipe("embedding"),
             "labels": [],
-            "activation": "relu",
         },
     )
     print(model.config.to_str())
@@ -299,7 +298,6 @@ def test_function_huggingface(pdf, error_pdf, change_test_dir, dummy_dataset, tm
         config={
             "embedding": model.get_pipe("embedding"),
             "labels": [],
-            "activation": "relu",
         },
     )
     trf = model.get_pipe("embedding")

@@ -10,7 +10,6 @@ from edspdf.structures import PDFDoc
 BoxLayoutBatch = TypedDict(
     "BoxLayoutBatch",
     {
-        "page": FoldedTensor,
         "xmin": FoldedTensor,
         "ymin": FoldedTensor,
         "xmax": FoldedTensor,
@@ -62,10 +61,9 @@ class BoxLayoutPreprocessor(TrainablePipe[BoxLayoutBatch]):
 
     def preprocess(self, doc: PDFDoc, supervision: bool = False):
         pages = doc.pages
-        box_pages = [[b.page_num for b in page.text_boxes] for page in pages]
-        last_p = max((p for x in box_pages for p in x), default=0)
+        [[b.page_num for b in page.text_boxes] for page in pages]
+        last_p = doc.num_pages - 1
         return {
-            "page": box_pages,
             "xmin": [[b.x0 for b in p.text_boxes] for p in pages],
             "ymin": [[b.y0 for b in p.text_boxes] for p in pages],
             "xmax": [[b.x1 for b in p.text_boxes] for p in pages],
@@ -84,7 +82,6 @@ class BoxLayoutPreprocessor(TrainablePipe[BoxLayoutBatch]):
         }
 
         return {
-            "page": as_folded_tensor(batch["page"], dtype=torch.float, **kw),
             "xmin": as_folded_tensor(batch["xmin"], dtype=torch.float, **kw),
             "ymin": as_folded_tensor(batch["ymin"], dtype=torch.float, **kw),
             "xmax": as_folded_tensor(batch["xmax"], dtype=torch.float, **kw),
