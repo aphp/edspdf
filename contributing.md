@@ -21,9 +21,8 @@ $ git clone ssh://git@github.com/aphp/edspdf.git
 $ cd edspdf
 
 color:gray # Create and activate a virtual environment for build isolation
-$ virtualenv venv
-$ source venv/bin/activate
-
+$ python -m venv .venv
+$ source .venv/bin/activate
 color:gray # Install the dependencies
 $ pip install '.[dev]'
 ```
