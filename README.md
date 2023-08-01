@@ -12,7 +12,7 @@ You can use it out-of-the-box, or extend it to fit your specific use case. We pr
 - 📄 [Extractors](https://aphp.github.io/edspdf/latest/pipes/extractors) to parse PDFs (based on [pdfminer](https://github.com/euske/pdfminer), [mupdf](https://github.com/aphp/edspdf-mupdf) or [poppler](https://github.com/aphp/edspdf-poppler))
 - 🎯 [Classifiers](https://aphp.github.io/edspdf/latest/pipes/box-classifiers) to perform text box classification, in order to segment PDFs
 - 🧩 [Aggregators](https://aphp.github.io/edspdf/latest/pipes/aggregators) to produce an aggregated output from the detected text boxes
-- 🧠 Trainable layers to incorporate machine learning in your pipeline (e.g., [embedding](https://aphp.github.io/edspdf/latest/pipes/embedding) building blocks or a [trainable classifier](https://aphp.github.io/edspdf/latest/pipes/box-classifiers/trainable/))
+- 🧠 Trainable layers to incorporate machine learning in your pipeline (e.g., [embedding](https://aphp.github.io/edspdf/latest/pipes/embeddings) building blocks or a [trainable classifier](https://aphp.github.io/edspdf/latest/pipes/box-classifiers/trainable/))
 
 Visit the [:book: documentation](https://aphp.github.io/edspdf/) for more information!
 
