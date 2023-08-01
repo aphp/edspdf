@@ -10,7 +10,6 @@ We welcome contributions ! There are many ways to help. For example, you can:
 
 To be able to run the test suite and develop your own pipeline, you should clone the repo and install it locally.
 
-We use [setuptools](https://github.com/pypa/setuptools) to manage dependencies. Install with `pip install --upgrade setuptools`.
 
 <div class="termy">
 
