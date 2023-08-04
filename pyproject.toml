@@ -31,6 +31,7 @@ dependencies = [
     "rich-logger>=0.3.0,<1.0.0",
     "safetensors~=0.3.1",
     "anyascii>=0.3.2",
+    "attrs~=23.1"
 ]
 
 [project.optional-dependencies]
