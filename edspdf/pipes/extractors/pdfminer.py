@@ -2,6 +2,8 @@ import re
 from io import BytesIO
 from typing import List, Optional, Tuple, Union
 
+import numpy as np
+import pypdfium2
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LAParams, LTTextBoxHorizontal, LTTextLineHorizontal
 from pdfminer.pdftypes import PDFException
@@ -70,6 +72,14 @@ class PdfMinerExtractor:
         Whether to extract style (font, size, ...) information for each line of
         the document.
         Default: False
+    render_pages: bool
+        Whether to extract the rendered page as a numpy array in the `page.image`
+        attribute (defaults to False)
+    render_dpi: int
+        DPI to use when rendering the page (defaults to 200)
+    raise_on_error : bool
+        Whether to raise an error if the PDF cannot be parsed.
+        Default: False
     """  # noqa: E501
 
     def __init__(
@@ -85,6 +95,8 @@ class PdfMinerExtractor:
         all_texts: bool = False,
         extract_style: bool = False,
         raise_on_error: bool = False,
+        render_pages: bool = False,
+        render_dpi: int = 200,
     ):
         self.name = name
 
@@ -99,6 +111,8 @@ class PdfMinerExtractor:
         )
         self.extract_style = extract_style
         self.raise_on_error = raise_on_error
+        self.render_pages = render_pages
+        self.render_dpi = render_dpi
 
     def __call__(self, doc: Union[PDFDoc, bytes]) -> PDFDoc:
         if not isinstance(doc, PDFDoc):
@@ -168,6 +182,16 @@ class PdfMinerExtractor:
                     ]
                 )
             )
+
+        if self.render_pages:
+            # See https://pypdfium2.readthedocs.io/en/stable/python_api.html#user-unit
+            images = pypdfium2.PdfDocument(content).render_topil(
+                scale=self.render_dpi / 72
+            )
+            for page, image in zip(pages, images):
+                np_img = np.array(image)
+                print("NP IMG", np_img.shape)
+                page.image = np_img
 
         return doc
 

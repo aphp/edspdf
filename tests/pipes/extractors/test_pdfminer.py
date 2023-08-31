@@ -13,6 +13,14 @@ def test_pdfminer(pdf, styles_pdf, blank_pdf):
     pytest.nested_approx(extractor(blank_pdf).text_boxes, blank_blocks, abs=5e-2)
 
 
+def test_pdfminer_image(pdf, styles_pdf, blank_pdf):
+    extractor = PdfMinerExtractor(extract_style=False, render_pages=True)
+
+    assert extractor(pdf).pages[0].image.shape == (2339, 1654, 3)
+    assert extractor(styles_pdf).pages[0].image.shape == (2200, 1700, 3)
+    assert extractor(blank_pdf).pages[0].image.shape == (2339, 1654, 3)
+
+
 def test_pdfminer_error(error_pdf):
     extractor = PdfMinerExtractor(extract_style=False, raise_on_error=True)
 
