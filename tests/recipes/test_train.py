@@ -280,6 +280,7 @@ def test_script(change_test_dir, dummy_dataset):
 
 
 def test_function_huggingface(pdf, error_pdf, change_test_dir, dummy_dataset, tmp_path):
+    set_seed(42)
     model = Pipeline()
     model.add_pipe("pdfminer-extractor", name="extractor")
     model.add_pipe(
@@ -287,8 +288,8 @@ def test_function_huggingface(pdf, error_pdf, change_test_dir, dummy_dataset, tm
         name="embedding",
         config={
             "model": "microsoft/layoutlmv3-base",
-            "window": 128,
-            "stride": 64,
+            "window": 64,
+            "stride": 32,
             "use_image": False,
         },
     )

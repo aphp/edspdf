@@ -135,6 +135,7 @@ class SimpleTextEmbedding(TrainablePipe[EmbeddingOutput]):
     def post_init(self, gold_data, exclude: set):
         if self.name in exclude:
             return
+
         exclude.add(self.name)
         vocab_items_before = {
             "shape": dict(self.shape_voc.indices),
@@ -156,10 +157,9 @@ class SimpleTextEmbedding(TrainablePipe[EmbeddingOutput]):
     def save_extra_data(self, path: Path, exclude: Set):
         if self.name in exclude:
             return
+
         exclude.add(self.name)
-
         os.makedirs(path, exist_ok=True)
-
         with (path / "shape_voc.json").open("w") as f:
             json.dump(self.shape_voc.indices, f)
         with (path / "prefix_voc.json").open("w") as f:
@@ -172,15 +172,14 @@ class SimpleTextEmbedding(TrainablePipe[EmbeddingOutput]):
     def load_extra_data(self, path: Path, exclude: Set):
         if self.name in exclude:
             return
-        exclude.add(self.name)
 
+        exclude.add(self.name)
         vocab_items_before = {
             "shape": dict(self.shape_voc.indices),
             "prefix": dict(self.prefix_voc.indices),
             "suffix": dict(self.suffix_voc.indices),
             "norm": dict(self.norm_voc.indices),
         }
-
         with (path / "shape_voc.json").open("r") as f:
             self.shape_voc.indices = json.load(f)
         with (path / "prefix_voc.json").open("r") as f:

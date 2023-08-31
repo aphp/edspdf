@@ -33,13 +33,10 @@ def gather(tensor, index, dim):
 
 
 class GroupedLinear(torch.nn.Module):
-    def __init__(self, input_size, output_size, bias=True, n_groups=1):
+    def __init__(self, input_size, output_size, n_groups=1):
         super().__init__()
         self.n_groups = n_groups
-        if bias:
-            self.bias = torch.nn.Parameter(torch.zeros(n_groups, output_size))
-        else:
-            self.bias = None
+        self.bias = torch.nn.Parameter(torch.zeros(n_groups, output_size))
         self.weight = torch.nn.Parameter(
             torch.stack(
                 [
@@ -50,12 +47,7 @@ class GroupedLinear(torch.nn.Module):
             )
         )
 
-    def forward(self, x, reshape=True):
-        if not reshape:
-            x = torch.einsum("...ni,nio->...no", x, self.weight)
-            if self.bias is not None:
-                x = x + self.bias
-            return x
+    def forward(self, x):
         (*base_shape, dim) = x.shape
         x = x.reshape(*base_shape, self.n_groups, dim // self.n_groups)
         x = torch.einsum("...ni,nio->...no", x, self.weight)

@@ -93,4 +93,4 @@ class BoxLayoutPreprocessor(TrainablePipe[BoxLayoutBatch]):
         }
 
     def forward(self, *args, **kwargs) -> Dict[str, Any]:
-        pass
+        raise NotImplementedError()
