@@ -1,4 +1,6 @@
+import copy
 import os
+from functools import lru_cache
 from pathlib import Path
 
 import pytest
@@ -48,6 +50,18 @@ def letter_pdf():
 def error_pdf():
     path = TEST_DIR / "resources" / "error.pdf"
     return path.read_bytes()
+
+
+@lru_cache(maxsize=1)
+def make_pdfdoc(pdf):
+    from edspdf.pipes.extractors.pdfminer import PdfMinerExtractor
+
+    return PdfMinerExtractor(render_pages=True)(pdf)
+
+
+@fixture()
+def pdfdoc(pdf):
+    return copy.deepcopy(make_pdfdoc(pdf))
 
 
 @fixture(scope="session")

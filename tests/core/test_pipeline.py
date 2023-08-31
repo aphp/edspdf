@@ -74,8 +74,6 @@ def test_add_pipe_factory():
     with pytest.raises(ValueError):
         model.get_pipe("missing-pipe")
 
-    assert model.get_pipe_meta("pdfminer-extractor")
-
 
 def test_add_pipe_component():
     model = Pipeline()

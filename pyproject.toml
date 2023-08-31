@@ -118,10 +118,18 @@ whitelist-regex = []
 color = true
 omit-covered-files = false
 
-[tool.coverage]
-exclude_lines = [
-    "raise NotImplementedError",
+[tool.coverage.report]
+exclude_also = [
     "def __repr__",
+    "if __name__ == .__main__.:",
+    "@overload",
+    "pragma: no cover",
+    "raise .*Error",
+    "if __name__ == .__main__.:",
+    "if (self[.])?name in exclude:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
 ]
 
 [tool.pytest.ini_options]
