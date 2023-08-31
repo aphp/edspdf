@@ -51,7 +51,7 @@ def _align_box_labels_on_page(
     score = covered_src_ratio
     score[covered_dst_ratio < threshold] = 0.0
 
-    src_indices = covered_src_ratio.argmax(0)
+    src_indices = score.argmax(0)
     dst_labels = src_labels[src_indices]
 
     new_dst_boxes = [
