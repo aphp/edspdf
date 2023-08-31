@@ -1,16 +1,13 @@
 import inspect
-from dataclasses import dataclass
 from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence
-from weakref import WeakKeyDictionary
 
 import catalogue
 from confit import Config, Registry
+from confit.errors import ConfitValidationError, ErrorWrapper, patch_errors
 from confit.registry import RegistryCollection
 
 import edspdf
 from edspdf.utils.collections import FrozenDict, FrozenList
-
-PIPE_META = WeakKeyDictionary()
 
 
 def accepted_arguments(
@@ -40,20 +37,12 @@ def accepted_arguments(
     return [arg for arg in args if arg in sig.parameters]
 
 
-@dataclass
-class FactoryMeta:
-    assigns: Iterable[str]
-    requires: Iterable[str]
-    retokenizes: bool
-    default_config: Dict
-
-
 class CurriedFactory:
     def __init__(self, func, kwargs):
         self.kwargs = kwargs
         self.factory = func
-        # self.factory_name = factory_name
         self.instantiated = None
+        self.error = None
 
     def instantiate(
         obj: Any,
@@ -61,11 +50,14 @@ class CurriedFactory:
         path: Sequence[str] = (),
     ):
         """
-        To ensure compatibility with spaCy's API, we need to support
-        passing in the pipeline object and name to factories. Since they can be
-        nested, we need to add them to every factory in the config.
+        We need to support passing in the pipeline object and name to factories from
+        a config file. Since components can be nested, we need to add them to every
+        factory in the config.
         """
         if isinstance(obj, CurriedFactory):
+            if obj.error is not None:
+                raise obj.error from None
+
             if obj.instantiated is not None:
                 return obj.instantiated
 
@@ -75,41 +67,56 @@ class CurriedFactory:
                 key: CurriedFactory.instantiate(value, pipeline, (*path, key))
                 for key, value in obj.kwargs.items()
             }
-            obj.instantiated = obj.factory(
-                **{
-                    "pipeline": pipeline,
-                    "name": name,
-                    **kwargs,
-                }
-            )
-            # Config._store_resolved(
-            #     obj.instantiated,
-            #     Config(
-            #         {
-            #             "@factory": obj.factory_name,
-            #             **kwargs,
-            #         }
-            #     ),
-            # )
-            # PIPE_META[obj.instantiated] = obj.meta
+            try:
+                obj.instantiated = obj.factory(
+                    **{
+                        "pipeline": pipeline,
+                        "name": name,
+                        **kwargs,
+                    }
+                )
+            except ConfitValidationError as e:
+                obj.error = ConfitValidationError(
+                    patch_errors(e.raw_errors, path, model=e.model),
+                    model=e.model,
+                    name=obj.factory.__module__ + "." + obj.factory.__qualname__,
+                ).with_traceback(None)
+                raise obj.error from None
+            except Exception as e:  # pragma: no cover
+                obj.error = ConfitValidationError([ErrorWrapper(e, path)])
+                raise obj.error from None
             return obj.instantiated
         elif isinstance(obj, dict):
-            return {
-                key: CurriedFactory.instantiate(value, pipeline, (*path, key))
-                for key, value in obj.items()
-            }
-        elif isinstance(obj, tuple):
-            return tuple(
-                CurriedFactory.instantiate(value, pipeline, (*path, str(i)))
-                for i, value in enumerate(obj)
-            )
-        elif isinstance(obj, list):
-            return [
-                CurriedFactory.instantiate(value, pipeline, (*path, str(i)))
-                for i, value in enumerate(obj)
-            ]
+            instantiated = {}
+            errors = []
+            for key, value in obj.items():
+                try:
+                    instantiated[key] = CurriedFactory.instantiate(
+                        value, pipeline, (*path, key)
+                    )
+                except KeyboardInterrupt:  # pragma: no cover
+                    raise
+                except ConfitValidationError as e:
+                    errors.extend(e.raw_errors)
+            if not errors:
+                return instantiated
+        elif isinstance(obj, (list, tuple)):
+            instantiated = []
+            errors = []
+            for i, value in enumerate(obj):
+                try:
+                    instantiated.append(
+                        CurriedFactory.instantiate(value, pipeline, (*path, str(i)))
+                    )
+                except KeyboardInterrupt:  # pragma: no cover
+                    raise
+                except ConfitValidationError as e:
+                    errors.append(e.raw_errors)
+            if not errors:
+                return type(obj)(instantiated)
         else:
             return obj
+        raise ConfitValidationError(list(dict.fromkeys(errors)))
 
 
 class FactoryRegistry(Registry):
@@ -184,13 +191,6 @@ class FactoryRegistry(Registry):
                     "Factory functions must accept pipeline and name as arguments."
                 )
 
-            meta = FactoryMeta(
-                assigns=assigns,
-                requires=requires,
-                retokenizes=retokenizes,
-                default_config=default_config,
-            )
-
             def invoke(validated_fn, kwargs):
                 if default_config is not None:
                     kwargs = (
@@ -199,7 +199,6 @@ class FactoryRegistry(Registry):
                         .merge(kwargs)
                     )
                 instantiated = validated_fn(kwargs)
-                PIPE_META[instantiated] = meta
                 return instantiated
 
             registered_fn = Registry.register(

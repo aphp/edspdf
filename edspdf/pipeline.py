@@ -23,15 +23,15 @@ from typing import (
     Union,
 )
 
-import torch
 from confit import Config
+from confit.errors import ConfitValidationError, patch_errors
 from confit.utils.collections import join_path, split_path
 from confit.utils.xjson import Reference
 from tqdm import tqdm
 
 import edspdf
 
-from .registry import PIPE_META, CurriedFactory, FactoryMeta, registry
+from .registry import CurriedFactory, registry
 from .structures import PDFDoc
 from .utils.collections import (
     FrozenList,
@@ -148,18 +148,24 @@ class Pipeline:
         -------
         Pipe
         """
-        curried_factory: CurriedFactory = Config(
-            {
-                "@factory": factory,
-                **(config if config is not None else {}),
-            }
-        ).resolve(registry=registry)
-        pipe = curried_factory.instantiate(pipeline=self, path=(name,))
+        try:
+            curried_factory: CurriedFactory = Config(
+                {
+                    "@factory": factory,
+                    **(config if config is not None else {}),
+                }
+            ).resolve(registry=registry)
+            pipe = curried_factory.instantiate(pipeline=self, path=(name,))
+        except ConfitValidationError as e:
+            raise e.with_traceback(None) from None
         return pipe
 
     def add_pipe(
         self,
         factory: Union[str, Pipe],
+        first: bool = False,
+        before: Optional[str] = None,
+        after: Optional[str] = None,
         name: Optional[str] = None,
         config: Optional[Dict[str, Any]] = None,
     ) -> Pipe:
@@ -173,6 +179,15 @@ class Pipeline:
         name: Optional[str]
             The name of the component. If not provided, the name of the component
             will be used if it has one (.name), otherwise the factory name will be used.
+        first: bool
+            Whether to add the component to the beginning of the pipeline. This argument
+            is mutually exclusive with `before` and `after`.
+        before: Optional[str]
+            The name of the component to add the new component before. This argument is
+            mutually exclusive with `after` and `first`.
+        after: Optional[str]
+            The name of the component to add the new component after. This argument is
+            mutually exclusive with `before` and `first`.
         config: Dict[str, Any]
             The arguments to pass to the component factory.
 
@@ -209,24 +224,20 @@ class Pipeline:
                         "The component does not have a name, so you must provide one",
                     )
                 pipe.name = name
-        self._components.append((name, pipe))
+        assert sum([before is not None, after is not None, first]) <= 1, (
+            "You can only use one of before, after, or first",
+        )
+        insertion_idx = (
+            0
+            if first
+            else self.pipe_names.index(before)
+            if before is not None
+            else self.pipe_names.index(after) + 1
+            if after is not None
+            else len(self._components)
+        )
+        self._components.insert(insertion_idx, (name, pipe))
         return pipe
-
-    def get_pipe_meta(self, name: str) -> FactoryMeta:
-        """
-        Get the meta information for a component.
-
-        Parameters
-        ----------
-        name: str
-            The name of the component to get the meta for.
-
-        Returns
-        -------
-        Dict[str, Any]
-        """
-        pipe = self.get_pipe(name)
-        return PIPE_META.get(pipe, {})
 
     def make_doc(self, content: bytes) -> PDFDoc:
         """
@@ -328,15 +339,14 @@ class Pipeline:
             for batch in batchify(docs, batch_size=batch_size):
                 with self.cache():
                     for name, pipe in self.pipeline:
-                        if name in self._disabled:
-                            continue
-                        kwargs = component_cfg.get(name, {})
-                        if hasattr(pipe, "batch_process"):
-                            batch = pipe.batch_process(batch, **kwargs)
-                        else:
-                            batch = [
-                                pipe(doc, **kwargs) for doc in batch  # type: ignore
-                            ]
+                        if name not in self._disabled:
+                            kwargs = component_cfg.get(name, {})
+                            if hasattr(pipe, "batch_process"):
+                                batch = pipe.batch_process(batch, **kwargs)
+                            else:
+                                batch = [
+                                    pipe(doc, **kwargs) for doc in batch  # type: ignore
+                                ]
 
                 yield from batch
 
@@ -348,10 +358,12 @@ class Pipeline:
         """
         Enable caching for all (trainable) components in the pipeline
         """
-        cache_before = self._cache
-        self._cache = {} if cache_before is None else cache_before
+        was_not_cached = self._cache is None
+        if was_not_cached:
+            self._cache = {}
         yield
-        self._cache = cache_before
+        if was_not_cached:
+            self._cache = None
 
     def trainable_pipes(
         self, disable: Sequence[str] = ()
@@ -431,10 +443,14 @@ class Pipeline:
         exclude = exclude if exclude is not None else set()
         meta = meta if meta is not None else {}
 
+        loc_prefix = []
         if isinstance(config.get("pipeline"), dict):
+            loc_prefix = ["pipeline"]
             if "components" in config and "components" not in config["pipeline"]:
                 config["pipeline"]["components"] = Reference("components")
+                loc_prefix = ["components"]
             config = config["pipeline"]
+        loc_prefix.append("components")
 
         assert (
             "pipeline" in config and "components" in config
@@ -457,7 +473,16 @@ class Pipeline:
                     "config."
                 )
 
-        components = CurriedFactory.instantiate(components, pipeline=model)
+        try:
+            components = CurriedFactory.instantiate(components, pipeline=model)
+        except ConfitValidationError as e:
+            e = ConfitValidationError(
+                e.raw_errors,
+                model=cls,
+                name=cls.__module__ + "." + cls.__qualname__,
+            )
+            e.raw_errors = patch_errors(e.raw_errors, loc_prefix)
+            raise e from None
 
         for name in pipeline:
             if name in exclude:
@@ -490,12 +515,14 @@ class Pipeline:
         yield cls.validate
 
     @classmethod
-    def validate(cls, v):
+    def validate(cls, v, config=None):
         """
         Pydantic validator, used in the `validate_arguments` decorated functions
         """
         if isinstance(v, dict):
             return cls.from_config(v)
+        if not isinstance(v, cls):
+            raise ValueError("input is not a Pipeline or config dict")
         return v
 
     def preprocess(self, doc: PDFDoc, supervision: bool = False):
@@ -559,7 +586,7 @@ class Pipeline:
     def collate(
         self,
         batch: List[Dict[str, Any]],
-        device: Optional[torch.device] = None,
+        device: Optional["torch.device"] = None,  # noqa F821
     ):
         """
         Collates a batch of preprocessed samples into a single (maybe nested)
@@ -604,7 +631,7 @@ class Pipeline:
                     seen.add(param)
                     yield f"{name}.{param_name}", param
 
-    def to(self, device: Optional[torch.device] = None):
+    def to(self, device: Optional["torch.device"] = None):  # noqa F821
         """Moves the pipeline to a given device"""
         for name, component in self.trainable_pipes():
             component.to(device)
@@ -754,7 +781,7 @@ class Pipeline:
         path = Path(path) if isinstance(path, str) else path
 
         if os.path.exists(path) and not os.path.exists(path / "config.cfg"):
-            raise Exception(
+            raise FileExistsError(
                 "The directory already exists and doesn't appear to be a"
                 "saved pipeline. Please erase it manually or choose a "
                 "different directory."

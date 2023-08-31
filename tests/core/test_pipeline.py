@@ -3,6 +3,7 @@ from pathlib import Path
 import datasets
 import pytest
 from confit import Config
+from confit.errors import ConfitValidationError
 from confit.registry import validate_arguments
 
 import edspdf
@@ -64,18 +65,27 @@ def test_add_pipe_factory():
     model = Pipeline()
     model.add_pipe("pdfminer-extractor")
     assert "pdfminer-extractor" in model.pipe_names
+    assert model.has_pipe("pdfminer-extractor")
 
     model.add_pipe("simple-aggregator", name="aggregator")
     assert "aggregator" in model.pipe_names
+    assert model.has_pipe("aggregator")
+
+    with pytest.raises(ValueError):
+        model.get_pipe("missing-pipe")
+
+    assert model.get_pipe_meta("pdfminer-extractor")
 
 
 def test_add_pipe_component():
     model = Pipeline()
     model.add_pipe(PdfMinerExtractor(pipeline=model, name="pdfminer-extractor"))
     assert "pdfminer-extractor" in model.pipe_names
+    assert model.has_pipe("pdfminer-extractor")
 
     model.add_pipe(SimpleAggregator(pipeline=model, name="aggregator"))
     assert "aggregator" in model.pipe_names
+    assert model.has_pipe("aggregator")
 
     with pytest.raises(ValueError):
         model.add_pipe(
@@ -245,4 +255,69 @@ def test_different_names(pipeline: Pipeline):
 
     assert "The provided name does not match the name of the component." in str(
         exc_info.value
+    )
+
+
+fail_config = """
+[train]
+model = ${pipeline}
+max_steps = 20
+lr = 8e-4
+seed = 43
+
+[train.train_data]
+@adapter = segmentation-adapter
+
+[train.val_data]
+@adapter = segmentation-adapter
+
+[pipeline]
+pipeline = ["extractor", "embedding", "classifier"]
+disabled = []
+
+[components]
+
+[components.extractor]
+@factory = "pdfminer-extractor"
+
+[components.classifier]
+@factory = "trainable-classifier"
+labels = []
+embedding = ${components.embedding}
+
+[components.embedding]
+@factory = "box-layout-embedding"
+n_positions = 64
+x_mode = "learned"
+y_mode = "learned"
+w_mode = "learned"
+h_mode = "hello"
+"""
+
+
+def test_config_validation_error():
+    model = Pipeline()
+    model.add_pipe("pdfminer-extractor", name="extractor")
+
+    with pytest.raises(ConfitValidationError) as e:
+        Pipeline.from_config(Config.from_str(fail_config))
+
+    assert str(e.value) == (
+        "2 validation errors for edspdf.pipeline.Pipeline()\n"
+        "-> components.components.classifier.embedding.size\n"
+        "   field required\n"
+        "-> components.components.classifier.embedding.h_mode\n"
+        "   unexpected value; permitted: 'sin', 'learned', got 'hello' (str)"
+    )
+
+
+def test_add_pipe_validation_error():
+    model = Pipeline()
+    with pytest.raises(ConfitValidationError) as e:
+        model.add_pipe("pdfminer-extractor", name="extractor", config={"foo": "bar"})
+
+    assert str(e.value) == (
+        "1 validation error for edspdf.pipes.extractors.pdfminer.PdfMinerExtractor()\n"
+        "-> extractor.foo\n"
+        "   unexpected keyword argument"
     )
