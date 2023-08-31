@@ -1,4 +1,3 @@
-import dataclasses
 from typing import Dict, List, Optional, Union
 
 import attrs
@@ -6,20 +5,6 @@ import numpy as np
 from confit import Config
 
 from .registry import registry
-
-
-class DataclassField:
-    def __init__(self, name):
-        self.name = name
-        self._field_type = dataclasses._FIELD
-
-
-class DataclassFields:
-    def __init__(self, base):
-        self.base = base
-
-    def values(self):
-        return [DataclassField(key.name) for key in attrs.fields(type(self.base))]
 
 
 class BaseModel:
@@ -37,9 +22,6 @@ class BaseModel:
     #         fget=getter,
     #         fset=setter,
     #     ))
-    @property
-    def __dataclass_fields__(self):
-        return DataclassFields(self)
 
     @classmethod
     def __get_validators__(cls):
