@@ -20,7 +20,7 @@ dependencies = [
     "pydantic>=1.2,<2.0.0",
     "catalogue~=2.0",
     "networkx~=2.6",
-    "confit>=0.2.1,<1.0.0",
+    "confit>=0.4.3,<1.0.0",
     "foldedtensor>=0.3.0,<1.0.0",
     "torch>1.0.0",
     "accelerate>=0.12.0,<1.0.0",

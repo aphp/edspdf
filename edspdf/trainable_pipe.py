@@ -1,9 +1,19 @@
-import typing
 from abc import ABCMeta
 from enum import Enum
 from functools import wraps
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, Sequence, Tuple, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    Iterable,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
 import torch
 
@@ -13,8 +23,8 @@ from edspdf.utils.collections import batch_compress_dict, decompress_dict
 
 NestedSequences = Dict[str, Union["NestedSequences", Sequence]]
 NestedTensors = Dict[str, Union["NestedSequences", torch.Tensor]]
-InputBatch = typing.TypeVar("InputBatch", bound=NestedTensors)
-OutputBatch = typing.TypeVar("OutputBatch", bound=NestedTensors)
+InputBatch = TypeVar("InputBatch", bound=NestedTensors)
+OutputBatch = TypeVar("OutputBatch", bound=NestedTensors)
 Scorer = Callable[[Sequence[Tuple[PDFDoc, PDFDoc]]], Union[float, Dict[str, Any]]]
 
 
@@ -113,7 +123,7 @@ class TrainablePipeMeta(ABCMeta):
 
 class TrainablePipe(
     torch.nn.Module,
-    typing.Generic[OutputBatch],
+    Generic[OutputBatch],
     metaclass=TrainablePipeMeta,
 ):
     """
@@ -126,7 +136,7 @@ class TrainablePipe(
     for components that share a common subcomponent.
     """
 
-    def __init__(self, pipeline: Pipeline, name: str):
+    def __init__(self, pipeline: Optional[Pipeline], name: Optional[str]):
         super().__init__()
         self.pipeline = pipeline
         self.name = name
