@@ -287,7 +287,7 @@ def test_function_huggingface(pdf, error_pdf, change_test_dir, dummy_dataset, tm
         "huggingface-embedding",
         name="embedding",
         config={
-            "model": "microsoft/layoutlmv3-base",
+            "model": "hf-tiny-model-private/tiny-random-LayoutLMv3Model",
             "window": 64,
             "stride": 32,
             "use_image": False,
@@ -310,9 +310,9 @@ def test_function_huggingface(pdf, error_pdf, change_test_dir, dummy_dataset, tm
         model=model,
         train_data=data_adapter,
         val_data=data_adapter,
-        max_steps=10,
-        batch_size=2,
-        validation_interval=4,
+        max_steps=2,
+        batch_size=1,
+        validation_interval=1,
         output_dir=tmp_path,
         lr=0.001,
     )
