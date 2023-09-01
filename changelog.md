@@ -1,8 +1,20 @@
 # Changelog
 
-## v0.7.1 (Pending)
+## Unreleased
+
+### Added
+
+- Add multi-modal transformers (`huggingface-embedding`) with windowing options
+- Add `render_page` option to `pdfminer` extractor, for multi-modal PDF features
+
+### Changed
+
+- Updated API to follow EDS-NLP's refactoring
+- Updated `confit` to 0.4.2 (better errors) and `foldedtensor` to 0.3.0 (better multiprocess support)
+- Better test coverage
 
 ### Fixed
+
 - Fixed `attrs` dependency only being installed in dev mode
 
 ## v0.7.0
