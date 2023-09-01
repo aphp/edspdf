@@ -85,7 +85,7 @@ a[data-terminal-control] {
 
 [data-ty="input"]:before,
 [data-ty-prompt]:before {
-    margin-right: 0.75em;
+    margin-right: 0.72em;
     color: var(--color-text-subtle);
 }
 

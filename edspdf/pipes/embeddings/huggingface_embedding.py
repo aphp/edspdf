@@ -25,8 +25,24 @@ def compute_contextualization_scores(windows):
 class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
     """
     The HuggingfaceEmbeddings component is a wrapper around the Huggingface multi-modal
-    models. Compared to using the raw Huggingface model, we offer a simple mechanism to
-    split long documents into strided windows before feeding them to the model.
+    models. Such pre-trained models should offer better results than a model trained
+    from scratch. Compared to using the raw Huggingface model, we offer a simple
+    mechanism to split long documents into strided windows before feeding them to the
+    model.
+
+    ## Windowing
+
+    The HuggingfaceEmbedding component splits long documents into smaller windows before
+    feeding them to the model. This is done to avoid hitting the maximum number of
+    tokens that can be processed by the model on a single device. The window size and
+    stride can be configured using the `window` and `stride` parameters. The default
+    values are 510 and 255 respectively, which means that the model will process windows
+    of 510 tokens, each separated by 255 tokens. Whenever a token appears in multiple
+    windows, the embedding of the "most contextualized" occurrence is used, i.e. the
+    occurrence that is the closest to the center of its window.
+
+    Here is an overview how this works in a classifier model :
+    ![Transformer windowing](./assets/transformer-windowing.svg)
 
     Examples
     --------
@@ -37,15 +53,15 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
     ```python
     from edspdf import Pipeline
 
-    pipeline = Pipeline()
-    pipeline.add_pipe(
-        "mupdf-extractor",
+    model = Pipeline()
+    model.add_pipe(
+        "pdfminer-extractor",
         name="extractor",
         config={
             "render_pages": True,
         },
     )
-    pipeline.add_pipe(
+    model.add_pipe(
         "huggingface-embedding",
         name="embedding",
         config={
