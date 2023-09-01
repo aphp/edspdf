@@ -700,6 +700,7 @@ class Pipeline:
         path: Union[str, Path],
         *,
         exclude: Set[str] = None,
+        device: Optional[Union[str, "torch.device"]] = "cpu",  # noqa F821
     ) -> "Pipeline":
         """
         Load the pipeline from a directory. Components will be updated in-place.
@@ -730,7 +731,9 @@ class Pipeline:
                     # are expected to be shared
                     pipe = trainable_components[pipe_names[0]]
                     tensor_dict = {}
-                    for keys, tensor in safetensors.torch.load_file(file_name).items():
+                    for keys, tensor in safetensors.torch.load_file(
+                        file_name, device=device
+                    ).items():
                         split_keys = [split_path(key) for key in keys.split("+")]
                         key = next(key for key in split_keys if key[0] == pipe_names[0])
                         tensor_dict[join_path(key[1:])] = tensor
@@ -769,11 +772,12 @@ class Pipeline:
         path: Union[str, Path],
         *,
         exclude: Optional[Set[str]] = None,
+        device: Optional[Union[str, "torch.device"]] = "cpu",  # noqa F821
     ):
         path = Path(path) if isinstance(path, str) else path
         config = Config.from_disk(path / "config.cfg")
         self = Pipeline.from_config(config)
-        self.load_state_from_disk(path, exclude=exclude)
+        self.load_state_from_disk(path, exclude=exclude, device=device)
         return self
 
     # override config property getter to remove "factory" key from components
@@ -854,12 +858,15 @@ class Pipeline:
         return context()
 
 
-def load(config: Union[Path, str, Config]) -> Pipeline:
+def load(
+    config: Union[Path, str, Config],
+    device: Optional[Union[str, "torch.device"]] = "cpu",  # noqa F821
+) -> Pipeline:
     error = "The load function expects a Config or a path to a config file"
     if isinstance(config, (Path, str)):
         path = Path(config)
         if path.is_dir():
-            return Pipeline.load(path)
+            return Pipeline.load(path, device=device)
         elif path.is_file():
             config = Config.from_disk(path)
         else:
