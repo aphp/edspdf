@@ -13,6 +13,7 @@ from typing import (
     Dict,
     Iterable,
     List,
+    Mapping,
     Optional,
     Sequence,
     Set,
@@ -25,6 +26,7 @@ from confit import Config, validate_arguments
 from confit.errors import ConfitValidationError, patch_errors
 from confit.utils.collections import join_path, split_path
 from confit.utils.xjson import Reference
+from typing_extensions import Literal
 
 import edspdf
 
@@ -856,6 +858,37 @@ class Pipeline:
         disabled_before = self._disabled
         self._disabled = disable
         return context()
+
+    def package(
+        self,
+        name: Optional[str] = None,
+        root_dir: Union[str, Path] = ".",
+        artifacts_name: str = "artifacts",
+        check_dependencies: bool = False,
+        project_type: Optional[Literal["poetry", "setuptools"]] = None,
+        version: str = "0.1.0",
+        metadata: Optional[Dict[str, Any]] = {},
+        distributions: Optional[Sequence[Literal["wheel", "sdist"]]] = ["wheel"],
+        config_settings: Optional[Mapping[str, Union[str, Sequence[str]]]] = None,
+        isolation: bool = True,
+        skip_build_dependency_check: bool = False,
+    ):
+        from .utils.package import package
+
+        return package(
+            pipeline=self,
+            name=name,
+            root_dir=root_dir,
+            artifacts_name=artifacts_name,
+            check_dependencies=check_dependencies,
+            project_type=project_type,
+            version=version,
+            metadata=metadata,
+            distributions=distributions,
+            config_settings=config_settings,
+            isolation=isolation,
+            skip_build_dependency_check=skip_build_dependency_check,
+        )
 
 
 def load(

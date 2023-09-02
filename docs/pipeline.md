@@ -11,6 +11,8 @@ Processing PDFs usually involves many steps such as extracting lines, running OC
     can use any technology in static components, we do not provide tools to train
     components built with other deep learning frameworks.
 
+## Creating a pipeline
+
 A pipe is a processing block (like a function) that applies a transformation on its input and returns a modified object.
 
 At the moment, four types of pipes are implemented in the library:
@@ -59,7 +61,33 @@ model.pipe([pdf_bytes, ...])
 
 For more information on how to use the pipeline, refer to the [Inference](/inference) page.
 
-## Hybrid models
+### Hybrid models
 
 EDS-PDF was designed to facilitate the training and inference of hybrid models that
 arbitrarily chain static components or trained deep learning components. Static components are callable objects that take a PDFDoc object as input, perform arbitrary transformations over the input, and return the modified object. [Trainable pipes][edspdf.trainable_pipe.TrainablePipe], on the other hand, allow for deep learning operations to be performed on the [PDFDoc][edspdf.structures.PDFDoc] object and must be trained to be used.
+
+## Saving and loading a pipeline
+
+Pipelines can be saved and loaded using the `save` and `load` methods. The saved pipeline is not a pickled objet but a folder containing the config file, the weights and extra resources for each pipeline. This allows for easy inspection and modification of the pipeline, and avoids the execution of arbitrary code when loading a pipeline.
+
+```python
+model.save("path/to/your/model")
+model = edspdf.load("path/to/your/model")
+```
+
+To share the pipeline and turn it into a pip installable package, you can use the `package` method, which will use or create a pyproject.toml file, fill it accordingly, and create a wheel file. At the moment, we only support the poetry package manager.
+
+```python
+model.package(
+    name="path/to/your/package",
+    version="0.0.1",
+    root_dir="path/to/project/root",  # optional, to retrieve an existing pyproject.toml file
+    # if you don't have a pyproject.toml, you can provide the metadata here instead
+    metadata=dict(
+        authors="Firstname Lastname <your.email@domain.fr>",
+        description="A short description of your package",
+    ),
+)
+```
+
+This will create a wheel file in the root_dir/dist folder, which you can share and install with pip
