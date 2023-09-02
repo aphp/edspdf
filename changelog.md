@@ -7,6 +7,7 @@
 - Add multi-modal transformers (`huggingface-embedding`) with windowing options
 - Add `render_page` option to `pdfminer` extractor, for multi-modal PDF features
 - Add inference utilities (`accelerators`), with simple mono process support and multi gpu / cpu support
+- Packaging utils (`pipeline.package(...)`) to make a pip installable package from a pipeline
 
 ### Changed
 

@@ -25,27 +25,6 @@ class CustomClass:
     pass
 
 
-@pytest.fixture(scope="session")
-def frozen_pipeline():
-    model = Pipeline()
-    model.add_pipe("pdfminer-extractor", name="extractor")
-    model.add_pipe(
-        "trainable-classifier",
-        name="classifier",
-        config=dict(
-            embedding={
-                "@factory": "box-layout-embedding",
-                "n_positions": 32,
-                "size": "48",
-            },
-            labels=["first", "second"],
-        ),
-    )
-    model.add_pipe("simple-aggregator")
-    model.post_init([])
-    return model
-
-
 @pytest.fixture()
 def pipeline():
     model = Pipeline()

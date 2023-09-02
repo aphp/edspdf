@@ -8,6 +8,7 @@ from datasets import Dataset
 from pytest import fixture
 from utils import nested_approx
 
+from edspdf import Pipeline
 from edspdf.utils.collections import ld_to_dl
 
 pytest.nested_approx = nested_approx
@@ -104,3 +105,24 @@ def dummy_dataset(tmpdir_factory, pdf):
     )
     ds.save_to_disk(dataset_path)
     return dataset_path
+
+
+@pytest.fixture(scope="session")
+def frozen_pipeline():
+    model = Pipeline()
+    model.add_pipe("pdfminer-extractor", name="extractor")
+    model.add_pipe(
+        "trainable-classifier",
+        name="classifier",
+        config=dict(
+            embedding={
+                "@factory": "box-layout-embedding",
+                "n_positions": 32,
+                "size": "48",
+            },
+            labels=["first", "second"],
+        ),
+    )
+    model.add_pipe("simple-aggregator")
+    model.post_init([])
+    return model

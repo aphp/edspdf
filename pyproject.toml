@@ -31,7 +31,9 @@ dependencies = [
     "rich-logger>=0.3.0,<1.0.0",
     "safetensors~=0.3.1",
     "anyascii>=0.3.2",
-    "attrs~=23.1"
+    "attrs~=23.1",
+    "build>=0.10.0",
+    "loguru",
 ]
 
 [project.optional-dependencies]
@@ -139,6 +141,7 @@ exclude_also = [
     "@overload",
     "pragma: no cover",
     "raise .*Error",
+    "raise .*Exception",
     "if __name__ == .__main__.:",
     "if (self[.])?name in exclude:",
     "if TYPE_CHECKING:",
@@ -177,6 +180,7 @@ fixable = ["E", "F", "W", "I"]
 
 [tool.ruff.isort]
 known-first-party = ["edspdf"]
+known-third-party = ["build"]
 
 
 [build-system]
