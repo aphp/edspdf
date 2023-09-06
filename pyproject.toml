@@ -89,6 +89,10 @@ docs = [
 # Aggregators
 "simple-aggregator" = "edspdf.pipes.aggregators.simple:SimpleAggregator"
 
+[project.entry-points."edspdf_accelerator"]
+"simple" = "edspdf.accelerators.simple:SimpleAccelerator"
+"multiprocessing" = "edspdf.accelerators.multiprocessing:MultiprocessingAccelerator"
+
 [project.entry-points."mkdocs.plugins"]
 
 "bibtex" = "docs.scripts.bibtex:BibTexPlugin"
@@ -119,6 +123,9 @@ color = true
 omit-covered-files = false
 
 [tool.coverage.report]
+omit = [
+    "edspdf/accelerators/multi_gpu.py",
+]
 exclude_also = [
     "def __repr__",
     "if __name__ == .__main__.:",

@@ -219,3 +219,4 @@ class registry(RegistryCollection):
     factory = factories = FactoryRegistry(("edspdf", "factories"), entry_points=True)
     misc = Registry(("edspdf", "misc"), entry_points=True)
     adapter = Registry(("edspdf", "adapter"), entry_points=True)
+    accelerator = Registry(("edspdf", "accelerator"), entry_points=True)

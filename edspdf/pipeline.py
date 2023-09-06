@@ -23,7 +23,7 @@ from typing import (
     Union,
 )
 
-from confit import Config
+from confit import Config, validate_arguments
 from confit.errors import ConfitValidationError, patch_errors
 from confit.utils.collections import join_path, split_path
 from confit.utils.xjson import Reference
@@ -31,6 +31,7 @@ from tqdm import tqdm
 
 import edspdf
 
+from .accelerators.base import Accelerator, FromDoc, ToDoc
 from .registry import CurriedFactory, registry
 from .structures import PDFDoc
 from .utils.collections import (
@@ -239,51 +240,19 @@ class Pipeline:
         self._components.insert(insertion_idx, (name, pipe))
         return pipe
 
-    def make_doc(self, content: bytes) -> PDFDoc:
-        """
-        Create a PDFDoc from text.
-
-        Parameters
-        ----------
-        content: bytes
-            The bytes content to create the PDFDoc from.
-
-        Returns
-        -------
-        PDFDoc
-        """
-        return PDFDoc(content=content)
-
-    def _ensure_doc(self, text: Union[bytes, PDFDoc]) -> PDFDoc:
-        """
-        Ensure that the input is a PDFDoc.
-
-        Parameters
-        ----------
-        text: Union[str, PDFDoc]
-            The text to create the PDFDoc from, or a PDFDoc.
-
-        Returns
-        -------
-        PDFDoc
-        """
-        return text if isinstance(text, PDFDoc) else self.make_doc(text)
-
-    def __call__(self, text: Union[str, PDFDoc]) -> PDFDoc:
+    def __call__(self, doc: Any) -> PDFDoc:
         """
         Apply each component successively on a document.
 
         Parameters
         ----------
-        text: Union[str, PDFDoc]
-            The text to create the PDFDoc from, or a PDFDoc.
+        doc: Union[str, PDFDoc]
+            The doc to create the PDFDoc from, or a PDFDoc.
 
         Returns
         -------
         PDFDoc
         """
-        doc = self._ensure_doc(text)
-
         with self.cache():
             for name, pipe in self.pipeline:
                 if name in self._disabled:
@@ -298,11 +267,15 @@ class Pipeline:
 
         return doc
 
+    @validate_arguments
     def pipe(
         self,
-        texts: Iterable[Union[str, PDFDoc]],
+        inputs: Any,
         batch_size: Optional[int] = None,
-        component_cfg: Dict[str, Dict[str, Any]] = None,
+        *,
+        accelerator: Optional[Union[str, Accelerator]] = None,
+        to_doc: Optional[ToDoc] = None,
+        from_doc: FromDoc = lambda doc: doc,
     ) -> Iterable[PDFDoc]:
         """
         Process a stream of documents by applying each component successively on
@@ -310,48 +283,49 @@ class Pipeline:
 
         Parameters
         ----------
-        texts: Iterable[Union[str, PDFDoc]]
-            The texts to create the Docs from, or Docs directly.
+        inputs: Iterable[Union[str, PDFDoc]]
+            The inputs to create the PDFDocs from, or the PDFDocs directly.
         batch_size: Optional[int]
             The batch size to use. If not provided, the batch size of the pipeline
             object will be used.
-        component_cfg: Dict[str, Dict[str, Any]]
-            The arguments to pass to the components when processing the documents.
+        accelerator: Optional[Union[str, Accelerator]]
+            The accelerator to use for processing the documents. If not provided,
+            the default accelerator will be used.
+        to_doc: ToDoc
+            The function to use to convert the inputs to PDFDoc objects. By default,
+            the `content` field of the inputs will be used if dict-like objects are
+            provided, otherwise the inputs will be passed directly to the pipeline.
+        from_doc: FromDoc
+            The function to use to convert the PDFDoc objects to outputs. By default,
+            the PDFDoc objects will be returned directly.
 
         Returns
         -------
         Iterable[PDFDoc]
         """
-        import torch
 
-        if component_cfg is None:
-            component_cfg = {}
         if batch_size is None:
             batch_size = self.batch_size
 
-        docs = (self._ensure_doc(text) for text in texts)
+        if accelerator is None:
+            accelerator = {"@accelerator": "simple", "batch_size": batch_size}
+        if isinstance(accelerator, str):
+            accelerator = {"@accelerator": accelerator, "batch_size": batch_size}
+        if isinstance(accelerator, dict):
+            accelerator = Config(accelerator).resolve(registry=registry)
 
-        was_training = {name: proc.training for name, proc in self.trainable_pipes()}
-        for name, proc in self.trainable_pipes():
-            proc.train(False)
+        kwargs = {
+            "inputs": inputs,
+            "model": self,
+            "to_doc": to_doc,
+            "from_doc": from_doc,
+        }
+        for k, v in list(kwargs.items()):
+            if v is None:
+                del kwargs[k]
 
-        with torch.no_grad():
-            for batch in batchify(docs, batch_size=batch_size):
-                with self.cache():
-                    for name, pipe in self.pipeline:
-                        if name not in self._disabled:
-                            kwargs = component_cfg.get(name, {})
-                            if hasattr(pipe, "batch_process"):
-                                batch = pipe.batch_process(batch, **kwargs)
-                            else:
-                                batch = [
-                                    pipe(doc, **kwargs) for doc in batch  # type: ignore
-                                ]
-
-                yield from batch
-
-        for name, proc in self.trainable_pipes():
-            proc.train(was_training[name])
+        with self.train(False):
+            return accelerator(**kwargs)
 
     @contextmanager
     def cache(self):
