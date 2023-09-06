@@ -25,23 +25,18 @@ class ToDoc:
     @classmethod
     def validate(cls, value, config=None):
         if isinstance(value, str):
-            return FromDictFieldsToDoc(value)
-        elif isinstance(value, dict):
-            return FromDictFieldsToDoc(**value)
-        elif callable(value):
+            value = {"content_field": value}
+        if isinstance(value, dict):
+            value = FromDictFieldsToDoc(**value)
+        if callable(value):
             return value
-        else:
-            raise TypeError(
-                f"Invalid entry {value} ({type(value)}) for ToDoc, "
-                f"expected string, a dict or a callable."
-            )
+        raise TypeError(
+            f"Invalid entry {value} ({type(value)}) for ToDoc, "
+            f"expected string, a dict or a callable."
+        )
 
 
-def identity(x):
-    return x
-
-
-FROM_DOC_TO_DICT_FIELDS_TEMPLATE = """\
+FROM_DOC_TO_DICT_FIELDS_TEMPLATE = """
 def fn(doc):
     return {X}
 """
@@ -50,8 +45,10 @@ def fn(doc):
 class FromDocToDictFields:
     def __init__(self, mapping):
         self.mapping = mapping
-        dict_fields = ", ".join(f"{k}: doc.{v}" for k, v in mapping.items())
-        self.fn = eval(FROM_DOC_TO_DICT_FIELDS_TEMPLATE.replace("X", dict_fields))
+        dict_fields = ", ".join(f"{repr(k)}: doc.{v}" for k, v in mapping.items())
+        local_vars = {}
+        exec(FROM_DOC_TO_DICT_FIELDS_TEMPLATE.replace("X", dict_fields), local_vars)
+        self.fn = local_vars["fn"]
 
     def __reduce__(self):
         return FromDocToDictFields, (self.mapping,)
@@ -75,14 +72,13 @@ class FromDoc:
     @classmethod
     def validate(cls, value, config=None):
         if isinstance(value, dict):
-            return FromDocToDictFields(value)
-        elif callable(value):
+            value = FromDocToDictFields(value)
+        if callable(value):
             return value
-        else:
-            raise TypeError(
-                f"Invalid entry {value} ({type(value)}) for ToDoc, "
-                f"expected dict or callable"
-            )
+        raise TypeError(
+            f"Invalid entry {value} ({type(value)}) for ToDoc, "
+            f"expected dict or callable"
+        )
 
 
 class Accelerator:
@@ -92,7 +88,6 @@ class Accelerator:
         model: Any,
         to_doc: ToDoc = FromDictFieldsToDoc("content"),
         from_doc: FromDoc = lambda doc: doc,
-        component_cfg: Dict[str, Dict[str, Any]] = None,
     ):
         raise NotImplementedError()
 
