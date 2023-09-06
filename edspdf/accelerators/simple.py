@@ -80,11 +80,6 @@ class SimpleAccelerator(Accelerator):
         from_doc: FromDoc = lambda doc: doc,
         component_cfg: Dict[str, Dict[str, Any]] = None,
     ):
-        if from_doc is None:
-
-            def from_doc(doc):
-                return doc
-
         docs = (to_doc(doc) for doc in inputs)
         for batch in batchify(docs, batch_size=self.batch_size):
             with torch.no_grad(), model.cache(), model.train(False):

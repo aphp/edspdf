@@ -29,6 +29,7 @@ nav:
   - configuration.md
   - data-structures.md
   - trainable-pipes.md
+  - inference.md
   - Recipes:
       - recipes/index.md
       - recipes/rule-based.md

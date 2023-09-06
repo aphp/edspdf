@@ -57,6 +57,8 @@ model(pdf_bytes)
 model.pipe([pdf_bytes, ...])
 ```
 
+For more information on how to use the pipeline, refer to the [Inference](../inference) page.
+
 ## Hybrid models
 
 EDS-PDF was designed to facilitate the training and inference of hybrid models that

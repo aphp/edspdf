@@ -122,10 +122,16 @@ whitelist-regex = []
 color = true
 omit-covered-files = false
 
+[tool.coverage.run]
+concurrency = ["multiprocessing"]
+
 [tool.coverage.report]
 omit = [
-    "edspdf/accelerators/multi_gpu.py",
+    "tests/*",
 ]
+# omit = [
+#     "edspdf/accelerators/multiprocessing.py",
+# ]
 exclude_also = [
     "def __repr__",
     "if __name__ == .__main__.:",

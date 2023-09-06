@@ -155,6 +155,6 @@ body, input {
     margin-top: 1.5rem;
 }
 
-.references {
-
+.doc td > code {
+    word-break: normal;
 }

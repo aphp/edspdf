@@ -1,12 +1,16 @@
+from itertools import chain
 from pathlib import Path
 
 import datasets
 import pytest
+import torch
 from confit import Config
 from confit.errors import ConfitValidationError
 from confit.registry import validate_arguments
 
 import edspdf
+import edspdf.accelerators.multiprocessing
+from edspdf import TrainablePipe
 from edspdf.pipeline import Pipeline
 from edspdf.pipes.aggregators.simple import SimpleAggregator
 from edspdf.pipes.extractors.pdfminer import PdfMinerExtractor
@@ -319,3 +323,116 @@ def test_add_pipe_validation_error():
         "-> extractor.foo\n"
         "   unexpected keyword argument"
     )
+
+
+def test_multiprocessing_accelerator(frozen_pipeline, pdf, letter_pdf):
+    edspdf.accelerators.multiprocessing.MAX_NUM_PROCESSES = 2
+    docs = list(
+        frozen_pipeline.pipe(
+            [pdf, letter_pdf] * 20,
+            accelerator="multiprocessing",
+            batch_size=2,
+        )
+    )
+    assert len(docs) == 40
+
+
+def error_pipe(doc: PDFDoc):
+    if doc.id == "pdf-3":
+        raise ValueError("error")
+    return doc
+
+
+def test_multiprocessing_gpu_stub(frozen_pipeline, pdf, letter_pdf):
+    edspdf.accelerators.multiprocessing.MAX_NUM_PROCESSES = 2
+    accelerator = edspdf.accelerators.multiprocessing.MultiprocessingAccelerator(
+        batch_size=2,
+        num_gpu_workers=1,
+        num_cpu_workers=1,
+        gpu_worker_devices=["cpu"],
+    )
+    list(
+        frozen_pipeline.pipe(
+            chain.from_iterable(
+                [
+                    {"content": pdf},
+                    {"content": letter_pdf},
+                ]
+                for i in range(5)
+            ),
+            accelerator=accelerator,
+            to_doc="content",
+            from_doc={"text": "aggregated_texts"},
+        )
+    )
+
+
+def test_multiprocessing_rb_error(pipeline, pdf, letter_pdf):
+    edspdf.accelerators.multiprocessing.MAX_NUM_PROCESSES = 2
+    pipeline.add_pipe(error_pipe, name="error", after="extractor")
+    with pytest.raises(ValueError):
+        list(
+            pipeline.pipe(
+                chain.from_iterable(
+                    [
+                        {"content": pdf, "id": f"pdf-{i}"},
+                        {"content": letter_pdf, "id": f"letter-{i}"},
+                    ]
+                    for i in range(5)
+                ),
+                accelerator="multiprocessing",
+                batch_size=2,
+                to_doc={"content_field": "content", "id_field": "id"},
+            )
+        )
+
+
+class DeepLearningError(TrainablePipe):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def preprocess(self, doc):
+        return {"num_boxes": len(doc.content_boxes), "doc_id": doc.id}
+
+    def collate(self, batch, device):
+        return {
+            "num_boxes": torch.tensor(batch["num_boxes"], device=device),
+            "doc_id": batch["doc_id"],
+        }
+
+    def forward(self, batch):
+        if "pdf-1" in batch["doc_id"]:
+            raise RuntimeError("Deep learning error")
+        return {}
+
+
+def test_multiprocessing_ml_error(pipeline, pdf, letter_pdf):
+    edspdf.accelerators.multiprocessing.MAX_NUM_PROCESSES = 2
+    pipeline.add_pipe(
+        DeepLearningError(
+            pipeline=pipeline,
+            name="error",
+        ),
+        after="extractor",
+    )
+    accelerator = edspdf.accelerators.multiprocessing.MultiprocessingAccelerator(
+        batch_size=2,
+        num_gpu_workers=1,
+        num_cpu_workers=1,
+        gpu_worker_devices=["cpu"],
+    )
+    with pytest.raises(RuntimeError) as e:
+        list(
+            pipeline.pipe(
+                chain.from_iterable(
+                    [
+                        {"content": pdf, "id": f"pdf-{i}"},
+                        {"content": letter_pdf, "id": f"letter-{i}"},
+                    ]
+                    for i in range(5)
+                ),
+                accelerator=accelerator,
+                to_doc={"content_field": "content", "id_field": "id"},
+            )
+        )
+    assert "Deep learning error" in str(e.value)
