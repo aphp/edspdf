@@ -15,9 +15,8 @@ jobs:
       - name: Set PY variable
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
 
-      - name: Install dependencies
-        run: |
-          pip install -e '.[docs]'
+      - name: Install hatch
+        run: pip install hatch
 
       - name: Set up Git
         run: |
@@ -26,5 +25,5 @@ jobs:
       - name: Build documentation
         run: |
           git fetch origin gh-pages
-          mike delete main
-          mike deploy --push main
+          hatch -e docs run mike delete main
+          hatch -e docs run mike deploy --push main

@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Upload Python Package
+name: Release
 
 on:
   workflow_dispatch:
@@ -14,6 +14,34 @@ on:
     types: [published]
 
 jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}/${{ matrix.arch || '*' }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            arch: x86_64
+          - os: macos-latest
+            arch: arm64
+          - os: ubuntu-latest
+            arch: '*'  # unused
+          - os: windows-latest
+            arch: '*'  # unused
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.13.1
+        env:
+          CIBW_ARCHS_MACOS: ${{ matrix.arch }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
+
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-latest
@@ -23,28 +51,28 @@ jobs:
       - name: Build sdist
         run: pipx run build --sdist
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           path: dist/*.tar.gz
 
-  PyPI:
+  pypi:
     name: Upload to PyPI
-
-    needs: [build_sdist]
+    needs: [ build_wheels, build_sdist ]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
 
     steps:
-    - uses: actions/download-artifact@v2
-      with:
-        name: artifact
-        path: dist
-    - name: Publish package
-      uses: pypa/gh-action-pypi-publish@v1.5.0
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+          path: dist
+      - name: Publish package
+        uses: pypa/gh-action-pypi-publish@release/v1
 
-  Documentation:
+  documentation:
+    name: Build documentation
+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -53,8 +81,8 @@ jobs:
       - name: Set PY variable
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
 
-      - name: Install dependencies
-        run: pip install -e '.[docs]'
+      - name: Install hatch
+        run: pip install hatch
 
       - name: Set up Git
         run: |
@@ -64,4 +92,4 @@ jobs:
       - name: Build documentation
         run: |
           git fetch origin gh-pages
-          mike deploy --push --no-redirect --update-aliases $GITHUB_REF_NAME latest
+          hatch -e docs run mike deploy --push --no-redirect --update-aliases $GITHUB_REF_NAME latest

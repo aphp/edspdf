@@ -8,7 +8,7 @@ We welcome contributions ! There are many ways to help. For example, you can:
 
 ## Development installation
 
-To be able to run the test suite and develop your own pipeline, you should clone the repo and install it locally.
+To be able to run the test suite and develop your own pipeline, you should clone the repo and install it locally. We use the [`hatch`](https://hatch.pypa.io/) package manager to manage the project.
 
 
 <div class="termy">
@@ -18,13 +18,15 @@ color:gray # Clone the repository and change directory
 $ git clone ssh://git@github.com/aphp/edspdf.git
 ---> 100%
 
+color:gray # Ensure hatch is installed, preferably via pipx
+$ pipx install hatch
+
 $ cd edspdf
 
-color:gray # Create and activate a virtual environment for build isolation
-$ python -m venv .venv
-$ source .venv/bin/activate
-color:gray # Install the dependencies
-$ pip install '.[dev]'
+color:gray # Enter a shell to develop / test the project. This will install everything required in a virtual environment. You can also `source` the path shown by hatch.
+$ hatch shell
+$ ...
+$ exit  # when you're done
 ```
 
 </div>
@@ -89,13 +91,13 @@ Most modern editors propose extensions that will format files on save.
 Make sure to document your improvements, both within the code with comprehensive docstrings,
 as well as in the documentation itself if need be.
 
-We use `MkDocs` for EDS-PDF's documentation. You can checkout the changes you make with:
+We use `MkDocs` for EDS-PDF's documentation. You can view your changes with
 
 <div class="termy">
 
 ```console
 color:gray # Run the documentation
-$ mkdocs serve
+$ hatch run docs:serve
 ```
 
 </div>

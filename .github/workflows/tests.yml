@@ -31,16 +31,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: x64
 
-      - name: Set PY variable
-        run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
-
-      - name: Install dependencies
-        run: |
-          pip install -e '.[dev]'
-          pip install poetry build
+      - name: Install hatch
+        run: pip install hatch
 
       - name: Test with Pytest on Python ${{ matrix.python-version }}
-        run: python -m pytest --cov edspdf --cov-report xml
+        run: hatch run tests
 
       - name: Upload coverage
         uses: codecov/codecov-action@v2
@@ -54,16 +49,11 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Set PY variable
-        run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
-
-      - name: Install dependencies
-        run: |
-          pip install -e '.[docs]'
+      - name: Install hatch
+        run: pip install hatch
 
       - name: Build documentation
-        run: |
-          mkdocs build --clean
+        run: hatch run docs:build
 
   Installation:
     runs-on: ubuntu-latest
@@ -76,6 +66,6 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install library
+      - name: Install library from source
         run: |
           pip install .
