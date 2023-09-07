@@ -4,13 +4,11 @@ from functools import wraps
 from pathlib import Path
 from typing import (
     Any,
-    Callable,
     Dict,
     Generic,
     Iterable,
     Optional,
     Sequence,
-    Tuple,
     TypeVar,
     Union,
 )
@@ -25,7 +23,6 @@ NestedSequences = Dict[str, Union["NestedSequences", Sequence]]
 NestedTensors = Dict[str, Union["NestedSequences", torch.Tensor]]
 InputBatch = TypeVar("InputBatch", bound=NestedTensors)
 OutputBatch = TypeVar("OutputBatch", bound=NestedTensors)
-Scorer = Callable[[Sequence[Tuple[PDFDoc, PDFDoc]]], Union[float, Dict[str, Any]]]
 
 
 class CacheEnum(str, Enum):
@@ -377,24 +374,6 @@ class TrainablePipe(
             the document.
         """
         return self.preprocess(doc)
-
-    def clean_gold_for_evaluation(self, gold: PDFDoc) -> PDFDoc:
-        """
-        Clean the gold document before evaluation.
-        Only the attributes that are predicted by the component should be removed.
-        By default, this is a no-op.
-
-        Parameters
-        ----------
-        gold: PDFDoc
-            Gold document
-
-        Returns
-        -------
-        PDFDoc
-            The document without attributes that should be predicted
-        """
-        return gold
 
     def __call__(self, doc: PDFDoc) -> PDFDoc:
         """

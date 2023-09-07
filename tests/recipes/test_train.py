@@ -2,6 +2,7 @@ import itertools
 import json
 import os
 from collections import defaultdict
+from copy import deepcopy
 from pathlib import Path
 from typing import Any, Callable, Generator, Iterable, List, Optional, Union
 
@@ -10,6 +11,7 @@ import torch
 from accelerate import Accelerator
 from confit import Cli
 from rich_logger import RichTablePrinter
+from sklearn.metrics import classification_report
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from typer.testing import CliRunner
@@ -24,6 +26,15 @@ from edspdf.utils.optimization import LinearSchedule, ScheduledOptimizer
 from edspdf.utils.random import set_seed
 
 runner = CliRunner()
+
+
+def score(golds, preds):
+    return classification_report(
+        [b.label for gold in golds for b in gold.text_boxes if b.text != ""],
+        [b.label for pred in preds for b in pred.text_boxes if b.text != ""],
+        output_dict=True,
+        zero_division=0,
+    )
 
 
 @registry.adapter.register("segmentation-adapter")
@@ -149,12 +160,13 @@ def train(
         all_metrics = []
         for step in tqdm(range(max_steps + 1), "Training model", leave=True):
             if (step % validation_interval) == 0:
-                metrics = {
-                    "step": step,
-                    "lr": optimizer.param_groups[0]["lr"],
-                    **cumulated_losses,
-                    **flatten_dict(model.score(val_docs)),
-                }
+                with model.select_pipes(enable=["classifier"]):
+                    metrics = {
+                        "step": step,
+                        "lr": optimizer.param_groups[0]["lr"],
+                        **cumulated_losses,
+                        **flatten_dict(score(val_docs, model.pipe(deepcopy(val_docs)))),
+                    }
                 cumulated_losses = defaultdict(lambda: 0.0)
                 all_metrics.append(metrics)
                 logger.log_metrics(metrics)
@@ -254,7 +266,8 @@ def test_function(pdf, error_pdf, change_test_dir, dummy_dataset, tmp_path):
     list(model.pipe([pdf] * 2 + [error_pdf] * 2))
     output = model(PDFDoc(content=pdf))
 
-    assert model.score(docs)["classifier"]["accuracy"] > 0.5
+    with model.select_pipes(enable=["classifier"]):
+        assert score(docs, model.pipe(deepcopy(docs)))["accuracy"] > 0.5
 
     assert type(output) == PDFDoc
 
@@ -324,6 +337,7 @@ def test_function_huggingface(pdf, error_pdf, change_test_dir, dummy_dataset, tm
     list(model.pipe([pdf] * 2 + [error_pdf] * 2))
     output = model(PDFDoc(content=pdf))
 
-    assert model.score(docs)["classifier"]["accuracy"] > 0.5
+    with model.select_pipes(enable=["classifier"]):
+        assert score(docs, model.pipe(deepcopy(docs)))["accuracy"] > 0.5
 
     assert type(output) == PDFDoc

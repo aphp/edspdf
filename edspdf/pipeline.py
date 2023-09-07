@@ -1,9 +1,7 @@
-import copy
 import functools
 import json
 import os
 import shutil
-import time
 import warnings
 from collections import defaultdict
 from contextlib import contextmanager
@@ -27,7 +25,6 @@ from confit import Config, validate_arguments
 from confit.errors import ConfitValidationError, patch_errors
 from confit.utils.collections import join_path, split_path
 from confit.utils.xjson import Reference
-from tqdm import tqdm
 
 import edspdf
 
@@ -37,7 +34,6 @@ from .structures import PDFDoc
 from .utils.collections import (
     FrozenList,
     batch_compress_dict,
-    batchify,
     decompress_dict,
     multi_tee,
 )
@@ -122,10 +118,7 @@ class Pipeline:
         -------
         bool
         """
-        for n, _ in self.pipeline:
-            if n == name:
-                return True
-        return False
+        return any(n == name for n, _ in self.pipeline)
 
     def create_pipe(
         self,
@@ -635,79 +628,6 @@ class Pipeline:
 
         return context()
 
-    def score(self, docs: Sequence[PDFDoc], batch_size: int = None) -> Dict[str, Any]:
-        """
-        Scores a pipeline against a sequence of annotated documents.
-
-        This poses a few challenges:
-        - for a NER pipeline, if a component adds new entities instead of replacing
-          all entities altogether, documents need to be stripped of gold entities before
-          being passed to the component to avoid counting them.
-        - on the other hand, if a component uses existing entities to make a decision,
-          e.g. span classification, we must preserve the gold entities in documents
-          before evaluating the component.
-        Therefore, we must be able to define what a "clean" document is for each
-        component.
-        Can we do this automatically? If not, we should at least be able to define
-        it manually for each component.
-
-
-        Parameters
-        ----------
-        docs: Sequence[InputT]
-            The documents to score
-        batch_size: int
-            The batch size to use for scoring
-
-        Returns
-        -------
-        Dict[str, Any]
-            A dictionary containing the metrics of the pipeline, as well as the speed of
-            the pipeline. Each component that has a scorer will also be scored and its
-            metrics will be included in the returned dictionary under a key named after
-            each component.
-        """
-        import torch
-
-        inputs: Sequence[PDFDoc] = copy.deepcopy(docs)
-        golds: Sequence[PDFDoc] = docs
-
-        scored_components = {}
-
-        # Predicting intermediate steps
-        preds = defaultdict(lambda: [])
-        if batch_size is None:
-            batch_size = self.batch_size
-        total_duration = 0
-        with self.train(False), torch.no_grad():  # type: ignore
-            for batch in batchify(
-                tqdm(inputs, "Scoring components"), batch_size=batch_size
-            ):
-                with self.cache():
-                    for name, pipe in self.pipeline[::-1]:
-                        if hasattr(pipe, "clean_gold_for_evaluation"):
-                            batch = [
-                                pipe.clean_gold_for_evaluation(doc) for doc in batch
-                            ]
-                        t0 = time.time()
-                        if hasattr(pipe, "batch_process"):
-                            batch = pipe.batch_process(batch)
-                        else:
-                            batch = [pipe(doc) for doc in batch]
-                        total_duration += time.time() - t0
-
-                        if getattr(pipe, "score", None) is not None:
-                            scored_components[name] = pipe
-                            preds[name].extend(copy.deepcopy(batch))
-
-            metrics: Dict[str, Any] = {
-                "speed": len(inputs) / total_duration,
-            }
-            for name, pipe in scored_components.items():
-                metrics[name] = pipe.score([(p, g) for p, g in zip(preds[name], golds)])
-
-        return metrics
-
     def save(
         self, path: Union[str, Path], *, exclude: Optional[Set[str]] = None
     ) -> None:
@@ -878,7 +798,6 @@ class Pipeline:
         config["pipeline"]["components"] = Reference("components")
         return config.serialize()
 
-    @contextmanager
     def select_pipes(
         self,
         *,
@@ -895,24 +814,44 @@ class Pipeline:
         enable: Optional[Union[str, Iterable[str]]]
             The name of the component to enable, or a list of names.
         """
+
+        class context:
+            def __enter__(self):
+                pass
+
+            def __exit__(ctx_self, type, value, traceback):
+                self._disabled = disabled_before
+
         if enable is None and disable is None:
             raise ValueError("Expected either `enable` or `disable`")
         if isinstance(disable, str):
             disable = [disable]
+        pipe_names = set(self.pipe_names)
         if enable is not None:
             if isinstance(enable, str):
                 enable = [enable]
+            if set(enable) - pipe_names:
+                raise ValueError(
+                    "Enabled pipes {} not found in pipeline.".format(
+                        sorted(set(enable) - pipe_names)
+                    )
+                )
             to_disable = [pipe for pipe in self.pipe_names if pipe not in enable]
             # raise an error if the enable and disable keywords are not consistent
             if disable is not None and disable != to_disable:
                 raise ValueError("Inconsistent values for `enable` and `disable`")
             disable = to_disable
 
-        disabled_before = self._disabled
+        if set(disable) - pipe_names:
+            raise ValueError(
+                "Disabled pipes {} not found in pipeline.".format(
+                    sorted(set(disable) - pipe_names)
+                )
+            )
 
+        disabled_before = self._disabled
         self._disabled = disable
-        yield self
-        self._disabled = disabled_before
+        return context()
 
 
 def load(config: Union[Path, str, Config]):

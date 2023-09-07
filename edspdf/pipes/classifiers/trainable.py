@@ -6,7 +6,6 @@ from typing import Any, Dict, Iterable, Sequence, Set
 import torch
 import torch.nn.functional as F
 from foldedtensor import as_folded_tensor
-from sklearn.metrics import classification_report
 from tqdm import tqdm
 
 from edspdf.layers.vocabulary import Vocabulary
@@ -14,16 +13,7 @@ from edspdf.pipeline import Pipeline
 from edspdf.pipes.embeddings import EmbeddingOutput
 from edspdf.registry import registry
 from edspdf.structures import PDFDoc
-from edspdf.trainable_pipe import Scorer, TrainablePipe
-
-
-def classifier_scorer(pairs):
-    return classification_report(
-        [b.label for pred, gold in pairs for b in gold.text_boxes if b.text != ""],
-        [b.label for pred, gold in pairs for b in pred.text_boxes if b.text != ""],
-        output_dict=True,
-        zero_division=0,
-    )
+from edspdf.trainable_pipe import TrainablePipe
 
 
 @registry.factory.register("trainable-classifier")
@@ -96,17 +86,12 @@ class TrainableClassifier(TrainablePipe[Dict[str, Any]]):
         Initial labels of the classifier (will be completed during initialization)
     embedding: TrainablePipe[EmbeddingOutput]
         Embedding module to encode the PDF boxes
-    dropout_p: float
-        Dropout probability used on the output of the box and textual encoders
-    scorer: Scorer
-        Scoring function
     """
 
     def __init__(
         self,
         embedding: TrainablePipe[EmbeddingOutput],
         labels: Sequence[str] = ("pollution",),
-        scorer: Scorer = classifier_scorer,
         pipeline: Pipeline = None,
         name: str = "trainable-classifier",
     ):
@@ -121,8 +106,6 @@ class TrainableClassifier(TrainablePipe[Dict[str, Any]]):
             in_features=self.embedding.output_size,
             out_features=len(self.label_voc),
         )
-        # Scoring function
-        self.score = scorer
 
     def post_init(self, gold_data: Iterable[PDFDoc], exclude: set):
         if self.name in exclude:

@@ -12,6 +12,7 @@
 
 - Updated API to follow EDS-NLP's refactoring
 - Updated `confit` to 0.4.2 (better errors) and `foldedtensor` to 0.3.0 (better multiprocess support)
+- Removed `pipeline.score`. You should use `pipeline.pipe`, a custom scorer and `pipeline.select_pipes` instead.
 - Better test coverage
 
 ### Fixed

@@ -1,3 +1,4 @@
+import copy
 from itertools import chain
 from pathlib import Path
 
@@ -7,6 +8,7 @@ import torch
 from confit import Config
 from confit.errors import ConfitValidationError
 from confit.registry import validate_arguments
+from sklearn.metrics import classification_report
 
 import edspdf
 import edspdf.accelerators.multiprocessing
@@ -224,11 +226,20 @@ def make_segmentation_adapter(path: str):
 
 
 def test_pipeline_on_data(pipeline: Pipeline, dummy_dataset: str, pdf: bytes):
+    def score(golds, preds):
+        return classification_report(
+            [b.label for gold in golds for b in gold.text_boxes if b.text != ""],
+            [b.label for pred in preds for b in pred.text_boxes if b.text != ""],
+            output_dict=True,
+            zero_division=0,
+        )
+
     assert type(pipeline(pdf)) == PDFDoc
     assert len(list(pipeline.pipe([pdf] * 4))) == 4
 
     data = list(make_segmentation_adapter(dummy_dataset)(pipeline))
-    results = pipeline.score(data)
+    with pipeline.select_pipes(enable=["classifier"]):
+        results = score(data, pipeline.pipe(copy.deepcopy(data)))
     assert isinstance(results, dict)
 
 
@@ -244,6 +255,13 @@ def test_cache(pipeline: Pipeline, dummy_dataset: Path, pdf: bytes):
 
 def test_select_pipes(pipeline: Pipeline, pdf: bytes):
     with pipeline.select_pipes(enable=["extractor", "classifier"]):
+        assert pipeline(pdf).aggregated_texts == {}
+    with pipeline.select_pipes(enable="extractor"):
+        assert all(box.label is None for box in pipeline(pdf).content_boxes)
+    with pytest.raises(ValueError):
+        with pipeline.select_pipes(disable="aggregator"):
+            pass
+    with pipeline.select_pipes(disable="simple-aggregator"):
         assert pipeline(pdf).aggregated_texts == {}
 
 
