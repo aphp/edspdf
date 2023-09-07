@@ -36,8 +36,11 @@ dependencies = [
     "loguru",
 ]
 
-[project.optional-dependencies]
-dev = [
+
+[tool.hatch.envs.default]
+dependencies = [
+    "pip",
+    "poetry",
     "pandas>=1.2,<2.0.0",
     "black==22.6.0",
     "flake8>=3.0",
@@ -51,7 +54,12 @@ dev = [
     "huggingface_hub>=0.8.1",
     "transformers~=4.30",
 ]
-docs = [
+
+[tool.hatch.envs.default.scripts]
+tests = "pytest --cov=edspdf --cov-report=term-missing --cov-report=xml"
+
+[tool.hatch.envs.docs]
+dependencies = [
     "mike~=1.1.2",
     "mkdocs@git+https://github.com/mkdocs/mkdocs.git@5af8bd30538ff8f0cfb698c8b90c3020da319f92",
     "mkdocstrings~=0.20",
@@ -65,6 +73,12 @@ docs = [
     "pybtex~=0.24.0",
 ]
 
+[tool.hatch.envs.docs.scripts]
+build = "mkdocs build --site-dir public --clean"
+serve = "mkdocs serve"
+
+[tool.hatch.version]
+path = "edspdf/__init__.py"
 
 [project.entry-points."edspdf_factories"]
 # Extractors
@@ -99,12 +113,6 @@ docs = [
 [project.entry-points."mkdocs.plugins"]
 
 "bibtex" = "docs.scripts.bibtex:BibTexPlugin"
-
-[tool.setuptools.dynamic]
-version = { attr = "edspdf.__version__" }
-
-[tool.setuptools.packages.find]
-where = ["."]
 
 [tool.interrogate]
 ignore-init-method = true
@@ -179,10 +187,9 @@ select = [
 fixable = ["E", "F", "W", "I"]
 
 [tool.ruff.isort]
-known-first-party = ["edspdf"]
-known-third-party = ["build"]
-
+    known-first-party = ["edspdf"]
+    known-third-party = ["build"]
 
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

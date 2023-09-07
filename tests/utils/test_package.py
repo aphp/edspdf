@@ -1,7 +1,9 @@
 import importlib
+import subprocess
+import sys
 
-import pip
 import pytest
+import torch
 
 from edspdf.utils.package import package
 
@@ -58,8 +60,10 @@ authors = ["Test Author <test.author@mail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-torch = "^1.4.0"
-"""
+torch = "^{}"
+""".format(
+            torch.__version__.split("+")[0]
+        )
     )
 
     with pytest.raises(ValueError):
@@ -95,12 +99,18 @@ torch = "^1.4.0"
     assert (tmp_path / "pyproject.toml").is_file()
 
     # pip install the whl file
-    pip.main(
-        [
-            "install",
-            str(tmp_path / "dist" / f"{module_name}-0.1.0-py3-none-any.whl"),
-            "--force-reinstall",
-        ]
+    print(
+        subprocess.check_output(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                str(tmp_path / "dist" / f"{module_name}-0.1.0-py3-none-any.whl"),
+                "--force-reinstall",
+            ],
+            stderr=subprocess.STDOUT,
+        )
     )
 
     module = importlib.import_module(module_name)
@@ -138,5 +148,30 @@ def load(device: "torch.device" = "cpu") -> edspdf.Pipeline:
 def clean_after():
     yield
 
-    pip.main(["uninstall", "-y", "test-model"])
-    pip.main(["uninstall", "-y", "my-test-model"])
+    print(
+        subprocess.check_output(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "uninstall",
+                "-y",
+                "test-model",
+            ],
+            stderr=subprocess.STDOUT,
+        )
+    )
+
+    print(
+        subprocess.check_output(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "uninstall",
+                "-y",
+                "my-test-model",
+            ],
+            stderr=subprocess.STDOUT,
+        )
+    )
