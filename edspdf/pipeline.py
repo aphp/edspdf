@@ -854,7 +854,7 @@ class Pipeline:
         return context()
 
 
-def load(config: Union[Path, str, Config]):
+def load(config: Union[Path, str, Config]) -> Pipeline:
     error = "The load function expects a Config or a path to a config file"
     if isinstance(config, (Path, str)):
         path = Path(config)
