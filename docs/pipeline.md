@@ -79,7 +79,7 @@ To share the pipeline and turn it into a pip installable package, you can use th
 
 ```python
 model.package(
-    name="path/to/your/package",
+    name="your-package-name",  # leave None to reuse name in pyproject.toml
     version="0.0.1",
     root_dir="path/to/project/root",  # optional, to retrieve an existing pyproject.toml file
     # if you don't have a pyproject.toml, you can provide the metadata here instead
