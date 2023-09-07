@@ -160,16 +160,32 @@ model to decrease a given loss. The process of training a pipeline with EDS-PDF 
         optimizer.step()
     ```
 
-7. Finally, the model is evaluated on the validation dataset at regular intervals and saved at the end of the training. Although you can use `torch.save` to save your model, we provide a safer method to avoid the security pitfalls of pickle models
-    ```python
-    from edspdf import Pipeline
+   7. Finally, the model is evaluated on the validation dataset at regular intervals and saved at the end of the training. To score the model, we only want to run "classifier" component and not the extractor, otherwise we would overwrite annotated text boxes on documents in the `val_docs` dataset, and have mismatching text boxes between the gold and predicted documents. To save the model, although you can use `torch.save` to save your model, we provide a safer method to avoid the security pitfalls of pickle models
+       ```python
+       from edspdf import Pipeline
+       from sklearn.metrics import classification_report
+       from copy import deepcopy
 
-    if (step % 100) == 0:
-        print(model.score(val_docs))
 
-    # torch.save(model, "model.pt")
-    model.save("model")
-    ```
+       def score(golds, preds):
+           return classification_report(
+               [b.label for gold in golds for b in gold.text_boxes if b.text != ""],
+               [b.label for pred in preds for b in pred.text_boxes if b.text != ""],
+               output_dict=True,
+               zero_division=0,
+           )
+
+
+       ...
+
+       if (step % 100) == 0:
+           # we only want to run "classifier" component, not overwrite the text boxes
+           with model.select_pipes(enable=["classifier"]):
+               print(score(val_docs, model.pipe(deepcopy(val_docs))))
+
+       # torch.save(model, "model.pt")
+       model.save("model")
+       ```
 
 ## Adapting a dataset
 
@@ -234,6 +250,7 @@ Let's wrap the training code in a function, and make it callable from the comman
     ```python linenums="1"
     import itertools
     import json
+    from copy import deepcopy
     from pathlib import Path
 
     import torch
@@ -248,6 +265,15 @@ Let's wrap the training code in a function, and make it callable from the comman
     from edspdf.utils.random import set_seed
 
     app = Cli(pretty_exceptions_show_locals=False)
+
+
+    def score(golds, preds):
+        return classification_report(
+            [b.label for gold in golds for b in gold.text_boxes if b.text != ""],
+            [b.label for pred in preds for b in pred.text_boxes if b.text != ""],
+            output_dict=True,
+            zero_division=0,
+        )
 
 
     @registry.adapter.register("my-segmentation-adapter")
@@ -390,7 +416,8 @@ Let's wrap the training code in a function, and make it callable from the comman
                 optimizer.step()
 
             if (step % 100) == 0:
-                print(model.score(val_docs))
+                with model.select_pipes(enable=["classifier"]):
+                    print(score(val_docs, model.pipe(deepcopy(val_docs))))
                 model.save("model")
 
         return model
@@ -398,6 +425,7 @@ Let's wrap the training code in a function, and make it callable from the comman
 
     if __name__ == "__main__":
         app()
+
     ```
 
 ```bash
