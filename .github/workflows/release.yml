@@ -14,50 +14,24 @@ on:
     types: [published]
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}/${{ matrix.arch || '*' }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: macos-latest
-            arch: x86_64
-          - os: macos-latest
-            arch: arm64
-          - os: ubuntu-latest
-            arch: '*'  # unused
-          - os: windows-latest
-            arch: '*'  # unused
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.13.1
-        env:
-          CIBW_ARCHS_MACOS: ${{ matrix.arch }}
-
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ./wheelhouse/*.whl
-
-  build_sdist:
-    name: Build source distribution
+  build:
+    name: Build package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
       - name: Build sdist
-        run: pipx run build --sdist
+        run: pipx run build --sdist --wheel
 
       - uses: actions/upload-artifact@v3
         with:
-          path: dist/*.tar.gz
+          path: |
+            dist/*.tar.gz
+            dist/*.whl
 
   pypi:
     name: Upload to PyPI
-    needs: [ build_wheels, build_sdist ]
+    needs: [ build ]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
