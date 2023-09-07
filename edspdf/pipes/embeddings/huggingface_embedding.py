@@ -42,7 +42,7 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
     occurrence that is the closest to the center of its window.
 
     Here is an overview how this works in a classifier model :
-    ![Transformer windowing](./assets/transformer-windowing.svg)
+    ![Transformer windowing](/assets/images/transformer-windowing.svg)
 
     Examples
     --------
@@ -82,7 +82,8 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
     )
     ```
 
-    This model can then be trained following the [training recipe](/recipes/training/).
+    This model can then be trained following the
+    [training recipe](/recipes/training/).
 
     Parameters
     ----------

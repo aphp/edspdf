@@ -125,6 +125,7 @@ plugins:
             show_root_toc_entry: false
             show_signature: false
             merge_init_into_class: true
+  - autolinks
   - glightbox:
       touchNavigation: true
       loop: false
@@ -155,3 +156,6 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
+
+validation:
+  absolute_links: ignore

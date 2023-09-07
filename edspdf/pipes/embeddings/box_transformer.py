@@ -61,8 +61,8 @@ class BoxTransformer(TrainablePipe[EmbeddingOutput]):
         Initializing with a value close to 0 can help the training converge.
     attention_mode: Sequence[RelativeAttentionMode]
         Mode of relative position infused attention layer.
-        See the [relative attention](relative_attention) documentation for more
-        information.
+        See the [relative attention][edspdf.layers.relative_attention.RelativeAttention]
+        documentation for more information.
     n_layers: int
         Number of layers in the Transformer
     """

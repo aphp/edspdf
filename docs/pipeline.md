@@ -57,7 +57,7 @@ model(pdf_bytes)
 model.pipe([pdf_bytes, ...])
 ```
 
-For more information on how to use the pipeline, refer to the [Inference](../inference) page.
+For more information on how to use the pipeline, refer to the [Inference](/inference) page.
 
 ## Hybrid models
 
