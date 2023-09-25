@@ -20,6 +20,8 @@ theme:
     - navigation.tracking
     - navigation.instant
     - navigation.indexes
+    - navigation.prune
+    - navigation.top
     - content.code.annotate
 
 nav:
@@ -37,6 +39,7 @@ nav:
       - recipes/extension.md
       - recipes/annotation.md
   - Pipes:
+      - pipes/index.md
       - Embeddings:
         - pipes/embeddings/index.md
         - pipes/embeddings/simple-text-embedding.md
@@ -59,7 +62,6 @@ nav:
       - Aggregators:
         - pipes/aggregators/index.md
         - pipes/aggregators/simple-aggregator.md
-      - pipes/index.md
   - Layers:
       - layers/index.md
       - layers/box-transformer.md
@@ -125,7 +127,6 @@ plugins:
             show_root_toc_entry: false
             show_signature: false
             merge_init_into_class: true
-  - autolinks
   - glightbox:
       touchNavigation: true
       loop: false

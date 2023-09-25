@@ -6,7 +6,7 @@ from edspdf.structures import PDFDoc
 @registry.factory.register("dummy-classifier")
 class DummyClassifier:
     """
-    Dummy classifier, for chaos purposes. Classifies each line to a random element.
+    Dummy classifier. Classifies each line to the same element.
 
     Parameters
     ----------
