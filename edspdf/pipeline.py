@@ -22,10 +22,11 @@ from typing import (
     Union,
 )
 
-from confit import Config, validate_arguments
+from confit import Config
 from confit.errors import ConfitValidationError, patch_errors
 from confit.utils.collections import join_path, split_path
 from confit.utils.xjson import Reference
+from pydantic import parse_obj_as
 from typing_extensions import Literal
 
 import edspdf
@@ -262,7 +263,6 @@ class Pipeline:
 
         return doc
 
-    @validate_arguments
     def pipe(
         self,
         inputs: Any,
@@ -303,7 +303,7 @@ class Pipeline:
             batch_size = self.batch_size
 
         if accelerator is None:
-            accelerator = {"@accelerator": "simple", "batch_size": batch_size}
+            accelerator = "simple"
         if isinstance(accelerator, str):
             accelerator = {"@accelerator": accelerator, "batch_size": batch_size}
         if isinstance(accelerator, dict):
@@ -312,8 +312,8 @@ class Pipeline:
         kwargs = {
             "inputs": inputs,
             "model": self,
-            "to_doc": to_doc,
-            "from_doc": from_doc,
+            "to_doc": parse_obj_as(Optional[ToDoc], to_doc),
+            "from_doc": parse_obj_as(Optional[FromDoc], from_doc),
         }
         for k, v in list(kwargs.items()):
             if v is None:
