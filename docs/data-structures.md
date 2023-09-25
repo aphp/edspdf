@@ -17,11 +17,11 @@ When running a trainable component, the [PDFDoc][edspdf.structures.PDFDoc] is pr
 
 ## Data models
 
-The main data structure is the [[PDFDoc][edspdf.structures.PDFDoc]][edspdf.structures.PDFDoc], which represents full a PDF document. It contains the raw PDF content, annotations for the full document, regardless of pages. A PDF is split into [`Page`][edspdf.structures.Page] objects that stores their number, dimension and optionally an image of the rendered page.
+The main data structure is the [PDFDoc][edspdf.structures.PDFDoc], which represents full a PDF document. It contains the raw PDF content, annotations for the full document, regardless of pages. A PDF is split into [Page][edspdf.structures.Page] objects that stores their number, dimension and optionally an image of the rendered page.
 
-The PDF annotations are stored in [`Box`][edspdf.structures.Box] objects, which represent a rectangular region of the PDF. At the moment, box can only be specialized into [`TextBox`][edspdf.structures.TextBox] to represent text regions, such as lines extracted by a PDF extractor. Aggregated texts are stored in [`Text`][edspdf.structures.Text] objects, that are not associated with a specific box.
+The PDF annotations are stored in [Box][edspdf.structures.Box] objects, which represent a rectangular region of the PDF. At the moment, box can only be specialized into [TextBox][edspdf.structures.TextBox] to represent text regions, such as lines extracted by a PDF extractor. Aggregated texts are stored in [Text][edspdf.structures.Text] objects, that are not associated with a specific box.
 
-A [`TextBox`][edspdf.structures.TextBox] contains a list of [`TextProperties`][edspdf.structures.TextProperties] objects to store the style properties of a styled spans of the text.
+A [TextBox][edspdf.structures.TextBox] contains a list of [TextProperties][edspdf.structures.TextProperties] objects to store the style properties of a styled spans of the text.
 
 ??? note "Reference"
 

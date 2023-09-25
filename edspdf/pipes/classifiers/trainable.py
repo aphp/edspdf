@@ -32,14 +32,12 @@ class TrainableClassifier(TrainablePipe[Dict[str, Any]]):
 
     The classifier is composed of the following blocks:
 
-    - a configurable box embedding layer
+    - a configurable embedding layer
     - a linear classification layer
 
-    In this example, we use a `box-embedding` layer to generate the embeddings
-    of the boxes. It is composed of a text encoder that embeds the text features of the
-    boxes and a layout encoder that embeds the layout features of the boxes.
-    These two embeddings are summed and passed through an optional `contextualizer`,
-    here a `box-transformer`.
+    In this example, we use a simple CNN-based embedding layer (`sub-box-cnn-pooler`),
+    which applies a stack of CNN layers to the embeddings computed by a text embedding
+    layer (`simple-text-embedding`).
 
     === "API-based"
 

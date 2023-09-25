@@ -30,7 +30,7 @@ y1 = 0.6
 threshold = 0.1
 
 [components.aggregator]
-@factory = "styled-aggregator"  # (4)
+@factory = "simple-aggregator"  # (4)
 ```
 
 1. This is the top-level object, which organises the entire extraction process.

@@ -61,7 +61,7 @@ tests = "pytest --cov=edspdf --cov-report=term-missing --cov-report=xml"
 [tool.hatch.envs.docs]
 dependencies = [
     "mike~=1.1.2",
-    "mkdocs@git+https://github.com/mkdocs/mkdocs.git@5af8bd30538ff8f0cfb698c8b90c3020da319f92",
+    "mkdocs~=1.5.2",
     "mkdocstrings~=0.20",
     "mkdocstrings-python~=1.1",
     "mkdocs-autorefs@git+https://github.com/percevalw/mkdocs-autorefs.git@0.4.1.post0",
@@ -71,6 +71,9 @@ dependencies = [
     "mkdocs-material~=9.1.0",
     "mkdocs-glightbox~=0.3.1",
     "pybtex~=0.24.0",
+    "lxml",
+    "edspdf-mupdf",
+    "edspdf-poppler",
 ]
 
 [tool.hatch.envs.docs.scripts]
@@ -111,7 +114,6 @@ path = "edspdf/__init__.py"
 "multiprocessing" = "edspdf.accelerators.multiprocessing:MultiprocessingAccelerator"
 
 [project.entry-points."mkdocs.plugins"]
-
 "bibtex" = "docs.scripts.bibtex:BibTexPlugin"
 
 [tool.interrogate]
