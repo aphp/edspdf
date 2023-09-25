@@ -12,7 +12,7 @@ from ..registry import registry
 from ..utils.collections import batchify
 from .base import Accelerator, FromDictFieldsToDoc, FromDoc, ToDoc
 
-DEBUG = True
+DEBUG = False
 
 debug = (
     (lambda *args, flush=False, **kwargs: print(*args, **kwargs, flush=True))
