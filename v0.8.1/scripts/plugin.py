@@ -234,6 +234,11 @@ def on_post_page(
             if href is None or href.startswith("http"):
                 continue
             a.set("href", get_relative_link(href))
+        for img in root.iter("img"):
+            href = img.get("src")
+            if href is None or href.startswith("http"):
+                continue
+            img.set("src", get_relative_link(href))
 
         # Convert the modified tree back to a string
         return root
