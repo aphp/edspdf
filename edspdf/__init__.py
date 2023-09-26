@@ -6,4 +6,4 @@ from .structures import Box, Page, PDFDoc, Text, TextBox, TextProperties
 
 from . import utils  # isort:skip
 
-__version__ = "0.8.0"
+__version__ = "0.8.1"

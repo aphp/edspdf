@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.8.1
+
+### Fixed
+
+- Fix typing to allow passing an accelerator dict to `Pipeline.pipe(...)`
+- Removed multiprocessing accelerator debug output
+- Fixed absolute links in github-pages docs (e.g. image assets)
+
+### Changed
+
+- Added auto-links to components in the docs (by comparing span contents with entry points)
+
 ## v0.8.0
 
 ### Added
