@@ -185,7 +185,7 @@ def on_post_page(
         link_url = get_component_url(content.strip("\"'"))
         if link_url is None:
             return
-        a = lh.Element("a", href="/" + link_url)
+        a = etree.Element("a", href="/" + link_url)
         a.text = content
         span.text = ""
         span.append(a)
@@ -244,9 +244,11 @@ def on_post_page(
         return root
 
     # Replace absolute paths with path relative to the rendered page
-    import lxml.html as lh
+    from lxml.html import etree
 
-    root = lh.fromstring(output)
+    root = etree.HTML(output)
     root = replace_component_names(root)
     root = replace_absolute_links(root)
-    return "".join(lh.tostring(e, encoding="unicode") for e in root)
+    doctype = root.getroottree().docinfo.doctype
+    res = etree.tostring(root, encoding="unicode", method="html", doctype=doctype)
+    return res
