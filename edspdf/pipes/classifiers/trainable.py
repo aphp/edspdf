@@ -181,7 +181,9 @@ class TrainableClassifier(TrainablePipe[Dict[str, Any]]):
         output = {"loss": 0, "mask": embeddings.mask}
 
         # Label prediction / learning
-        logits = self.classifier(embeddings).refold("line")
+        logits = self.classifier(embeddings.to(self.classifier.weight.dtype)).refold(
+            "line"
+        )
         if "labels" in batch:
             targets = batch["labels"].refold(logits.data_dims)
             output["label_loss"] = (
