@@ -1,14 +1,20 @@
 import math
+import sys
+from typing import Optional, Set
 
 import torch
+from confit import validate_arguments
 from foldedtensor import as_folded_tensor
 from transformers import AutoImageProcessor, AutoModel, AutoTokenizer
+from transformers import BitsAndBytesConfig as BitsAndBytesConfig_
 from typing_extensions import Literal
 
 from edspdf import TrainablePipe, registry
 from edspdf.pipeline import Pipeline
 from edspdf.pipes.embeddings import EmbeddingOutput
 from edspdf.structures import PDFDoc
+
+BitsAndBytesConfig = validate_arguments(BitsAndBytesConfig_)
 
 
 def compute_contextualization_scores(windows):
@@ -108,6 +114,11 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
         The maximum number of tokens that can be processed by the model on a single
         device. This does not affect the results but can be used to reduce the memory
         usage of the model, at the cost of a longer processing time.
+    quantization_config: Optional[BitsAndBytesConfig]
+        The quantization configuration to use when loading the model
+    kwargs:
+        Additional keyword arguments to pass to the Huggingface
+        `AutoModel.from_pretrained` method
     """
 
     def __init__(
@@ -119,7 +130,9 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
         window: int = 510,
         stride: int = 255,
         line_pooling: Literal["mean", "max", "sum"] = "mean",
-        max_tokens_per_device: int = 128 * 128,
+        max_tokens_per_device: int = sys.maxsize,
+        quantization_config: Optional[BitsAndBytesConfig] = None,
+        **kwargs,
     ):
         super().__init__(pipeline, name)
         self.use_image = use_image
@@ -129,7 +142,11 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
             else None
         )
         self.tokenizer = AutoTokenizer.from_pretrained(model)
-        self.hf_model = AutoModel.from_pretrained(model)
+        self.hf_model = AutoModel.from_pretrained(
+            model,
+            quantization_config=quantization_config,
+            **kwargs,
+        )
         self.output_size = self.hf_model.config.hidden_size
         self.window = window
         self.stride = stride
@@ -335,3 +352,16 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
             mode=self.line_pooling,
         )
         return {"embeddings": line_embedding}
+
+    def to_disk(self, path, *, exclude: Optional[Set[str]]):
+        repr_id = object.__repr__(self)
+        if repr_id in exclude:
+            return
+        for obj in (self.tokenizer, self.image_processor, self.hf_model):
+            if obj is not None:
+                obj.save_pretrained(path)
+        for param in self.hf_model.parameters():
+            exclude.add(object.__repr__(param))
+        cfg = super().to_disk(path, exclude=exclude) or {}
+        cfg["model"] = f"./{path.as_posix()}"
+        return cfg
