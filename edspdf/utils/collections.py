@@ -1,8 +1,18 @@
 import copy
 import itertools
-import math
 from collections import defaultdict
-from typing import Any, Dict, Iterable, List, Mapping, Sequence, TypeVar
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Mapping,
+    Sequence,
+    TypeVar,
+    Union,
+)
 
 It = TypeVar("It", bound=Iterable)
 T = TypeVar("T")
@@ -37,16 +47,46 @@ def nest_dict(flat: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def ld_to_dl(ld: Iterable[Mapping[str, T]]) -> Dict[str, List[T]]:
+    """
+    Convert a list of dictionaries to a dictionary of lists
+
+    Parameters
+    ----------
+    ld: Iterable[Mapping[str, T]]
+        The list of dictionaries
+
+    Returns
+    -------
+    Dict[str, List[T]]
+        The dictionary of lists
+    """
     ld = list(ld)
-    return {k: [dic[k] for dic in ld] for k in ld[0]}
+    return {k: [dic.get(k) for dic in ld] for k in (ld[0] if len(ld) else ())}
 
 
-def dl_to_ld(dl: Mapping[str, Sequence[T]]) -> List[Dict[str, T]]:
-    return [dict(zip(dl, t)) for t in zip(*dl.values())]
+def dl_to_ld(dl: Mapping[str, Sequence[Any]]) -> Iterator[Dict[str, Any]]:
+    """
+    Convert a dictionary of lists to a list of dictionaries
+
+    Parameters
+    ----------
+    dl: Mapping[str, Sequence[Any]]
+        The dictionary of lists
+
+    Returns
+    -------
+    List[Dict[str, Any]]
+        The list of dictionaries
+    """
+    return (dict(zip(dl, t)) for t in zip(*dl.values()))
 
 
-def flatten(seq: Sequence[Sequence["T"]]) -> List["T"]:
-    return list(itertools.chain.from_iterable(seq))
+def flatten(items):
+    for item in items:
+        if isinstance(item, list):
+            yield from flatten(item)
+        else:
+            yield item
 
 
 FLATTEN_TEMPLATE = """\
@@ -64,16 +104,17 @@ def discover_scheme(obj):
             keys[id(current)].append(path)
             return
         for key, value in current.items():
-            rec(value, (*path, key))
+            if not key.startswith("$"):
+                rec(value, (*path, key))
 
     rec(obj, ())
 
     code = FLATTEN_TEMPLATE.format(
         "{"
         + "\n".join(
-            "'{}': root{},".format(
-                "|".join(map("/".join, key_list)),
-                "".join(f"['{k}']" for k in key_list[0]),
+            "{}: root{},".format(
+                repr("|".join(map("/".join, key_list))),
+                "".join(f"[{repr(k)}]" for k in key_list[0]),
             )
             for key_list in keys.values()
         )
@@ -83,6 +124,19 @@ def discover_scheme(obj):
 
 
 class batch_compress_dict:
+    """
+    Compress a sequence of dictionaries in which values that occur multiple times are
+    deduplicated. The corresponding keys will be merged into a single string using
+    the "|" character as a separator.
+    This is useful to preserve referential identities when decompressing the dictionary
+    after it has been serialized and deserialized.
+
+    Parameters
+    ----------
+    seq: Iterable[Dict[str, Any]]
+        Sequence of dictionaries to compress
+    """
+
     __slots__ = ("flatten", "seq")
 
     def __init__(self, seq: Iterable[Dict[str, Any]]):
@@ -109,7 +163,23 @@ class batch_compress_dict:
         return self.flatten(item)
 
 
-def decompress_dict(seq):
+def decompress_dict(seq: Union[Iterable[Dict[str, Any]], Dict[str, Any]]):
+    """
+    Decompress a dictionary of lists into a sequence of dictionaries.
+    This function assumes that the dictionary structure was obtained using the
+    `batch_compress_dict` class.
+    Keys that were merged into a single string using the "|" character as a separator
+    will be split into a nested dictionary structure.
+
+    Parameters
+    ----------
+    seq: Union[Iterable[Dict[str, Any]], Dict[str, Any]]
+        The dictionary to decompress or a sequence of dictionaries to decompress
+
+    Returns
+    -------
+
+    """
     obj = ld_to_dl(seq) if isinstance(seq, Sequence) else seq
     res = {}
     for key, value in obj.items():
@@ -122,26 +192,33 @@ def decompress_dict(seq):
     return res
 
 
-class batchify(Iterable[List[T]]):
-    def __init__(self, iterable: Iterable[T], batch_size: int):
-        self.iterable = iter(iterable)
-        self.batch_size = batch_size
-        try:
-            self.length = math.ceil(len(iterable) / batch_size)
-        except (AttributeError, TypeError):
-            pass
+def batchify(
+    iterable: Iterable[T],
+    batch_size: int,
+    drop_last: bool = False,
+    formula: Callable = len,
+) -> Iterable[List[T]]:
+    """
+    Yields batch that contain at most `batch_size` elements.
+    If an item contains more than `batch_size` elements, it will be yielded as a single
+    batch.
 
-    def __len__(self):
-        return self.length
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        batch = list(itertools.islice(self.iterable, self.batch_size))
-        if len(batch) == 0:
-            raise StopIteration()
-        return batch
+    Parameters
+    ----------
+    iterable: Iterable[T]
+    batch_size: int
+    drop_last: bool
+    formula: Callable
+    """
+    batch = []
+    for item in iterable:
+        next_size = formula(batch + [item])
+        if next_size > batch_size and len(batch) > 0:
+            yield batch
+            batch = []
+        batch.append(item)
+    if len(batch) > 0 and not drop_last:
+        yield batch
 
 
 def get_attr_item(base, attr):

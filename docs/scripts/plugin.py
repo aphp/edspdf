@@ -7,6 +7,8 @@ import mkdocs.structure
 import mkdocs.structure.files
 import mkdocs.structure.nav
 import mkdocs.structure.pages
+import regex
+from mkdocs_autorefs.plugin import AutorefsPlugin
 
 try:
     from importlib.metadata import entry_points
@@ -128,9 +130,13 @@ def on_page_read_source(page, config):
     return None
 
 
-HREF_REGEX = r'href=(?:"([^"]*)"|\'([^\']*)|[ ]*([^ =>]*)(?![a-z]+=))'
+HREF_REGEX = (
+    r"(?<=<\s*(?:a[^>]*href|img[^>]*src)=)"
+    r'(?:"([^"]*)"|\'([^\']*)|[ ]*([^ =>]*)(?![a-z]+=))'
+)
+
+
 # Maybe find something less specific ?
-PIPE_REGEX = r"(?<=[^a-zA-Z0-9._-])eds[.][a-zA-Z0-9._-]*(?=[^a-zA-Z0-9._-])"
 
 
 @mkdocs.plugins.event_priority(-1000)
@@ -155,100 +161,57 @@ def on_post_page(
 
     """
 
-    autorefs = config["plugins"]["autorefs"]
-    edspdf_factories_entry_points = {
-        ep.name: ep.value for ep in entry_points()["edspdf_factories"]
+    autorefs: AutorefsPlugin = config["plugins"]["autorefs"]
+    factories_entry_points = {
+        ep.name: autorefs.get_item_url(ep.value.replace(":", "."))
+        for ep in entry_points()["edspdf_factories"]
     }
+    factories_entry_points = {
+        k: "/" + v if not v.startswith("/") else v
+        for k, v in factories_entry_points.items()
+    }
+    factories_entry_points.update(
+        {
+            "mupdf-extractor": "https://aphp.github.io/edspdf-mupdf/latest/",
+            "poppler-extractor": "https://aphp.github.io/edspdf-poppler/latest/",
+        }
+    )
 
-    def get_component_url(name):
-        ep = edspdf_factories_entry_points.get(name)
-        if ep is None:
-            return None
-        try:
-            url = autorefs.get_item_url(ep.replace(":", "."))
-        except KeyError:
-            pass
-        else:
-            return url
-        return None
+    PIPE_REGEX_BASE = "|".join(regex.escape(name) for name in factories_entry_points)
+    PIPE_REGEX = f"""(?x)
+    (?<=")({PIPE_REGEX_BASE})(?=")
+    |(?<=&quot;)({PIPE_REGEX_BASE})(?=&quot;)
+    |(?<=')({PIPE_REGEX_BASE})(?=')
+    |(?<=<code>)({PIPE_REGEX_BASE})(?=</code>)
+    """
 
-    def get_relative_link(url):
+    def replace_component(match):
+        name = match.group()
+        preceding = output[match.start(0) - 50 : match.start(0)]
+        if (
+            "DEFAULT:"
+            not in preceding
+            # and output[: match.start(0)].count("<code>")
+            # > output[match.end(0) :].count("</code>")
+        ):
+            try:
+                ep_url = factories_entry_points[name]
+            except KeyError:
+                pass
+            else:
+                if ep_url.split("#")[0].strip("/") != page.file.url.strip("/"):
+                    return "<a href={href}>{name}</a>".format(href=ep_url, name=name)
+        return name
+
+    def replace_link(match):
+        relative_url = url = match.group(1) or match.group(2) or match.group(3)
         page_url = os.path.join("/", page.file.url)
         if url.startswith("/"):
-            url = os.path.relpath(url, page_url)
-        return url
-
-    def replace_component_span(span):
-        content = span.text
-        if content is None:
-            return
-        link_url = get_component_url(content.strip("\"'"))
-        if link_url is None:
-            return
-        a = etree.Element("a", href="/" + link_url)
-        a.text = content
-        span.text = ""
-        span.append(a)
-
-    def replace_component_names(root):
-        # Iterate through all span elements
-        spans = list(root.iter("span", "code"))
-        for i, span in enumerate(spans):
-            prev = span.getprevious()
-            if span.getparent().tag == "a":
-                continue
-            # To avoid replacing default component name in parameter tables
-            if prev is None or prev.text != "DEFAULT:":
-                replace_component_span(span)
-            # if span.text == "add_pipe":
-            #     next_span = span.getnext()
-            #     if next_span is None:
-            #         continue
-            #     next_span = next_span.getnext()
-            #     if next_span is None or next_span.tag != "span":
-            #         continue
-            #     replace_component_span(next_span)
-            #     continue
-            # tokens = ["@", "factory", "="]
-            # while True:
-            #     if len(tokens) == 0:
-            #         break
-            #     if span.text != tokens[0]:
-            #         break
-            #     tokens = tokens[1:]
-            #     span = span.getnext()
-            #     while span is not None and (
-            #       span.text is None or not span.text.strip()
-            #     ):
-            #         span = span.getnext()
-            # if len(tokens) == 0:
-            #     replace_component_span(span)
-
-        # Convert the modified tree back to a string
-        return root
-
-    def replace_absolute_links(root):
-        # Iterate through all a elements
-        for a in root.iter("a"):
-            href = a.get("href")
-            if href is None or href.startswith("http"):
-                continue
-            a.set("href", get_relative_link(href))
-        for img in root.iter("img"):
-            href = img.get("src")
-            if href is None or href.startswith("http"):
-                continue
-            img.set("src", get_relative_link(href))
-
-        # Convert the modified tree back to a string
-        return root
+            relative_url = os.path.relpath(url, page_url)
+        return f'"{relative_url}"'
 
     # Replace absolute paths with path relative to the rendered page
-    from lxml.html import etree
+    output = regex.sub(PIPE_REGEX, replace_component, output)
+    output = regex.sub(HREF_REGEX, replace_link, output)
 
-    root = etree.HTML(output)
-    root = replace_component_names(root)
-    root = replace_absolute_links(root)
-    doctype = root.getroottree().docinfo.doctype
-    res = etree.tostring(root, encoding="unicode", method="html", doctype=doctype)
-    return res
+    return output

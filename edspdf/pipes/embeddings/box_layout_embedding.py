@@ -9,7 +9,7 @@ from edspdf.pipes.embeddings.box_layout_preprocessor import (
     BoxLayoutPreprocessor,
 )
 from edspdf.registry import registry
-from edspdf.trainable_pipe import NestedSequences, TrainablePipe
+from edspdf.trainable_pipe import TrainablePipe
 
 
 @registry.factory.register("box-layout-embedding")
@@ -71,8 +71,8 @@ class BoxLayoutEmbedding(TrainablePipe[EmbeddingOutput]):
     def preprocess(self, doc):
         return self.box_preprocessor.preprocess(doc)
 
-    def collate(self, batch: NestedSequences, device: torch.device) -> BoxLayoutBatch:
-        return self.box_preprocessor.collate(batch, device)
+    def collate(self, batch) -> BoxLayoutBatch:
+        return self.box_preprocessor.collate(batch)
 
     @classmethod
     def _make_embed(cls, n_positions, size, mode):

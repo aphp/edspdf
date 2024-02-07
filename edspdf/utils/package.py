@@ -6,7 +6,7 @@ import subprocess
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from types import FunctionType
+from types import FunctionType, ModuleType
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -25,9 +25,13 @@ import toml
 from build.__main__ import build_package, build_package_via_sdist
 from confit import Cli
 from dill._dill import save_function as dill_save_function
+from dill._dill import save_module as dill_save_module
 from dill._dill import save_type as dill_save_type
-from importlib_metadata import PackageNotFoundError
-from importlib_metadata import version as get_version
+
+try:
+    import importlib_metadata
+except ImportError:  # pragma: no cover
+    import importlib.metadata as importlib_metadata
 from loguru import logger
 from typing_extensions import Literal
 
@@ -36,22 +40,25 @@ import edspdf
 py_version = f"{sys.version_info.major}.{sys.version_info.minor}"
 
 
-def get_package(obj_type: Type):
+def get_package(obj: Type):
     # Retrieve the __package__ attribute of the module of a type, if possible.
     # And returns the package version as well
     try:
-        module_name = obj_type.__module__
+        if isinstance(obj, ModuleType):
+            module_name = obj.__name__
+        else:
+            module_name = obj.__module__
         if module_name == "__main__":
-            raise Exception(f"Could not find package of type {obj_type}")
+            raise Exception(f"Could not find package of {obj}")
         module = __import__(module_name, fromlist=["__package__"])
-        package = module.__package__
+        package = module.__package__.split(".")[0]
         try:
-            version = get_version(package)
-        except (PackageNotFoundError, ValueError):
+            version = importlib_metadata.version(package)
+        except (importlib_metadata.PackageNotFoundError, ValueError):
             return None
         return package, version
     except (ImportError, AttributeError):
-        raise Exception(f"Cound not find package of type {obj_type}")
+        raise Exception(f"Cound not find package of type {obj}")
 
 
 def save_type(pickler, obj, *args, **kwargs):
@@ -68,11 +75,19 @@ def save_function(pickler, obj, *args, **kwargs):
     return dill_save_function(pickler, obj, *args, **kwargs)
 
 
+def save_module(pickler, obj, *args, **kwargs):
+    package_name = get_package(obj)
+    if package_name is not None:
+        pickler.packages.add(package_name)
+    return dill_save_module(pickler, obj, *args, **kwargs)
+
+
 class PackagingPickler(dill.Pickler):
     dispatch = dill.Pickler.dispatch.copy()
 
     dispatch[FunctionType] = save_function
     dispatch[type] = save_type
+    dispatch[ModuleType] = save_module
 
     def __init__(self, *args, **kwargs):
         self.file = io.BytesIO()
@@ -81,7 +96,7 @@ class PackagingPickler(dill.Pickler):
 
 
 def get_deep_dependencies(obj):
-    pickler = PackagingPickler()
+    pickler = PackagingPickler(byref=True)
     pickler.dump(obj)
     return sorted(pickler.packages)
 
@@ -132,6 +147,8 @@ poetry = Factory().create_poetry("__root_dir__")
 # Initialize the builder
 try:
     builder = SdistBuilder(poetry, None, None)
+    # Get the list of files to include
+    files = builder.find_files_to_add()
 except ModuleOrPackageNotFound:
     if not poetry.package.packages:
         print([])
@@ -139,15 +156,13 @@ except ModuleOrPackageNotFound:
 
 print([
     {k: v for k, v in {
-    "include": include._include,
-    "from": include.source,
-    "formats": include.formats,
-    }.items()}
+    "include": getattr(include, '_include'),
+    "from": getattr(include, 'source', None),
+    "formats": getattr(include, 'formats', None),
+    }.items() if v}
     for include in builder._module.includes
 ])
 
-# Get the list of files to include
-files = builder.find_files_to_add()
 
 # Print the list of files
 for file in files:
@@ -161,12 +176,16 @@ INIT_PY = """
 
 import edspdf
 from pathlib import Path
+from typing import Optional, Dict, Any
 
 __version__ = {__version__}
 
-def load(device: "torch.device" = "cpu") -> edspdf.Pipeline:
+def load(
+    overrides: Optional[Dict[str, Any]] = None,
+    device: "torch.device" = "cpu"
+) -> edspdf.Pipeline:
     artifacts_path = Path(__file__).parent / "{artifacts_dir}"
-    model = edspdf.load(artifacts_path, device=device)
+    model = edspdf.load(artifacts_path, overrides=overrides, device=device)
     return model
 """
 
@@ -194,11 +213,11 @@ class PoetryPackager:
         self,
         pyproject: Optional[Dict[str, Any]],
         pipeline: Union[Path, "edspdf.Pipeline"],
-        version: str,
+        version: Optional[str],
         name: Optional[ModuleName],
         root_dir: Path = ".",
-        build_name: Path = "build",
-        out_dir: Path = "dist",
+        build_dir: Path = "build",
+        dist_dir: Path = "dist",
         artifacts_name: ModuleName = "artifacts",
         dependencies: Optional[Sequence[Tuple[str, str]]] = None,
         metadata: Optional[Dict[str, Any]] = {},
@@ -215,10 +234,11 @@ class PoetryPackager:
         self.dependencies = dependencies
         self.pipeline = pipeline
         self.artifacts_name = artifacts_name
-        self.out_dir = self.root_dir / out_dir
+        self.dist_dir = (
+            dist_dir if Path(dist_dir).is_absolute() else self.root_dir / dist_dir
+        )
 
         with self.ensure_pyproject(metadata):
-
             python_executable = (
                 Path(self.poetry_bin_path).read_text().split("\n")[0][2:]
             )
@@ -236,7 +256,9 @@ class PoetryPackager:
             out = result.stdout.decode().strip().split("\n")
 
         self.poetry_packages = eval(out[0])
-        self.build_dir = root_dir / build_name / self.name
+        self.build_dir = (
+            build_dir if Path(build_dir).is_absolute() else root_dir / build_dir
+        ) / self.name
         self.file_paths = [self.root_dir / file_path for file_path in out[1:]]
 
         logger.info(f"root_dir: {self.root_dir}")
@@ -262,7 +284,7 @@ class PoetryPackager:
                         "poetry": {
                             **metadata,
                             "name": self.name,
-                            "version": self.version,
+                            "version": self.version or "0.1.0",
                             "dependencies": {
                                 "python": f">={py_version},<4.0",
                                 **{
@@ -319,7 +341,7 @@ class PoetryPackager:
             distributions = ["wheel"]
         build_call(
             srcdir=self.build_dir,
-            outdir=self.out_dir,
+            outdir=self.dist_dir,
             distributions=distributions,
             config_settings=config_settings,
             isolation=isolation,
@@ -335,12 +357,13 @@ class PoetryPackager:
             f"project"
         )
 
-        old_version = self.pyproject["tool"]["poetry"]["version"]
-        self.pyproject["tool"]["poetry"]["version"] = self.version
-        logger.info(
-            f"Replaced project version {old_version!r} with {self.version!r} in poetry "
-            f"based project"
-        )
+        if self.version is not None:
+            old_version = self.pyproject["tool"]["poetry"]["version"]
+            self.pyproject["tool"]["poetry"]["version"] = self.version
+            logger.info(
+                f"Replaced project version {old_version!r} with {self.version!r} in "
+                f"poetry based project"
+            )
 
         # Adding artifacts to include in pyproject.toml
         snake_name = snake_case(self.name.lower())
@@ -381,7 +404,7 @@ class PoetryPackager:
                 build_artifacts_dir,
             )
         else:
-            self.pipeline.save(build_artifacts_dir)
+            self.pipeline.to_disk(build_artifacts_dir)
         os.makedirs(package_dir, exist_ok=True)
         with open(package_dir / "__init__.py", mode="a") as f:
             f.write(
@@ -397,10 +420,12 @@ def package(
     pipeline: Union[Path, "edspdf.Pipeline"],
     name: Optional[ModuleName] = None,
     root_dir: Path = ".",
+    build_dir: Path = "build",
+    dist_dir: Path = "dist",
     artifacts_name: ModuleName = "artifacts",
     check_dependencies: bool = False,
     project_type: Optional[Literal["poetry", "setuptools"]] = None,
-    version: str = "0.1.0",
+    version: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = {},
     distributions: Optional[Sequence[Literal["wheel", "sdist"]]] = ["wheel"],
     config_settings: Optional[Mapping[str, Union[str, Sequence[str]]]] = None,
@@ -442,6 +467,8 @@ def package(
             name=name,
             version=version,
             root_dir=root_dir,
+            build_dir=build_dir,
+            dist_dir=dist_dir,
             artifacts_name=artifacts_name,
             dependencies=dependencies,
             metadata=metadata,

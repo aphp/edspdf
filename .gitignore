@@ -63,7 +63,7 @@ report.xml
 *.pickle
 *.joblib
 *.pdf
-data/
+/data/
 
 # MkDocs output
 docs/reference

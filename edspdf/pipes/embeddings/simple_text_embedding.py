@@ -154,7 +154,7 @@ class SimpleTextEmbedding(TrainablePipe[EmbeddingOutput]):
 
         self.update_weights_from_vocab_(vocab_items_before)
 
-    def save_extra_data(self, path: Path, exclude: Set):
+    def to_disk(self, path: Path, exclude: Set):
         if self.name in exclude:
             return
 
@@ -169,7 +169,9 @@ class SimpleTextEmbedding(TrainablePipe[EmbeddingOutput]):
         with (path / "norm_voc.json").open("w") as f:
             json.dump(self.norm_voc.indices, f)
 
-    def load_extra_data(self, path: Path, exclude: Set):
+        return super().to_disk(path, exclude)
+
+    def from_disk(self, path: Path, exclude: Set):
         if self.name in exclude:
             return
 
@@ -190,6 +192,8 @@ class SimpleTextEmbedding(TrainablePipe[EmbeddingOutput]):
             self.norm_voc.indices = json.load(f)
 
         self.update_weights_from_vocab_(vocab_items_before)
+
+        super().from_disk(path, exclude)
 
     def preprocess(self, doc: PDFDoc):
         tokens_shape = []
@@ -228,10 +232,9 @@ class SimpleTextEmbedding(TrainablePipe[EmbeddingOutput]):
             "tokens_norm": tokens_norm,
         }
 
-    def collate(self, batch, device: torch.device) -> BoxTextEmbeddingInputBatch:
+    def collate(self, batch) -> BoxTextEmbeddingInputBatch:
         kwargs = dict(
             dtype=torch.long,
-            device=device,
             data_dims=("word",),
             full_names=(
                 "sample",

@@ -155,9 +155,9 @@ class TrainableClassifier(TrainablePipe[Dict[str, Any]]):
             ],
         }
 
-    def collate(self, batch, device: torch.device) -> Dict:
+    def collate(self, batch) -> Dict:
         collated = {
-            "embedding": self.embedding.collate(batch["embedding"], device),
+            "embedding": self.embedding.collate(batch["embedding"]),
             "doc_id": batch["doc_id"],
         }
         if "labels" in batch:
@@ -167,7 +167,6 @@ class TrainableClassifier(TrainablePipe[Dict[str, Any]]):
                         batch["labels"],
                         data_dims=("line",),
                         full_names=("sample", "page", "line"),
-                        device=device,
                         dtype=torch.long,
                     ),
                 }
@@ -208,24 +207,22 @@ class TrainableClassifier(TrainablePipe[Dict[str, Any]]):
             b.label = self.label_voc.decode(label) if b.text != "" else None
         return docs
 
-    def save_extra_data(self, path: Path, exclude: Set):
+    def to_disk(self, path: Path, exclude: Set):
         if self.name in exclude:
             return
         exclude.add(self.name)
-
-        self.embedding.save_extra_data(path / "embedding", exclude)
 
         os.makedirs(path, exist_ok=True)
 
         with (path / "label_voc.json").open("w") as f:
             json.dump(self.label_voc.indices, f)
 
-    def load_extra_data(self, path: Path, exclude: Set):
+        return super().to_disk(path, exclude)
+
+    def from_disk(self, path: Path, exclude: Set):
         if self.name in exclude:
             return
         exclude.add(self.name)
-
-        self.embedding.load_extra_data(path / "embedding", exclude)
 
         label_voc_indices = dict(self.label_voc.indices)
 
@@ -233,3 +230,5 @@ class TrainableClassifier(TrainablePipe[Dict[str, Any]]):
             self.label_voc.indices = json.load(f)
 
         self.update_weights_from_vocab_(label_voc_indices)
+
+        super().from_disk(path, exclude)

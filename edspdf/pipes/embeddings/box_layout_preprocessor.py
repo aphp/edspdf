@@ -74,11 +74,10 @@ class BoxLayoutPreprocessor(TrainablePipe[BoxLayoutBatch]):
             "last_page": [[b.page_num == last_p for b in p.text_boxes] for p in pages],
         }
 
-    def collate(self, batch, device: torch.device) -> BoxLayoutBatch:
+    def collate(self, batch) -> BoxLayoutBatch:
         kw = {
             "full_names": ["sample", "page", "line"],
             "data_dims": ["line"],
-            "device": device,
         }
 
         return {

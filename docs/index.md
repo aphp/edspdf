@@ -99,12 +99,10 @@ See the [rule-based recipe](recipes/rule-based.md) for a step-by-step explanatio
 If you use EDS-PDF, please cite us as below.
 
 ```bibtex
-@software{edspdf,
-  author  = {Dura, Basile and Wajsburt, Perceval and Calliger, Alice and Gérardin, Christel and Bey, Romain},
-  doi     = {10.5281/zenodo.6902977},
-  license = {BSD-3-Clause},
-  title   = {{EDS-PDF: Smart text extraction from PDF documents}},
-  url     = {https://github.com/aphp/edspdf}
+@article{gerardin_wajsburt_pdf,
+  title={Bridging Clinical PDFs and Downstream Natural Language Processing: An Efficient Neural Approach to Layout Segmentation},
+  author={G{\'e}rardin, Christel Ducroz and Wajsburt, Perceval and Dura, Basile and Calliger, Alice and Mouchet, Alexandre and Tannier, Xavier and Bey, Romain},
+  journal={Available at SSRN 4587624}
 }
 ```
 
