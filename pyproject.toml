@@ -18,22 +18,28 @@ dependencies = [
     "anyascii>=0.3.2",
     "scikit-learn>=1.0.2,<2.0.0",
     "pydantic>=1.2,<2.0.0",
-    "catalogue~=2.0",
-    "networkx~=2.6",
-    "confit>=0.4.3,<1.0.0",
+    "catalogue>=2.0",
+    "networkx>=2.6",
+    "confit>=0.5.3,<1.0.0",
+    "fsspec<2023.1.0 ; python_version<'3.8'",
+    "fsspec ; python_version>='3.8'",
     "foldedtensor>=0.3.1,<1.0.0",
     "torch>1.0.0",
     "accelerate>=0.12.0,<1.0.0",
-    "tqdm~=4.64.1",
+    "tqdm>=4.64",
     "regex",
-    "pdfminer.six>=20220319",
-    "pypdfium2~=2.7",
-    "rich-logger>=0.3.0,<1.0.0",
-    "safetensors~=0.3.1",
+    "pdfminer.six>=20220319,<20231228 ; python_version<'3.8'",
+    "pdfminer.six ; python_version>='3.8'",
+    "pypdfium2>=2.7",
+    "rich-logger>=0.3",
+    "safetensors>=0.3",
     "anyascii>=0.3.2",
-    "attrs~=23.1",
+    "attrs>=23.1",
     "build>=0.10.0",
+    "pyarrow",
     "loguru",
+    "toml",
+    "dill",
 ]
 
 
@@ -50,9 +56,9 @@ dependencies = [
     "mypy>=1.0.0",
     "streamlit>=1.19",
     "coverage>=6.5.0",
-    "datasets~=2.10",
+    "datasets>=2.10",
     "huggingface_hub>=0.8.1",
-    "transformers~=4.30",
+    "transformers>=4.30",
 ]
 
 [tool.hatch.envs.default.scripts]
@@ -137,21 +143,20 @@ omit-covered-files = false
 
 [tool.coverage.run]
 concurrency = ["multiprocessing"]
+data_file = "coverage.coverage"
 
 [tool.coverage.report]
 omit = [
     "tests/*",
 ]
-# omit = [
-#     "edspdf/accelerators/multiprocessing.py",
-# ]
-exclude_also = [
+exclude_lines = [
     "def __repr__",
     "if __name__ == .__main__.:",
     "@overload",
     "pragma: no cover",
     "raise .*Error",
     "raise .*Exception",
+    "warn\\(",
     "if __name__ == .__main__.:",
     "if (self[.])?name in exclude:",
     "if TYPE_CHECKING:",

@@ -133,12 +133,16 @@ print("Hello World!")
 
 import edspdf
 from pathlib import Path
+from typing import Optional, Dict, Any
 
 __version__ = '0.1.0'
 
-def load(device: "torch.device" = "cpu") -> edspdf.Pipeline:
+def load(
+    overrides: Optional[Dict[str, Any]] = None,
+    device: "torch.device" = "cpu"
+) -> edspdf.Pipeline:
     artifacts_path = Path(__file__).parent / "artifacts"
-    model = edspdf.load(artifacts_path, device=device)
+    model = edspdf.load(artifacts_path, overrides=overrides, device=device)
     return model
 """
         )

@@ -181,7 +181,7 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
 
         return res
 
-    def collate(self, batch, device):
+    def collate(self, batch):
         # Flatten most of these arrays to process batches page per page and
         # not sample per sample
 
@@ -274,29 +274,24 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
         kw = dict(
             full_names=("sample", "page", "subword"),
             data_dims=("subword",),
-            device=device,
         )
         collated = {
             "input_ids": as_folded_tensor(batch["input_ids"], **kw, dtype=torch.long),
             "bbox": as_folded_tensor(batch["bbox"], **kw, dtype=torch.long),
-            "windows": windows.to(device),
-            "indexer": indexer[line_window_indices].to(device),
-            "line_window_indices": indexer[line_window_indices].as_tensor().to(device),
-            "line_window_offsets_flat": line_window_offsets_flat.to(device),
+            "windows": windows,
+            "indexer": indexer[line_window_indices],
+            "line_window_indices": indexer[line_window_indices].as_tensor(),
+            "line_window_offsets_flat": line_window_offsets_flat,
         }
         if self.use_image:
-            collated["pixel_values"] = (
-                torch.stack(
-                    [
-                        torch.from_numpy(page_pixels)
-                        for sample_pages in batch["pixel_values"]
-                        for page_pixels in sample_pages
-                    ],
-                    dim=0,
-                )
-                .repeat_interleave(torch.as_tensor(windows_count_per_page), dim=0)
-                .to(device)
-            )
+            collated["pixel_values"] = torch.stack(
+                [
+                    torch.from_numpy(page_pixels)
+                    for sample_pages in batch["pixel_values"]
+                    for page_pixels in sample_pages
+                ],
+                dim=0,
+            ).repeat_interleave(torch.as_tensor(windows_count_per_page), dim=0)
         return collated
 
     def forward(self, batch):

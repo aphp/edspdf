@@ -220,3 +220,5 @@ class registry(RegistryCollection):
     misc = Registry(("edspdf", "misc"), entry_points=True)
     adapter = Registry(("edspdf", "adapter"), entry_points=True)
     accelerator = Registry(("edspdf", "accelerator"), entry_points=True)
+    readers = Registry(("edspdf", "readers"), entry_points=True)
+    writers = Registry(("edspdf", "writers"), entry_points=True)

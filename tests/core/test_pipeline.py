@@ -223,11 +223,13 @@ def test_pipeline_on_data(pipeline: Pipeline, dummy_dataset: str, pdf: bytes):
 
 
 def test_cache(pipeline: Pipeline, dummy_dataset: Path, pdf: bytes):
+    from edspdf.trainable_pipe import _caches
+
     pipeline(pdf)
 
     with pipeline.cache():
         pipeline(pdf)
-        assert len(pipeline._cache) > 0
+        assert len(_caches["default"]) > 0
 
     assert pipeline._cache is None
 
@@ -249,11 +251,11 @@ def test_different_names(pipeline: Pipeline):
 
     extractor = PdfMinerExtractor(pipeline=pipeline, name="custom_name")
 
-    with pytest.raises(ValueError) as exc_info:
+    with pytest.warns() as record:
         pipeline.add_pipe(extractor, name="extractor")
 
     assert "The provided name does not match the name of the component." in str(
-        exc_info.value
+        record[0].message
     )
 
 
@@ -340,7 +342,7 @@ def error_pipe(doc: PDFDoc):
     return doc
 
 
-def test_multiprocessing_gpu_stub(frozen_pipeline, pdf, letter_pdf):
+def test_deprecated_multiprocessing_gpu_stub(frozen_pipeline, pdf, letter_pdf):
     edspdf.accelerators.multiprocessing.MAX_NUM_PROCESSES = 2
     accelerator = edspdf.accelerators.multiprocessing.MultiprocessingAccelerator(
         batch_size=2,
@@ -362,6 +364,29 @@ def test_multiprocessing_gpu_stub(frozen_pipeline, pdf, letter_pdf):
             from_doc={"text": "aggregated_texts"},
         )
     )
+
+
+def test_multiprocessing_gpu_stub(frozen_pipeline, pdf, letter_pdf):
+    edspdf.accelerators.multiprocessing.MAX_NUM_PROCESSES = 2
+    iterator = chain.from_iterable(
+        [
+            {"content": pdf},
+            {"content": letter_pdf},
+        ]
+        for i in range(5)
+    )
+    docs = edspdf.data.from_iterable(
+        iterator, converter=lambda x: PDFDoc(content=x["content"])
+    )
+    docs = docs.map_pipeline(frozen_pipeline)
+    docs = docs.set_processing(
+        batch_size=2,
+        num_gpu_workers=1,
+        num_cpu_workers=1,
+        gpu_worker_devices=["cpu"],
+        batch_unit="lines",
+    )
+    docs = list(docs.to_iterable(converter=lambda x: {"text": x.aggregated_texts}))
 
 
 def test_multiprocessing_rb_error(pipeline, pdf, letter_pdf):
@@ -391,9 +416,9 @@ class DeepLearningError(TrainablePipe):
     def preprocess(self, doc):
         return {"num_boxes": len(doc.content_boxes), "doc_id": doc.id}
 
-    def collate(self, batch, device):
+    def collate(self, batch):
         return {
-            "num_boxes": torch.tensor(batch["num_boxes"], device=device),
+            "num_boxes": torch.tensor(batch["num_boxes"]),
             "doc_id": batch["doc_id"],
         }
 

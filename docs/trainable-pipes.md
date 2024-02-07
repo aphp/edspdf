@@ -97,12 +97,12 @@ class MyComponent(TrainablePipe):
             "my-feature": ...(doc),
         }
 
-    def collate(self, batch, device: torch.device) -> Dict:
+    def collate(self, batch) -> Dict:
         # Collate the features of the "embedding" subcomponent
         # and the features of this component as well
         return {
-            "embedding": self.embedding.collate(batch["embedding"], device),
-            "my-feature": torch.as_tensor(batch["my-feature"], device=device),
+            "embedding": self.embedding.collate(batch["embedding"]),
+            "my-feature": torch.as_tensor(batch["my-feature"]),
         }
 
     def forward(self, batch: Dict, supervision=False) -> Dict:

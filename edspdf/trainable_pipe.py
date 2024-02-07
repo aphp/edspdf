@@ -1,28 +1,34 @@
+import os
 from abc import ABCMeta
 from enum import Enum
 from functools import wraps
-from pathlib import Path
 from typing import (
     Any,
+    Callable,
     Dict,
     Generic,
     Iterable,
     Optional,
     Sequence,
+    Set,
+    Tuple,
     TypeVar,
     Union,
 )
 
+import safetensors.torch
 import torch
 
 from edspdf.pipeline import Pipeline
 from edspdf.structures import PDFDoc
 from edspdf.utils.collections import batch_compress_dict, decompress_dict
 
-NestedSequences = Dict[str, Union["NestedSequences", Sequence]]
-NestedTensors = Dict[str, Union["NestedSequences", torch.Tensor]]
-InputBatch = TypeVar("InputBatch", bound=NestedTensors)
-OutputBatch = TypeVar("OutputBatch", bound=NestedTensors)
+BatchInput = TypeVar("BatchInput", bound=Dict[str, Any])
+BatchOutput = TypeVar("BatchOutput", bound=Dict[str, Any])
+Scorer = Callable[[Sequence[Tuple[PDFDoc, PDFDoc]]], Union[float, Dict[str, Any]]]
+
+ALL_CACHES = object()
+_caches = {}
 
 
 class CacheEnum(str, Enum):
@@ -36,19 +42,24 @@ def hash_batch(batch):
         return hash(tuple(id(item) for item in batch))
     elif not isinstance(batch, dict):
         return id(batch)
-    return hash((tuple(batch.keys()), tuple(map(hash_batch, batch.values()))))
+    if "__batch_hash__" in batch:
+        return batch["__batch_hash__"]
+    batch_hash = hash((tuple(batch.keys()), tuple(map(hash_batch, batch.values()))))
+    batch["__batch_hash__"] = batch_hash
+    return batch_hash
 
 
 def cached_preprocess(fn):
     @wraps(fn)
     def wrapped(self: "TrainablePipe", doc: PDFDoc):
-        if self.pipeline is None or self.pipeline._cache is None:
+        if self._current_cache_id is None:
             return fn(self, doc)
-        cache_id = (id(self), "preprocess", id(doc))
-        if cache_id in self.pipeline._cache:
-            return self.pipeline._cache[cache_id]
+        cache_key = ("preprocess", f"{type(self)}<{id(self)}>: {id(doc)}")
+        cache = _caches[self._current_cache_id]
+        if cache_key in cache:
+            return cache[cache_key]
         res = fn(self, doc)
-        self.pipeline._cache[cache_id] = res
+        cache[cache_key] = res
         return res
 
     return wrapped
@@ -57,31 +68,30 @@ def cached_preprocess(fn):
 def cached_preprocess_supervised(fn):
     @wraps(fn)
     def wrapped(self: "TrainablePipe", doc: PDFDoc):
-        if self.pipeline is None or self.pipeline._cache is None:
+        if self._current_cache_id is None:
             return fn(self, doc)
-        cache_id = (id(self), "preprocess_supervised", id(doc))
-        if cache_id in self.pipeline._cache:
-            return self.pipeline._cache[cache_id]
+        cache_key = ("preprocess_supervised", f"{type(self)}<{id(self)}>: {id(doc)}")
+        cache = _caches[self._current_cache_id]
+        if cache_key in cache:
+            return cache[cache_key]
         res = fn(self, doc)
-        self.pipeline._cache[cache_id] = res
+        cache[cache_key] = res
         return res
 
     return wrapped
 
 
 def cached_collate(fn):
-    import torch
-
     @wraps(fn)
-    def wrapped(self: "TrainablePipe", batch: Dict, device: torch.device):
-        if self.pipeline is None or self.pipeline._cache is None:
-            return fn(self, batch, device)
-        cache_id = (id(self), "collate", hash_batch(batch))
-        if cache_id in self.pipeline._cache:
-            return self.pipeline._cache[cache_id]
-        res = fn(self, batch, device)
-        self.pipeline._cache[cache_id] = res
-        res["cache_id"] = cache_id
+    def wrapped(self: "TrainablePipe", batch: Dict):
+        if self._current_cache_id is None:
+            return fn(self, batch)
+        cache_key = ("collate", f"{type(self)}<{id(self)}>: {hash_batch(batch)}")
+        cache = _caches[self._current_cache_id]
+        if cache_key in cache:
+            return cache[cache_key]
+        res = fn(self, batch)
+        cache[cache_key] = res
         return res
 
     return wrapped
@@ -90,13 +100,35 @@ def cached_collate(fn):
 def cached_forward(fn):
     @wraps(fn)
     def wrapped(self: "TrainablePipe", batch):
-        if self.pipeline is None or self.pipeline._cache is None:
+        # Convert args and kwargs to a dictionary matching fn signature
+        if self._current_cache_id is None:
             return fn(self, batch)
-        cache_id = (id(self), "collate", hash_batch(batch))
-        if cache_id in self.pipeline._cache:
-            return self.pipeline._cache[cache_id]
+        cache_key = ("forward", f"{type(self)}<{id(self)}>: {hash_batch(batch)}")
+        cache = _caches[self._current_cache_id]
+        if cache_key in cache:
+            return cache[cache_key]
         res = fn(self, batch)
-        self.pipeline._cache[cache_id] = res
+        cache[cache_key] = res
+        return res
+
+    return wrapped
+
+
+def cached_batch_to_device(fn):
+    @wraps(fn)
+    def wrapped(self: "TrainablePipe", batch, device):
+        # Convert args and kwargs to a dictionary matching fn signature
+        if self._current_cache_id is None:
+            return fn(self, batch, device)
+        cache_key = (
+            "batch_to_device",
+            f"{type(self)}<{id(self)}>: {hash_batch(batch)}",
+        )
+        cache = _caches[self._current_cache_id]
+        if cache_key in cache:
+            return cache[cache_key]
+        res = fn(self, batch, device)
+        cache[cache_key] = res
         return res
 
     return wrapped
@@ -112,6 +144,10 @@ class TrainablePipeMeta(ABCMeta):
             )
         if "collate" in class_dict:
             class_dict["collate"] = cached_collate(class_dict["collate"])
+        if "batch_to_device" in class_dict:
+            class_dict["batch_to_device"] = cached_batch_to_device(
+                class_dict["batch_to_device"]
+            )
         if "forward" in class_dict:
             class_dict["forward"] = cached_forward(class_dict["forward"])
 
@@ -120,7 +156,7 @@ class TrainablePipeMeta(ABCMeta):
 
 class TrainablePipe(
     torch.nn.Module,
-    Generic[OutputBatch],
+    Generic[BatchOutput],
     metaclass=TrainablePipeMeta,
 ):
     """
@@ -133,15 +169,30 @@ class TrainablePipe(
     for components that share a common subcomponent.
     """
 
+    call_super_init = True
+
     def __init__(self, pipeline: Optional[Pipeline], name: Optional[str]):
         super().__init__()
-        self.pipeline = pipeline
         self.name = name
-        self.cfg = {}
-        self._preprocess_cache = {}
-        self._preprocess_supervised_cache = {}
-        self._collate_cache = {}
-        self._forward_cache = {}
+        self._current_cache_id = None
+
+    def enable_cache(self, cache_id="default"):
+        self._current_cache_id = cache_id
+        _caches.setdefault(cache_id, {})
+        for name, component in self.named_component_children():
+            if hasattr(component, "enable_cache"):
+                component.enable_cache(cache_id)
+
+    def disable_cache(self, cache_id=ALL_CACHES):
+        if cache_id is ALL_CACHES:
+            _caches.clear()
+        else:
+            if cache_id in _caches:
+                del _caches[cache_id]
+        self._current_cache_id = None
+        for name, component in self.named_component_children():
+            if hasattr(component, "disable_cache"):
+                component.disable_cache(cache_id)
 
     @property
     def device(self):
@@ -152,45 +203,12 @@ class TrainablePipe(
             if isinstance(module, TrainablePipe):
                 yield name, module
 
-    def save_extra_data(self, path: Path, exclude: set):
-        """
-        Dumps vocabularies indices to json files
+    def named_component_modules(self):
+        for name, module in self.named_modules():
+            if isinstance(module, TrainablePipe):
+                yield name, module
 
-        Parameters
-        ----------
-        path: Path
-            Path to the directory where the files will be saved
-        exclude: Set
-            The set of component names to exclude from saving
-            This is useful when components are repeated in the pipeline.
-        """
-        if self.name in exclude:
-            return
-        exclude.add(self.name)
-        for name, component in self.named_component_children():
-            if hasattr(component, "save_extra_data"):
-                component.save_extra_data(path / name, exclude)
-
-    def load_extra_data(self, path: Path, exclude: set):
-        """
-        Loads vocabularies indices from json files
-
-        Parameters
-        ----------
-        path: Path
-            Path to the directory where the files will be loaded
-        exclude: Set
-            The set of component names to exclude from loading
-            This is useful when components are repeated in the pipeline.
-        """
-        if self.name in exclude:
-            return
-        exclude.add(self.name)
-        for name, component in self.named_component_children():
-            if hasattr(component, "load_extra_data"):
-                component.load_extra_data(path / name, exclude)
-
-    def post_init(self, gold_data: Iterable[PDFDoc], exclude: set):
+    def post_init(self, gold_data: Iterable[PDFDoc], exclude: Set[str]):
         """
         This method completes the attributes of the component, by looking at some
         documents. It is especially useful to build vocabularies or detect the labels
@@ -205,9 +223,10 @@ class TrainablePipe(
             This argument will be gradually updated  with the names of initialized
             components
         """
-        if self.name in exclude:
+        repr_id = object.__repr__(self)
+        if repr_id in exclude:
             return
-        exclude.add(self.name)
+        exclude.add(repr_id)
         for name, component in self.named_component_children():
             if hasattr(component, "post_init"):
                 component.post_init(gold_data, exclude=exclude)
@@ -233,52 +252,79 @@ class TrainablePipe(
             for name, component in self.named_component_children()
         }
 
-    def collate(self, batch: NestedSequences, device: torch.device) -> InputBatch:
+    def collate(self, batch: Dict[str, Any]) -> BatchInput:
         """
         Collate the batch of features into a single batch of tensors that can be
         used by the forward method of the component.
 
         Parameters
         ----------
-        batch: NestedSequences
+        batch: Dict[str, Any]
             Batch of features
-        device: torch.device
-            Device on which the tensors should be moved
 
         Returns
         -------
-        InputBatch
+        BatchInput
             Dictionary (optionally nested) containing the collated tensors
         """
         return {
-            name: component.collate(batch[name], device)
+            name: component.collate(batch[name])
             for name, component in self.named_component_children()
         }
 
-    def forward(self, batch: InputBatch) -> OutputBatch:
+    def batch_to_device(
+        self,
+        batch: BatchInput,
+        device: Optional[Union[str, torch.device]],
+    ) -> BatchInput:
         """
-        Perform the forward pass of the neural network, i.e, apply transformations
-        over the collated features to compute new embeddings, probabilities, losses, etc
+        Move the batch of tensors to the specified device.
 
         Parameters
         ----------
-        batch: InputBatch
+        batch: BatchInput
+            Batch of tensors
+        device: Optional[Union[str, torch.device]]
+            Device to move the tensors to
+
+        Returns
+        -------
+        BatchInput
+        """
+        return {
+            name: (
+                value.to(device)
+                if hasattr(value, "to")
+                else getattr(self, name).batch_to_device(value, device=device)
+                if hasattr(self, name)
+                else value
+            )
+            for name, value in batch.items()
+        }
+
+    def forward(self, batch: BatchInput) -> BatchOutput:
+        """
+        Perform the forward pass of the neural network.
+
+        Parameters
+        ----------
+        batch: BatchInput
             Batch of tensors (nested dictionary) computed by the collate method
 
         Returns
         -------
-        OutputBatch
+        BatchOutput
         """
         raise NotImplementedError()
 
-    def module_forward(self, batch: InputBatch) -> OutputBatch:
+    def module_forward(self, *args, **kwargs):
         """
         This is a wrapper around `torch.nn.Module.__call__` to avoid conflict
         with the
         [`TrainablePipe.__call__`][edspdf.trainable_pipe.TrainablePipe.__call__]
         method.
         """
-        return torch.nn.Module.__call__(self, batch)
+        return torch.nn.Module.__call__(self, *args, **kwargs)
 
     def make_batch(
         self,
@@ -323,9 +369,11 @@ class TrainablePipe(
         Sequence[PDFDoc]
             Batch of updated documents
         """
+        device = next((p.device for p in self.parameters()), "cpu")
         with torch.no_grad():
             batch = self.make_batch(docs)
-            inputs = self.collate(batch, device=self.device)
+            inputs = self.collate(batch)
+            inputs = self.batch_to_device(inputs, device=device)
             if hasattr(self, "compiled"):
                 res = self.compiled(inputs)
             else:
@@ -334,7 +382,7 @@ class TrainablePipe(
             return docs
 
     def postprocess(
-        self, docs: Sequence[PDFDoc], batch: OutputBatch
+        self, docs: Sequence[PDFDoc], batch: BatchOutput
     ) -> Sequence[PDFDoc]:
         """
         Update the documents with the predictions of the neural network, for instance
@@ -346,7 +394,7 @@ class TrainablePipe(
         ----------
         docs: Sequence[PDFDoc]
             Batch of documents
-        batch: OutputBatch
+        batch: BatchOutput
             Batch of predictions, as returned by the forward method
 
         Returns
@@ -391,3 +439,41 @@ class TrainablePipe(
         PDFDoc
         """
         return self.batch_process([doc])[0]
+
+    def to_disk(self, path, exclude: Optional[Set[str]]):
+        if object.__repr__(self) in exclude:
+            return
+        exclude.add(object.__repr__(self))
+        overrides = {}
+        for name, component in self.named_component_children():
+            if hasattr(component, "to_disk"):
+                pipe_overrides = component.to_disk(path / name, exclude=exclude)
+                if pipe_overrides:
+                    overrides[name] = pipe_overrides
+        tensor_dict = {
+            n: p
+            for n, p in self.named_parameters()
+            if object.__repr__(p) not in exclude
+        }
+        os.makedirs(path, exist_ok=True)
+        safetensors.torch.save_file(tensor_dict, path / "parameters.safetensors")
+        exclude.update(object.__repr__(p) for p in tensor_dict.values())
+        return overrides
+
+    def from_disk(self, path, exclude: Optional[Set[str]]):
+        if object.__repr__(self) in exclude:
+            return
+        exclude.add(object.__repr__(self))
+        for name, component in self.named_component_children():
+            if hasattr(component, "from_disk"):
+                component.from_disk(path / name, exclude=exclude)
+        tensor_dict = safetensors.torch.load_file(path / "parameters.safetensors")
+        self.load_state_dict(tensor_dict, strict=False)
+
+    @property
+    def load_extra_data(self):
+        return self.from_disk
+
+    @property
+    def save_extra_data(self):
+        return self.to_disk
