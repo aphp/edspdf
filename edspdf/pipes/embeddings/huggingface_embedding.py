@@ -165,14 +165,24 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
 
         for page in doc.pages:
             # Preprocess it using LayoutLMv3
+            width = page.width
+            height = page.height
+
+            if width > 1000:
+                width = 1000
+                height /= width * 1000
+            if height >= 1000:
+                width /= height * 1000
+                height = 1000
+
             prep = self.tokenizer(
                 text=[line.text for line in page.text_boxes],
                 boxes=[
                     (
-                        int(line.x0 * line.page.width),
-                        int(line.y0 * line.page.height),
-                        int(line.x1 * line.page.width),
-                        int(line.y1 * line.page.height),
+                        int(line.x0 * width),
+                        int(line.y0 * height),
+                        int(line.x1 * width),
+                        int(line.y1 * height),
                     )
                     for line in page.text_boxes
                 ],
