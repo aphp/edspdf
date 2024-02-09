@@ -5,6 +5,7 @@ import sys
 import pytest
 import torch
 
+import edspdf
 from edspdf.utils.package import package
 
 
@@ -82,7 +83,6 @@ torch = "^{}"
         name=package_name,
         pipeline=tmp_path / "model",
         root_dir=tmp_path,
-        check_dependencies=True,
         version="0.1.0",
         distributions=None,
         metadata={
@@ -146,6 +146,9 @@ def load(
     return model
 """
         )
+
+    module.load()
+    edspdf.load(module_name)
 
 
 @pytest.fixture(scope="session", autouse=True)

@@ -813,20 +813,6 @@ class Pipeline:
         self._path = path  # type: ignore[assignment]
         return self
 
-    @classmethod
-    def load(
-        cls,
-        path: Union[str, Path],
-        *,
-        exclude: Optional[Set[str]] = None,
-        device: Optional[Union[str, "torch.device"]] = "cpu",  # noqa F821
-    ):
-        path = Path(path) if isinstance(path, str) else path
-        config = Config.from_disk(path / "config.cfg")
-        self = Pipeline.from_config(config)
-        self.load(path, exclude=exclude, device=device)
-        return self
-
     # override config property getter to remove "factory" key from components
     @property
     def cfg(self) -> Config:
@@ -909,7 +895,6 @@ class Pipeline:
         build_dir: Union[str, Path] = "build",
         dist_dir: Union[str, Path] = "dist",
         artifacts_name: str = "artifacts",
-        check_dependencies: bool = False,
         project_type: Optional[Literal["poetry", "setuptools"]] = None,
         version: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = {},
@@ -927,7 +912,6 @@ class Pipeline:
             build_dir=build_dir,
             dist_dir=dist_dir,
             artifacts_name=artifacts_name,
-            check_dependencies=check_dependencies,
             project_type=project_type,
             version=version,
             metadata=metadata,

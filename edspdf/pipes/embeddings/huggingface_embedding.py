@@ -168,12 +168,9 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
             width = page.width
             height = page.height
 
-            if width > 1000:
-                width = 1000
-                height /= width * 1000
-            if height >= 1000:
-                width /= height * 1000
-                height = 1000
+            ratio = width / height
+            width, height = (1000, 1000 / ratio) if width > 1000 else (width, height)
+            width, height = (1000 * ratio, 1000) if height > 1000 else (width, height)
 
             prep = self.tokenizer(
                 text=[line.text for line in page.text_boxes],
