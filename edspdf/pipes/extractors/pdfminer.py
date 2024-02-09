@@ -185,12 +185,10 @@ class PdfMinerExtractor:
 
         if self.render_pages:
             # See https://pypdfium2.readthedocs.io/en/stable/python_api.html#user-unit
-            images = pypdfium2.PdfDocument(content).render_topil(
-                scale=self.render_dpi / 72
-            )
-            for page, image in zip(pages, images):
+            pdfium_doc = pypdfium2.PdfDocument(content)
+            for page, pdfium_page in zip(pages, pdfium_doc):
+                image = pdfium_page.render(scale=self.render_dpi / 72).to_pil()
                 np_img = np.array(image)
-                print("NP IMG", np_img.shape)
                 page.image = np_img
 
         return doc
