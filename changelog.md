@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.9.0
+
+### Added
+
+- New unified `edspdf.data` api (pdf files, pandas, parquet) and LazyCollection object
+  to efficiently read / write data from / to different formats & sources. This API is
+  has been heavily inspired by the `edsnlp.data` API.
+- New unified processing API to select the execution backend via `data.set_processing(...)`
+  to replace the old `accelerators` API (which is now deprecated, but still available).
+- `eds.huggingface-embedding` now supports quantization and other `AutoModel.from_pretrained` kwargs
+
+### Fixed
+
+- `eds.huggingface-embedding` now resize bbox features for large PDFs, instead of making the model crash
+
 ## v0.8.1
 
 ### Fixed
