@@ -59,7 +59,7 @@ def show_annotations(
     """
 
     pdf_doc = pdfium.PdfDocument(pdf)
-    pages = list(pdf_doc.render_topil(scale=2))
+    pages = list([page.render(scale=2).to_pil() for page in pdf_doc])
     unique_labels = list(dict.fromkeys([box.label for box in annotations]))
 
     if colors is None:

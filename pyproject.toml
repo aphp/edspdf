@@ -30,7 +30,7 @@ dependencies = [
     "regex",
     "pdfminer.six>=20220319,<20231228 ; python_version<'3.8'",
     "pdfminer.six ; python_version>='3.8'",
-    "pypdfium2>=2.7",
+    "pypdfium2>=4.0",
     "rich-logger>=0.3",
     "safetensors>=0.3",
     "anyascii>=0.3.2",
