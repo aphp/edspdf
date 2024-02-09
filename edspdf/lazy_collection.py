@@ -104,7 +104,7 @@ class LazyCollection(metaclass=MetaLazyCollection):
     def set_processing(
         self,
         batch_size: int = INFER,
-        batch_unit: Literal["docs", "pages", "lines"] = INFER,
+        batch_unit: Literal["doc", "page", "content_boxe"] = INFER,
         chunk_size: int = INFER,
         num_cpu_workers: int = INFER,
         num_gpu_workers: int = INFER,
@@ -122,9 +122,10 @@ class LazyCollection(metaclass=MetaLazyCollection):
         batch_size: int
             Number of documents to process at a time in a GPU worker (or in the
             main process if no workers are used).
-        batch_unit: Literal["docs", "pages", "lines"]
-            The unit of the batch size. Can be "docs" or "words". If "words", the
-            batch size is total number of words in the documents.
+        batch_unit: Literal["doc", "page", "content_box"]
+            The unit of the batch size. Can be "doc", "page" or "content_box". If
+            "content_box", the batch size is total number of content_box in the
+            documents.
         chunk_size: int
             Number of documents to build before splitting into batches. Only used
             with "simple" and "multiprocessing" backends. This is also the number of
@@ -211,7 +212,7 @@ class LazyCollection(metaclass=MetaLazyCollection):
         for name, pipe, kwargs in self.pipeline:
             new_steps.append((name, pipe, kwargs))
 
-        new_steps.append(("_ensure_doc", model.ensure_doc, {}))
+        new_steps.append((None, model.ensure_doc, {}))
 
         for name, pipe in model.pipeline:
             if name not in model._disabled:

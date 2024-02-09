@@ -183,7 +183,11 @@ try:
                 old = dill.Pickler.dispatch.get(AlignDevicesHook)
                 dill.Pickler.dispatch[AlignDevicesHook] = save_align_devices_hook
             dill.settings["recurse"] = True
-            return torch_save(*args, pickle_module=dill, **kwargs)
+            return torch_save(
+                *args,
+                pickle_module=dill,
+                **kwargs,
+            )
         finally:
             dill.settings["recurse"] = False
             if AlignDevicesHook is not None:
@@ -196,12 +200,22 @@ try:
         MAP_LOCATION = map_location
         if torch.__version__ >= "2.1" and isinstance(args[0], str):
             kwargs["mmap"] = True
-        result = torch_load(
-            *args,
-            pickle_module=dill,
-            map_location=map_location,
-            **kwargs,
-        )
+        # with open(args[0], "rb") as f:
+        #     result = dill.load(f, **kwargs)
+        try:
+            if torch.__version__ < "2.0.0":
+                pickle = torch_load.__globals__["pickle"]
+                torch_load.__globals__["pickle"] = dill
+            result = torch_load(
+                *args,
+                pickle_module=dill,
+                map_location=map_location,
+                **kwargs,
+            )
+        finally:
+            import pickle
+
+            torch_load.__globals__["pickle"] = pickle
         MAP_LOCATION = None
         return result
 
@@ -312,21 +326,21 @@ class CPUWorker:
         def read_tasks():
             nonlocal next_batch_id, expect_new_tasks, had_error
 
-            try:
-                if lc.batch_unit == "lines":
+            if lc.batch_unit == "content_box":
 
-                    def formula(batch):
-                        return sum(len(doc.content_boxes) for doc in batch)
+                def formula(batch):
+                    return sum(len(doc.content_boxes) for doc in batch)
 
-                elif lc.batch_unit == "pages":
+            elif lc.batch_unit == "page":
 
-                    def formula(batch):
-                        return sum(len(doc.pages) for doc in batch)
+                def formula(batch):
+                    return sum(len(doc.pages) for doc in batch)
 
-                else:
-                    formula = len
+            else:
+                formula = len
 
-                while expect_new_tasks or len(active_batches) > 0:
+            while expect_new_tasks or len(active_batches) > 0:
+                try:
                     stage, task = self.exchanger.get_cpu_task(
                         idx=self.cpu_idx,
                     )
@@ -350,16 +364,16 @@ class CPUWorker:
                             batchify(lc.reader.read_worker(fragments), lc.chunk_size)
                         )
                         for chunk_idx, docs in enumerate(chunks):
+                            print("CHUNK", chunk_idx, "LEN", len(docs), flush=True)
                             # If we sort by size, we must first create the documents
                             # to have features against which we will sort
-                            if do_preprocess_chunk:
-                                for pipe, kwargs in stages[0]["cpu_components"]:
-                                    if hasattr(pipe, "batch_process"):
-                                        docs = pipe.batch_process(docs)
-                                    else:
-                                        docs: List[PDFDoc] = [
-                                            pipe(doc, **kwargs) for doc in docs
-                                        ]
+                            for pipe, kwargs in preprocess_pipes:
+                                if hasattr(pipe, "batch_process"):
+                                    docs = pipe.batch_process(docs)
+                                else:
+                                    docs: List[PDFDoc] = [
+                                        pipe(doc, **kwargs) for doc in docs
+                                    ]
 
                             batches = [
                                 batch
@@ -373,6 +387,7 @@ class CPUWorker:
                             for batch_idx, batch in enumerate(batches):
                                 assert len(batch) > 0
                                 batch_id = next_batch_id
+                                print("BATCH", batch_id, "LEN", len(batch), flush=True)
 
                                 # We mark the task id only for the last batch of a task
                                 # since the purpose of storing the task id is to know
@@ -393,23 +408,38 @@ class CPUWorker:
                                 yield stage, (None, batch_id, None)
                     else:
                         yield stage, task
-            except BaseException as e:
-                had_error = True
-                import traceback
+                except BaseException as e:
+                    had_error = True
+                    import traceback
 
-                print(traceback.format_exc(), flush=True)
-                self.exchanger.put_results((e, 0, self.cpu_idx, None))
+                    print(traceback.format_exc(), flush=True)
+                    self.exchanger.put_results((e, 0, self.cpu_idx, None))
 
         lc: LazyCollection = load(self.lazy_collection_path, map_location=self.device)
-        do_preprocess_chunk = lc.batch_unit != "docs"
+        preprocess_pipes = []
+        is_before_split = True
+        split_into_batches_after = None
+        if lc.batch_unit != "docs":
+            split_into_batches_after = next(
+                (p[0] for p in lc.pipeline if p[0] is not None), None
+            )
+            is_before_split = split_into_batches_after is not None
+
+        print("split_into_batches_after", split_into_batches_after)
 
         stages: List[Stage] = [{"cpu_components": [], "gpu_component": None}]
         for name, pipe, *rest in lc.pipeline:
             if name in self.gpu_pipe_names:
+                is_before_split = False
                 stages[-1]["gpu_component"] = pipe
                 stages.append({"cpu_components": [], "gpu_component": None})
             else:
-                stages[-1]["cpu_components"].append((pipe, *rest))
+                if is_before_split:
+                    preprocess_pipes.append((pipe, *rest))
+                else:
+                    stages[-1]["cpu_components"].append((pipe, *rest))
+            if name is split_into_batches_after:
+                is_before_split = False
 
         # Start at cpu_idx to avoid having all workers sending their
         # first batch (0 % num_device, cf below) to the same gpu
@@ -430,12 +460,11 @@ class CPUWorker:
                     gpu_pipe = stages[stage - 1]["gpu_component"]
                     docs = gpu_pipe.postprocess(docs, result)  # type: ignore
 
-                if not do_preprocess_chunk or stage > 0:
-                    for pipe, kwargs in stages[stage]["cpu_components"]:
-                        if hasattr(pipe, "batch_process"):
-                            docs = pipe.batch_process(docs)
-                        else:
-                            docs = [pipe(doc, **kwargs) for doc in docs]
+                for pipe, kwargs in stages[stage]["cpu_components"]:
+                    if hasattr(pipe, "batch_process"):
+                        docs = pipe.batch_process(docs)
+                    else:
+                        docs = [pipe(doc, **kwargs) for doc in docs]
 
                 gpu_pipe: "TrainablePipe" = stages[stage]["gpu_component"]
                 if gpu_pipe is not None:
@@ -535,13 +564,13 @@ class GPUWorker:
         self.exchanger.outputs_queue.put(None)
         with torch.no_grad():
             while True:
-                stage, task = self.exchanger.get_gpu_task(self.gpu_idx)
-                if task is None:
-                    break
-                if had_error:
-                    continue  # pragma: no cover
-
                 try:
+                    stage, task = self.exchanger.get_gpu_task(self.gpu_idx)
+                    if task is None:
+                        break
+                    if had_error:
+                        continue  # pragma: no cover
+
                     cpu_idx, batch_id, batch = task
                     pipe = stage_components[stage]
                     pipe.enable_cache(batch_id)
@@ -562,11 +591,12 @@ class GPUWorker:
                         pipe.disable_cache(batch_id)
                     del batch, task
                 except BaseException as e:
-                    had_error = True
-                    import traceback
+                    if not had_error:
+                        had_error = True
+                        import traceback
 
-                    print(traceback.format_exc(), flush=True)
-                    self.exchanger.put_results((e, 0, None, None))
+                        print(traceback.format_exc(), flush=True)
+                        self.exchanger.put_results((e, 0, None, None))
                 task = batch = res = None  # noqa
         # We need to drain the queues of CPUWorker fed inputs (pre-moved to GPU)
         # to ensure no tensor allocated on producer processes (CPUWorker via
@@ -745,6 +775,8 @@ def execute_multiprocessing_backend(
 
     revert_pickler = replace_pickler()
 
+    print("FP", fp.name, flush=True)
+
     for gpu_idx in range(num_gpu_workers):
         gpu_workers.append(
             mp.Process(
@@ -891,6 +923,15 @@ def execute_multiprocessing_backend(
                 if worker.is_alive():
                     logging.error(f"Killing cpu worker {i}")
                     worker.kill()
+
+            for queue_group in (
+                *exchanger.cpu_inputs_queues,
+                *exchanger.gpu_inputs_queues,
+                [exchanger.outputs_queue],
+            ):
+                for queue in queue_group:
+                    if hasattr(queue, "cancel_join_thread"):
+                        queue.cancel_join_thread()
 
     gen = process()
     return lc.writer.write_main(gen) if lc.writer is not None else flatten(gen)

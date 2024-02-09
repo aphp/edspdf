@@ -1,4 +1,3 @@
-import io
 import os
 import re
 import shutil
@@ -6,7 +5,6 @@ import subprocess
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from types import FunctionType, ModuleType
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -14,92 +12,19 @@ from typing import (
     Mapping,
     Optional,
     Sequence,
-    Tuple,
-    Type,
     Union,
 )
 
 import build
-import dill
 import toml
 from build.__main__ import build_package, build_package_via_sdist
 from confit import Cli
-from dill._dill import save_function as dill_save_function
-from dill._dill import save_module as dill_save_module
-from dill._dill import save_type as dill_save_type
-
-try:
-    import importlib_metadata
-except ImportError:  # pragma: no cover
-    import importlib.metadata as importlib_metadata
 from loguru import logger
 from typing_extensions import Literal
 
 import edspdf
 
 py_version = f"{sys.version_info.major}.{sys.version_info.minor}"
-
-
-def get_package(obj: Type):
-    # Retrieve the __package__ attribute of the module of a type, if possible.
-    # And returns the package version as well
-    try:
-        if isinstance(obj, ModuleType):
-            module_name = obj.__name__
-        else:
-            module_name = obj.__module__
-        if module_name == "__main__":
-            raise Exception(f"Could not find package of {obj}")
-        module = __import__(module_name, fromlist=["__package__"])
-        package = module.__package__.split(".")[0]
-        try:
-            version = importlib_metadata.version(package)
-        except (importlib_metadata.PackageNotFoundError, ValueError):
-            return None
-        return package, version
-    except (ImportError, AttributeError):
-        raise Exception(f"Cound not find package of type {obj}")
-
-
-def save_type(pickler, obj, *args, **kwargs):
-    package_name = get_package(obj)
-    if package_name is not None:
-        pickler.packages.add(package_name)
-    dill_save_type(pickler, obj, *args, **kwargs)
-
-
-def save_function(pickler, obj, *args, **kwargs):
-    package_name = get_package(obj)
-    if package_name is not None:
-        pickler.packages.add(package_name)
-    return dill_save_function(pickler, obj, *args, **kwargs)
-
-
-def save_module(pickler, obj, *args, **kwargs):
-    package_name = get_package(obj)
-    if package_name is not None:
-        pickler.packages.add(package_name)
-    return dill_save_module(pickler, obj, *args, **kwargs)
-
-
-class PackagingPickler(dill.Pickler):
-    dispatch = dill.Pickler.dispatch.copy()
-
-    dispatch[FunctionType] = save_function
-    dispatch[type] = save_type
-    dispatch[ModuleType] = save_module
-
-    def __init__(self, *args, **kwargs):
-        self.file = io.BytesIO()
-        super().__init__(self.file, *args, **kwargs)
-        self.packages = set()
-
-
-def get_deep_dependencies(obj):
-    pickler = PackagingPickler(byref=True)
-    pickler.dump(obj)
-    return sorted(pickler.packages)
-
 
 app = Cli(pretty_exceptions_show_locals=False, pretty_exceptions_enable=False)
 
@@ -219,7 +144,6 @@ class PoetryPackager:
         build_dir: Path = "build",
         dist_dir: Path = "dist",
         artifacts_name: ModuleName = "artifacts",
-        dependencies: Optional[Sequence[Tuple[str, str]]] = None,
         metadata: Optional[Dict[str, Any]] = {},
     ):
         self.poetry_bin_path = (
@@ -231,7 +155,6 @@ class PoetryPackager:
         self.name = name
         self.pyproject = pyproject
         self.root_dir = root_dir.resolve()
-        self.dependencies = dependencies
         self.pipeline = pipeline
         self.artifacts_name = artifacts_name
         self.dist_dir = (
@@ -287,10 +210,6 @@ class PoetryPackager:
                             "version": self.version or "0.1.0",
                             "dependencies": {
                                 "python": f">={py_version},<4.0",
-                                **{
-                                    dep_name: f"^{dep_version}"
-                                    for dep_name, dep_version in self.dependencies
-                                },
                             },
                         },
                     },
@@ -423,7 +342,6 @@ def package(
     build_dir: Path = "build",
     dist_dir: Path = "dist",
     artifacts_name: ModuleName = "artifacts",
-    check_dependencies: bool = False,
     project_type: Optional[Literal["poetry", "setuptools"]] = None,
     version: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = {},
@@ -436,20 +354,11 @@ def package(
     pyproject_path = root_dir / "pyproject.toml"
 
     if not pyproject_path.exists():
-        check_dependencies = True
         if name is None:
             raise ValueError(
                 f"No pyproject.toml could be found in the root directory {root_dir}, "
                 f"you need to create one, or fill the name parameter."
             )
-
-    dependencies = None
-    if check_dependencies:
-        if isinstance(pipeline, Path):
-            pipeline = edspdf.load(pipeline)
-        dependencies = get_deep_dependencies(pipeline)
-        for dep in dependencies:
-            print("DEPENDENCY", dep[0].ljust(30), dep[1])
 
     root_dir = root_dir.resolve()
 
@@ -470,7 +379,6 @@ def package(
             build_dir=build_dir,
             dist_dir=dist_dir,
             artifacts_name=artifacts_name,
-            dependencies=dependencies,
             metadata=metadata,
         )
     else:
