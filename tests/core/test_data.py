@@ -7,6 +7,7 @@ import pytest
 
 import edspdf
 import edspdf.accelerators.multiprocessing
+from edspdf import PDFDoc
 from edspdf.data.converters import CONTENT, FILENAME
 from edspdf.utils.collections import flatten
 
@@ -43,20 +44,43 @@ def full_file_converter(x):
 
 
 @pytest.mark.parametrize("write_mode", ["parquet", "pandas", "iterable", "files"])
-def test_write_data(frozen_pipeline, write_mode, tmp_path, change_test_dir):
+@pytest.mark.parametrize("num_cpu_workers", [1, 2])
+@pytest.mark.parametrize("write_in_worker", [False, True])
+def test_write_data(
+    frozen_pipeline,
+    tmp_path,
+    change_test_dir,
+    write_mode,
+    num_cpu_workers,
+    write_in_worker,
+):
     docs = edspdf.data.read_files("file://" + os.path.abspath("../resources"))
     docs = docs.map_pipeline(frozen_pipeline)
+    docs = docs.set_processing(
+        num_cpu_workers=num_cpu_workers,
+        gpu_pipe_names=[],
+        batch_by="content_boxes",
+        chunk_size=3,
+        sort_chunks=True,
+    )
     if write_mode == "parquet":
         docs.write_parquet(
             "file://" + str(tmp_path / "parquet" / "test.parquet"),
             converter=box_converter,
+            write_in_worker=write_in_worker,
         )
         df = pd.read_parquet("file://" + str(tmp_path / "parquet" / "test.parquet"))
     elif write_mode == "pandas":
+        if write_in_worker:
+            pytest.skip()
         df = docs.to_pandas(converter=box_converter)
     elif write_mode == "iterable":
+        if write_in_worker:
+            pytest.skip()
         df = pd.DataFrame(flatten(docs.to_iterable(converter=box_converter)))
     else:
+        if write_in_worker:
+            pytest.skip()
         docs.write_files(
             tmp_path / "files",
             converter=full_file_converter,
@@ -86,29 +110,51 @@ def parquet_file(tmp_path_factory, request):
 
 
 @pytest.mark.parametrize("read_mode", ["parquet", "pandas", "iterable", "files"])
-def test_read_data(frozen_pipeline, read_mode, tmp_path, change_test_dir, parquet_file):
+@pytest.mark.parametrize("num_cpu_workers", [1, 2])
+@pytest.mark.parametrize("read_in_worker", [False, True])
+def test_read_data(
+    frozen_pipeline,
+    tmp_path,
+    parquet_file,
+    change_test_dir,
+    read_mode,
+    num_cpu_workers,
+    read_in_worker,
+):
     if read_mode == "files":
         docs = edspdf.data.read_files(
             "file://" + os.path.abspath("../resources"),
+            converter=lambda x: PDFDoc(id=x["id"], content=x["content"]),
+            # read_in_worker=True,
         )
+        if read_in_worker:
+            pytest.skip()
     elif read_mode == "parquet":
         docs = edspdf.data.read_parquet(
             parquet_file,
             converter=lambda x: x["content"],
+            read_in_worker=True,
         )
     elif read_mode == "pandas":
+        if read_in_worker:
+            pytest.skip()
         docs = edspdf.data.from_pandas(
             pd.read_parquet(parquet_file),
             converter=lambda x: x["content"],
         )
     else:
+        if read_in_worker:
+            pytest.skip()
         docs = edspdf.data.from_iterable(
             f.read_bytes() for f in Path("../resources").rglob("*.pdf")
         )
     docs = docs.map_pipeline(frozen_pipeline)
     docs = docs.set_processing(
-        num_cpu_workers=2,
+        num_cpu_workers=num_cpu_workers,
         show_progress=True,
+        batch_by="content_boxes",
+        chunk_size=3,
+        sort_chunks=True,
     )
     df = docs.to_pandas(converter=box_converter)
     assert len(df) == 91

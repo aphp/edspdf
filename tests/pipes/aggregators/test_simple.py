@@ -63,7 +63,13 @@ def test_no_style():
 
 def test_styled_pdfminer_aggregation(styles_pdf):
     extractor = PdfMinerExtractor(extract_style=True)
-    aggregator = SimpleAggregator()
+    aggregator = SimpleAggregator(
+        sort=True,
+        label_map={
+            "header": ["header"],
+            "body": "body",
+        },
+    )
 
     doc = extractor(styles_pdf)
     for b, label in zip(doc.text_boxes, cycle(["header", "body"])):

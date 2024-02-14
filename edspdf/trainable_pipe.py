@@ -369,7 +369,7 @@ class TrainablePipe(
         Sequence[PDFDoc]
             Batch of updated documents
         """
-        device = next((p.device for p in self.parameters()), "cpu")
+        device = self.device
         with torch.no_grad():
             batch = self.make_batch(docs)
             inputs = self.collate(batch)

@@ -1,6 +1,7 @@
 import copy
 from itertools import chain
 from pathlib import Path
+from time import sleep
 
 import datasets
 import pytest
@@ -214,7 +215,7 @@ def test_pipeline_on_data(pipeline: Pipeline, dummy_dataset: str, pdf: bytes):
         )
 
     assert type(pipeline(pdf)) == PDFDoc
-    assert len(list(pipeline.pipe([pdf] * 4))) == 4
+    assert len(list(pipeline.pipe([pdf] * 4).set_processing(show_progress=True))) == 4
 
     data = list(make_segmentation_adapter(dummy_dataset)(pipeline))
     with pipeline.select_pipes(enable=["classifier"]):
@@ -337,6 +338,7 @@ def test_multiprocessing_accelerator(frozen_pipeline, pdf, letter_pdf):
 
 
 def error_pipe(doc: PDFDoc):
+    sleep(0.1)
     if doc.id == "pdf-3":
         raise ValueError("error")
     return doc
@@ -384,7 +386,7 @@ def test_multiprocessing_gpu_stub(frozen_pipeline, pdf, letter_pdf):
         num_gpu_workers=1,
         num_cpu_workers=1,
         gpu_worker_devices=["cpu"],
-        batch_unit="lines",
+        batch_by="content_boxes",
     )
     docs = list(docs.to_iterable(converter=lambda x: {"text": x.aggregated_texts}))
 
@@ -400,7 +402,7 @@ def test_multiprocessing_rb_error(pipeline, pdf, letter_pdf):
                         {"content": pdf, "id": f"pdf-{i}"},
                         {"content": letter_pdf, "id": f"letter-{i}"},
                     ]
-                    for i in range(5)
+                    for i in range(200)
                 ),
                 accelerator="multiprocessing",
                 batch_size=2,
@@ -423,6 +425,7 @@ class DeepLearningError(TrainablePipe):
         }
 
     def forward(self, batch):
+        sleep(0.1)
         if "pdf-1" in batch["doc_id"]:
             raise RuntimeError("Deep learning error")
         return {}
@@ -451,10 +454,14 @@ def test_multiprocessing_ml_error(pipeline, pdf, letter_pdf):
                         {"content": pdf, "id": f"pdf-{i}"},
                         {"content": letter_pdf, "id": f"letter-{i}"},
                     ]
-                    for i in range(5)
+                    for i in range(200)
                 ),
                 accelerator=accelerator,
                 to_doc={"content_field": "content", "id_field": "id"},
             )
         )
     assert "Deep learning error" in str(e.value)
+
+
+def test_apply_on_empty_pdf(error_pdf, frozen_pipeline):
+    assert len(frozen_pipeline(error_pdf).content_boxes) == 0
