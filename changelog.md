@@ -1,5 +1,7 @@
 # Changelog
 
+
+
 ## v0.9.0
 
 ### Added
@@ -13,7 +15,8 @@
 
 ### Fixed
 
-- `eds.huggingface-embedding` now resize bbox features for large PDFs, instead of making the model crash
+- `huggingface-embedding` now resize bbox features for large PDFs, instead of making the model crash
+- `huggingface-embedding` and `sub-box-cnn-pooler` now handle empty PDFs correctly
 
 ## v0.8.1
 
