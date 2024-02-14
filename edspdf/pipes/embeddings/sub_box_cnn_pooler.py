@@ -74,6 +74,14 @@ class SubBoxCNNPooler(TrainablePipe[EmbeddingOutput]):
         embeddings = self.embedding.module_forward(batch["embedding"])[
             "embeddings"
         ].refold("line", "word")
+        if 0 in embeddings.shape:
+            return {
+                "embeddings": embeddings.with_data(
+                    embeddings.as_tensor().view(
+                        *embeddings.shape[:-1], self.output_size
+                    )
+                )
+            }
 
         # sample word dim -> sample dim word
         box_token_embeddings = embeddings.as_tensor().permute(0, 2, 1)

@@ -238,7 +238,9 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
             data_dims=("window", "token"),
             dtype=torch.long,
         )
-        indexer = torch.zeros(windows.max() + 1, dtype=torch.long)
+        indexer = torch.zeros(
+            (windows.max() + 1) if windows.numel() else 0, dtype=torch.long
+        )
 
         # Sort each occurrence of an initial token by its contextualization score:
         # We can only use the amax reduction, so to retrieve the best occurrence, we
@@ -286,7 +288,7 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
             data_dims=("token",),
             dtype=torch.long,
         )
-        last_after_one = max(1, len(line_window_offsets_flat) - 1)
+        last_after_one = max(0, len(line_window_offsets_flat) - 1)
         line_window_offsets_flat = as_folded_tensor(
             # discard the last offset, since we start from 0 and add each line length
             data=torch.as_tensor(line_window_offsets_flat[:last_after_one]),
@@ -294,7 +296,6 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
             full_names=("sample", "page", "line"),
             lengths=line_window_indices.lengths[:-1],
         )
-
         kw = dict(
             full_names=("sample", "page", "subword"),
             data_dims=("subword",),
@@ -319,6 +320,13 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
         return collated
 
     def forward(self, batch):
+        if 0 in batch["input_ids"].shape:
+            return {
+                "embeddings": batch["line_window_offsets_flat"].view(
+                    *batch["line_window_offsets_flat"].shape, self.output_size
+                ),
+            }
+
         windows = batch["windows"]
         kwargs = dict(
             input_ids=batch["input_ids"].as_tensor()[windows],
