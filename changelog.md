@@ -11,7 +11,17 @@
   has been heavily inspired by the `edsnlp.data` API.
 - New unified processing API to select the execution backend via `data.set_processing(...)`
   to replace the old `accelerators` API (which is now deprecated, but still available).
-- `eds.huggingface-embedding` now supports quantization and other `AutoModel.from_pretrained` kwargs
+- `huggingface-embedding` now supports quantization and other `AutoModel.from_pretrained` kwargs
+- It is now possible to add convert a label to multiple labels in the `simple-aggregator` component :
+
+```ini
+# To build the "text" field, we will aggregate "title", "body" and "table" lines,
+# and output "title" lines in a separate field as well.
+label_map = {
+    "text" : [ "title", "body", "table" ],
+    "title": "title",
+    }
+```
 
 ### Fixed
 

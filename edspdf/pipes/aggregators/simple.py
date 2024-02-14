@@ -1,5 +1,5 @@
-from itertools import groupby
-from typing import Dict, List
+from collections import defaultdict
+from typing import Dict, List, Union
 
 import numpy as np
 
@@ -45,8 +45,13 @@ class SimpleAggregator:
         @factory = "simple-aggregator"
         new_line_threshold = 0.2
         new_paragraph_threshold = 1.5
-        label_map = { body = "text", table = "text" }
-
+        # To build the "text" label, we will aggregate lines from
+        # "title", "body" and "table" and output "title" lines in a
+        # separate field "title" as well.
+        label_map = {
+            "text" : [ "title", "body", "table" ],
+            "title" : "title",
+            }
         ...
         ```
 
@@ -77,8 +82,9 @@ class SimpleAggregator:
         lines to consider them as being on separate paragraphs and thus add a
         newline character between them.
     label_map: Dict
-        A dictionary mapping labels to new labels. This is useful to group labels
-        together, for instance, to output both "body" and "table" as "text".
+        A dictionary mapping from new labels to old labels.
+        This is useful to group labels together, for instance, to output both "body"
+        and "table" as "text".
     """
 
     def __init__(
@@ -88,11 +94,14 @@ class SimpleAggregator:
         sort: bool = False,
         new_line_threshold: float = 0.2,
         new_paragraph_threshold: float = 1.5,
-        label_map: Dict = {},
+        label_map: Dict[str, Union[str, List[str]]] = {},
     ) -> None:
         self.name = name
         self.sort = sort
-        self.label_map = dict(label_map)
+        self.label_map = {
+            label: [old_labels] if not isinstance(old_labels, list) else old_labels
+            for label, old_labels in label_map.items()
+        }
         self.new_line_threshold = new_line_threshold
         self.new_paragraph_threshold = new_paragraph_threshold
 
@@ -107,12 +116,22 @@ class SimpleAggregator:
                 all_lines,
                 key=lambda b: (b.label, b.page_num, b.y1 // row_height, b.x0),
             )
-        else:
-            all_lines = sorted(all_lines, key=lambda b: b.label)
 
         texts = {}
         styles = {}
-        for label, lines in groupby(all_lines, key=lambda b: b.label):
+
+        inv_label_map = defaultdict(list)
+        for new_label, old_labels in self.label_map.items():
+            for old_label in old_labels:
+                inv_label_map[old_label].append(new_label)
+
+        lines_per_label = defaultdict(list)
+        lines_per_label.update({k: [] for k in self.label_map})
+        for line in all_lines:
+            for new_label in inv_label_map.get(line.label, [line.label]):
+                lines_per_label[new_label].append(line)
+
+        for label, lines in lines_per_label.items():
             styles[label] = []
             text = ""
             lines: List[TextBox] = list(lines)
