@@ -1,7 +1,8 @@
 from edspdf.pipes.embeddings.huggingface_embedding import HuggingfaceEmbedding
+from edspdf.pipes.extractors.pdfminer import PdfMinerExtractor
 
 
-def test_huggingface_embedding(pdfdoc):
+def test_huggingface_embedding(pdf, error_pdf):
     embedding = HuggingfaceEmbedding(
         pipeline=None,
         name="huggingface",
@@ -15,4 +16,7 @@ def test_huggingface_embedding(pdfdoc):
         "height": embedding.hf_model.config.input_size,
         "width": embedding.hf_model.config.input_size,
     }
-    embedding(pdfdoc)
+
+    extractor = PdfMinerExtractor(render_pages=True)
+    embedding(extractor(pdf))
+    embedding(extractor(error_pdf))

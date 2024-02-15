@@ -76,10 +76,11 @@ class SubBoxCNNPooler(TrainablePipe[EmbeddingOutput]):
         ].refold("line", "word")
         if 0 in embeddings.shape:
             return {
-                "embeddings": embeddings.with_data(
-                    embeddings.as_tensor().view(
-                        *embeddings.shape[:-1], self.output_size
-                    )
+                "embeddings": as_folded_tensor(
+                    data=torch.zeros(0, self.output_size, device=embeddings.device),
+                    lengths=embeddings.lengths[:-1],  # pooled on the last dim
+                    data_dims=["line"],  # fully flattened
+                    full_names=["sample", "page", "line"],
                 )
             }
 

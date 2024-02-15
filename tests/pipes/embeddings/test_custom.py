@@ -3,9 +3,10 @@ from edspdf.pipes.embeddings.box_transformer import BoxTransformer
 from edspdf.pipes.embeddings.embedding_combiner import EmbeddingCombiner
 from edspdf.pipes.embeddings.simple_text_embedding import SimpleTextEmbedding
 from edspdf.pipes.embeddings.sub_box_cnn_pooler import SubBoxCNNPooler
+from edspdf.pipes.extractors.pdfminer import PdfMinerExtractor
 
 
-def test_custom_embedding(pdfdoc, tmp_path):
+def test_custom_embedding(pdf, error_pdf, tmp_path):
     embedding = BoxTransformer(
         num_heads=4,
         dropout_p=0.1,
@@ -35,8 +36,14 @@ def test_custom_embedding(pdfdoc, tmp_path):
         ),
     )
     str(embedding)
+
+    extractor = PdfMinerExtractor(render_pages=True)
+    pdfdoc = extractor(pdf)
     pdfdoc.text_boxes[0].text = "Very long word of 150 letters : " + "x" * 150
     embedding.post_init([pdfdoc], set())
     embedding(pdfdoc)
     embedding.save_extra_data(tmp_path, set())
     embedding.load_extra_data(tmp_path, set())
+
+    # Test empty document
+    embedding(extractor(error_pdf))

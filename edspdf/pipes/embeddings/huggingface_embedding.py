@@ -309,14 +309,15 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
             "line_window_offsets_flat": line_window_offsets_flat,
         }
         if self.use_image:
-            collated["pixel_values"] = torch.stack(
+            collated["pixel_values"] = torch.as_tensor(
                 [
-                    torch.from_numpy(page_pixels)
+                    page_pixels
                     for sample_pages in batch["pixel_values"]
                     for page_pixels in sample_pages
                 ],
-                dim=0,
-            ).repeat_interleave(torch.as_tensor(windows_count_per_page), dim=0)
+            ).repeat_interleave(
+                torch.as_tensor(windows_count_per_page, dtype=torch.long), dim=0
+            )
         return collated
 
     def forward(self, batch):
