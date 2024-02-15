@@ -143,11 +143,10 @@ omit-covered-files = false
 
 [tool.coverage.run]
 concurrency = ["multiprocessing"]
-data_file = "coverage.coverage"
 
 [tool.coverage.report]
-omit = [
-    "tests/*",
+include = [
+    "edspdf/*",
 ]
 exclude_lines = [
     "def __repr__",
