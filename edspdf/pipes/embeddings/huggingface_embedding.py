@@ -332,7 +332,11 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
             input_ids=batch["input_ids"].as_tensor()[windows],
             bbox=batch["bbox"].as_tensor()[windows],
             attention_mask=windows.mask,
-            pixel_values=batch.get("pixel_values"),
+            pixel_values=(
+                batch.get("pixel_values").to(next(self.parameters()).dtype)
+                if self.use_image
+                else None
+            ),
         )
         num_windows_per_batch = self.max_tokens_per_device // (
             windows.shape[1]
