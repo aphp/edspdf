@@ -688,16 +688,17 @@ def execute_multiprocessing_backend(
 
         if num_gpu_workers is None:
             num_gpu_workers = num_devices
+    else:
+        num_gpu_workers = 0
 
-        if num_gpu_workers and process_start_method == "fork":
+    if any(gpu_steps_candidates):
+        if process_start_method == "fork":
             warnings.warn(
                 "Using fork start method with GPU workers may lead to deadlocks. "
                 "Consider using process_start_method='spawn' instead."
             )
 
         process_start_method = process_start_method or "spawn"
-    else:
-        num_gpu_workers = 0
 
     default_method = multiprocessing.get_start_method()
     if process_start_method is not None and default_method != process_start_method:
