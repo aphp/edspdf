@@ -346,12 +346,13 @@ def error_pipe(doc: PDFDoc):
 
 def test_deprecated_multiprocessing_gpu_stub(frozen_pipeline, pdf, letter_pdf):
     edspdf.accelerators.multiprocessing.MAX_NUM_PROCESSES = 2
-    accelerator = edspdf.accelerators.multiprocessing.MultiprocessingAccelerator(
-        batch_size=2,
-        num_gpu_workers=1,
-        num_cpu_workers=1,
-        gpu_worker_devices=["cpu"],
-    )
+    accelerator = {
+        "@accelerator": "multiprocessing",
+        "batch_size": 2,
+        "num_gpu_workers": 1,
+        "num_cpu_workers": 1,
+        "gpu_worker_devices": ["cpu"],
+    }
     list(
         frozen_pipeline.pipe(
             chain.from_iterable(

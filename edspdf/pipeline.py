@@ -360,7 +360,7 @@ class Pipeline:
                 backend = accelerator
             elif isinstance(accelerator, dict):
                 kwargs = dict(accelerator)
-                backend = accelerator.pop("@accelerator", "simple")
+                backend = kwargs.pop("@accelerator", "simple")
             elif "Accelerator" in type(accelerator).__name__:
                 backend = (
                     "multiprocessing"

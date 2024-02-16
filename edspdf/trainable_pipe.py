@@ -203,11 +203,6 @@ class TrainablePipe(
             if isinstance(module, TrainablePipe):
                 yield name, module
 
-    def named_component_modules(self):
-        for name, module in self.named_modules():
-            if isinstance(module, TrainablePipe):
-                yield name, module
-
     def post_init(self, gold_data: Iterable[PDFDoc], exclude: Set[str]):
         """
         This method completes the attributes of the component, by looking at some
