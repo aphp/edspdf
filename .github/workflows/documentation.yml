@@ -24,7 +24,7 @@ jobs:
           git config user.email ${{ github.actor }}@users.noreply.github.com
       - name: Build documentation
         run: |
-          pip install edspdf-poppler
+          pip install edspdf-poppler -vvvv
           git fetch origin gh-pages
           hatch -e docs run mike delete main
           hatch -e docs run mike deploy --push main
