@@ -11,6 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
 
       - name: Set PY variable
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
@@ -24,7 +26,6 @@ jobs:
           git config user.email ${{ github.actor }}@users.noreply.github.com
       - name: Build documentation
         run: |
-          pip install edspdf-poppler -vvvv
           git fetch origin gh-pages
           hatch -e docs run mike delete main
           hatch -e docs run mike deploy --push main
