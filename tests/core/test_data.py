@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -97,7 +98,10 @@ def parquet_file(tmp_path_factory, request):
     os.chdir(request.fspath.dirname)
     tmp_path = tmp_path_factory.mktemp("test_input_parquet")
     path = tmp_path / "input_test.pq"
-    docs = edspdf.data.read_files("file://" + os.path.abspath("../resources"))
+    docs = edspdf.data.read_files(
+        "file://" + os.path.abspath("../resources"),
+        recursive=sys.version_info >= (3, 8),
+    )
     docs.write_parquet(
         path,
         converter=lambda x: {

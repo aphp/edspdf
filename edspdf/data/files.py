@@ -1,6 +1,7 @@
 # ruff: noqa: F401
 import json
 import os
+import sys
 from collections import Counter
 from pathlib import Path
 from typing import (
@@ -39,6 +40,7 @@ class FileReader(BaseReader):
         keep_ipynb_checkpoints: bool = False,
         load_annotations: bool = False,
         filesystem: Optional[Any] = None,
+        recursive: bool = False,
     ):
         super().__init__()
 
@@ -66,9 +68,14 @@ class FileReader(BaseReader):
         if not self.filesystem.exists(path):
             raise FileNotFoundError(f"Path {path} does not exist")
 
+        assert sys.version_info >= (3, 8) or not recursive, (
+            "Recursive reading is only supported with Python 3.8 or higher. "
+            "Please upgrade your Python version or set `recursive=False`."
+        )
+        glob_str = "**/*.pdf" if recursive else "*.pdf"
         self.files: List[str] = [
             file
-            for file in self.filesystem.glob(os.path.join(str(self.path), "*.pdf"))
+            for file in self.filesystem.glob(os.path.join(str(self.path), glob_str))
             if (keep_ipynb_checkpoints or ".ipynb_checkpoints" not in str(file))
             and (
                 not load_annotations
