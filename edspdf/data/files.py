@@ -189,6 +189,7 @@ def read_files(
     load_annotations: bool = False,
     converter: Optional[Union[str, Callable]] = None,
     filesystem: Optional[Any] = None,
+    recursive: Optional[bool] = False,
     **kwargs,
 ) -> LazyCollection:
     """
@@ -271,6 +272,7 @@ def read_files(
             keep_ipynb_checkpoints=keep_ipynb_checkpoints,
             load_annotations=load_annotations,
             filesystem=filesystem,
+            recursive=recursive,
         )
     )
     if converter:
