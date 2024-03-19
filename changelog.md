@@ -1,6 +1,10 @@
 # Changelog
 
+## v0.9.1
 
+### Fixed
+
+- It is now possible to recursively retrieve pdf files in a directory using `edspdf.data.read_files`
 
 ## v0.9.0
 
