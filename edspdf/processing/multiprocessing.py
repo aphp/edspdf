@@ -4,6 +4,7 @@ import copyreg
 import gc
 import io
 import logging
+import math
 import multiprocessing
 import multiprocessing.reduction
 import os
@@ -28,13 +29,14 @@ import dill
 from typing_extensions import TypedDict
 
 from edspdf.lazy_collection import LazyCollection
-from edspdf.utils.collections import batchify, flatten
+from edspdf.utils.collections import (
+    batch_compress_dict,
+    batchify,
+    decompress_dict,
+    flatten,
+)
 
-batch_size_fns = {
-    "content_boxes": lambda batch: sum(len(doc.content_boxes) for doc in batch),
-    "pages": lambda batch: sum(len(doc.pages) for doc in batch),
-    "docs": len,
-}
+from .utils import apply_basic_pipes, batchify_fns, batchify_with_counts
 
 doc_size_fns = {
     "content_boxes": lambda doc: len(doc.content_boxes),
@@ -48,19 +50,10 @@ if TYPE_CHECKING:
 Stage = TypedDict(
     "Stage",
     {
-        "cpu_components": List[Tuple[str, Callable, Dict]],
+        "cpu_components": List[Tuple[str, Callable, Dict, Any]],
         "gpu_component": Optional[Any],
     },
 )
-
-
-def apply_basic_pipes(docs, pipes):
-    for name, pipe, kwargs in pipes:
-        if hasattr(pipe, "batch_process"):
-            docs = pipe.batch_process(docs)
-        else:
-            docs = [pipe(doc, **kwargs) for doc in docs]
-    return docs
 
 
 class ForkingPickler(dill.Pickler):
@@ -144,7 +137,76 @@ def replace_pickler():
     return revert
 
 
-# Should we check if the multiprocessing module of edspdf
+def cpu_count():  # pragma: no cover
+    """
+    Heavily inspired (partially copied) from joblib's loky
+    (https://github.com/joblib/loky/blob/2c21e/loky/backend/context.py#L83)
+    by Thomas Moreau and Olivier Grisel.
+
+    Return the number of CPUs we can use to process data in parallel.
+
+    The returned number of CPUs returns the minimum of:
+     * `os.cpu_count()`
+     * the CPU affinity settings
+     * cgroup CPU bandwidth limit (share of total CPU time allowed in a given job)
+       typically used in containerized environments like Docker
+
+    Note that on Windows, the returned number of CPUs cannot exceed 61 (or 60 for
+    Python < 3.10), see:
+    https://bugs.python.org/issue26903.
+
+    It is also always larger or equal to 1.
+    """
+    # Note: os.cpu_count() is allowed to return None in its docstring
+    os_cpu_count = os.cpu_count() or 1
+    if sys.platform == "win32":
+        # Following loky's windows implementation
+
+        _MAX_WINDOWS_WORKERS = 60
+        if sys.version_info >= (3, 8):
+            from concurrent.futures.process import _MAX_WINDOWS_WORKERS
+
+            if sys.version_info < (3, 10):
+                _MAX_WINDOWS_WORKERS = _MAX_WINDOWS_WORKERS - 1
+        os_cpu_count = min(os_cpu_count, _MAX_WINDOWS_WORKERS)
+
+    cpu_count_affinity = os_cpu_count
+    try:
+        cpu_count_affinity = len(os.sched_getaffinity(0))
+    except (NotImplementedError, AttributeError):
+        pass
+
+    # Cgroup CPU bandwidth limit available in Linux since 2.6 kernel
+    cpu_count_cgroup = os_cpu_count
+    cpu_max_fname = "/sys/fs/cgroup/cpu.max"
+    cfs_quota_fname = "/sys/fs/cgroup/cpu/cpu.cfs_quota_us"
+    cfs_period_fname = "/sys/fs/cgroup/cpu/cpu.cfs_period_us"
+    if os.path.exists(cpu_max_fname):
+        # cgroup v2
+        # https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html
+        with open(cpu_max_fname) as fh:
+            cpu_quota_us, cpu_period_us = fh.read().strip().split()
+    elif os.path.exists(cfs_quota_fname) and os.path.exists(cfs_period_fname):
+        # cgroup v1
+        # https://www.kernel.org/doc/html/latest/scheduler/sched-bwc.html#management
+        with open(cfs_quota_fname) as fh:
+            cpu_quota_us = fh.read().strip()
+        with open(cfs_period_fname) as fh:
+            cpu_period_us = fh.read().strip()
+    else:
+        cpu_quota_us = "max"
+        cpu_period_us = 100_000
+
+    if cpu_quota_us != "max":
+        cpu_quota_us = int(cpu_quota_us)
+        cpu_period_us = int(cpu_period_us)
+        if cpu_quota_us > 0 and cpu_period_us > 0:
+            cpu_count_cgroup = math.ceil(cpu_quota_us / cpu_period_us)
+
+    return max(1, min(os_cpu_count, cpu_count_affinity, cpu_count_cgroup))
+
+
+# Should we check if the multiprocessing module of edsnlp
 # is responsible for this child process before replacing the pickler ?
 if (
     multiprocessing.current_process() != "MainProcess"
@@ -161,7 +223,13 @@ debug = (
     else lambda *args, **kwargs: None
 )
 
-try:  # pragma: no cover
+if os.environ.get("TORCH_SHARING_STRATEGY"):
+    try:
+        torch.multiprocessing.set_sharing_strategy(os.environ["TORCH_SHARING_STRATEGY"])
+    except NameError:
+        pass
+
+try:
     import torch
 
     # Torch may still be imported as a namespace package, so we can access the
@@ -269,8 +337,17 @@ class Exchanger:
         self.num_stages = num_stages
 
     # noinspection PyUnresolvedReferences
-    def get_cpu_task(self, idx):
-        queue_readers = wait([queue._reader for queue in self.cpu_inputs_queues[idx]])
+    def get_cpu_task(self, idx, get_instant_active_or_skip: bool = False):
+        queues = self.cpu_inputs_queues[idx]
+        if get_instant_active_or_skip:
+            # Don't get new tasks
+            queues = queues[1:]
+        queue_readers = wait(
+            [queue._reader for queue in queues],
+            timeout=0 if get_instant_active_or_skip else None,
+        )
+        if len(queue_readers) == 0:
+            return None, None
         stage, queue = next(
             (stage, q)
             for stage, q in reversed(list(enumerate(self.cpu_inputs_queues[idx])))
@@ -324,15 +401,94 @@ class CPUWorker:
         # Cannot pass torch tensor during init i think ? otherwise i get
         # ValueError: bad value(s) in fds_to_keep
         # mp._prctl_pr_set_pdeathsig(signal.SIGINT)
+        next_batch_id = self.cpu_idx
+        new_batch_iterator = None
+
+        def split_task_into_new_batches(task):
+            nonlocal next_batch_id, new_batch_iterator
+            task_id, fragments = task
+            chunks = list(batchify(lc.reader.read_worker(fragments), lc.chunk_size))
+            for chunk_idx, docs in enumerate(chunks):
+                # If we sort by size, we must first create the documents
+                # to have features against which we will sort
+                docs = apply_basic_pipes(docs, preprocess_pipes)
+
+                if lc.sort_chunks:
+                    docs.sort(
+                        key=doc_size_fns.get(
+                            lc.sort_chunks,
+                            doc_size_fns["content_boxes"],
+                        )
+                    )
+
+                batches = [
+                    batch
+                    for batch in batchify_fns[lc.batch_by](
+                        docs,
+                        batch_size=lc.batch_size,
+                    )
+                ]
+
+                for batch_idx, batch in enumerate(batches):
+                    assert len(batch) > 0
+                    batch_id = next_batch_id
+
+                    # We mark the task id only for the last batch of a task
+                    # since the purpose of storing the task id is to know
+                    # when the worker has finished processing the task,
+                    # which is true only when the last batch has been
+                    # processed
+                    active_batches[batch_id] = (
+                        batch,
+                        task_id
+                        if (batch_idx == len(batches) - 1)
+                        and (chunk_idx == len(chunks) - 1)
+                        else None,
+                        None,
+                    )
+                    next_batch_id += num_cpu
+                    # gpu_idx = None
+                    # batch_id = we have just created a new batch
+                    # result from the last stage = None
+                    if batch_idx == len(batches) - 1 and chunk_idx == len(chunks) - 1:
+                        new_batch_iterator = None
+                    yield 0, (None, batch_id, None)
+
+            new_batch_iterator = None
 
         def read_tasks():
-            next_batch_id = self.cpu_idx
+            nonlocal new_batch_iterator
+
             expect_new_tasks = True
 
             while expect_new_tasks or len(active_batches) > 0:
+                # Check that there are no more than `chunk_size` docs being processed.
+                # If there is still room, we can process new batches
+                has_room_for_new_batches = (
+                    sum(len(ab[0]) for ab in active_batches.values()) < lc.chunk_size
+                )
+
+                # if new_batch_iterator is not None and len(active_batches) == 0:
+                #     yield next(new_batch_iterator)
+                #     continue
+
                 stage, task = self.exchanger.get_cpu_task(
                     idx=self.cpu_idx,
+                    # We don't have to wait for new active batches to come back if:
+                    get_instant_active_or_skip=(
+                        # - we have room for more batches
+                        has_room_for_new_batches
+                        # - and the batch iterator is still active
+                        and new_batch_iterator is not None
+                    ),
                 )
+
+                # No active batch was returned, and by construction we have room for
+                # new batches, so we can start a new batch
+                if stage is None:
+                    yield next(new_batch_iterator)
+                    continue
+
                 # stage, task = next(iterator)
                 # Prioritized STOP signal: something bad happened in another process
                 # -> stop listening to input queues and raise StopIteration (return)
@@ -348,52 +504,8 @@ class CPUWorker:
                 # If first stage, we receive tasks that may require batching
                 # again => we split them into chunks
                 if stage == 0:
-                    task_id, fragments = task
-                    chunks = list(
-                        batchify(lc.reader.read_worker(fragments), lc.chunk_size)
-                    )
-                    for chunk_idx, docs in enumerate(chunks):
-                        # If we sort by size, we must first create the documents
-                        # to have features against which we will sort
-                        docs = apply_basic_pipes(docs, preprocess_pipes)
-
-                        if lc.sort_chunks:
-                            docs.sort(
-                                key=doc_size_fns.get(
-                                    lc.sort_chunks, doc_size_fns["content_boxes"]
-                                )
-                            )
-
-                        batches = [
-                            batch
-                            for batch in batchify(
-                                docs,
-                                batch_size=lc.batch_size,
-                                formula=batch_size_fns[lc.batch_by],
-                            )
-                        ]
-
-                        for batch_idx, batch in enumerate(batches):
-                            assert len(batch) > 0
-                            batch_id = next_batch_id
-
-                            # We mark the task id only for the last batch of a task
-                            # since the purpose of storing the task id is to know
-                            # when the worker has finished processing the task,
-                            # which is true only when the last batch has been
-                            # processed
-                            active_batches[batch_id] = (
-                                batch,
-                                task_id
-                                if (batch_idx == len(batches) - 1)
-                                and (chunk_idx == len(chunks) - 1)
-                                else None,
-                            )
-                            next_batch_id += num_cpu
-                            # gpu_idx = None
-                            # batch_id = we have just created a new batch
-                            # result from the last stage = None
-                            yield stage, (None, batch_id, None)
+                    new_batch_iterator = split_task_into_new_batches(task)
+                    yield next(new_batch_iterator)
                 else:
                     yield stage, task
 
@@ -401,16 +513,15 @@ class CPUWorker:
             lc: LazyCollection = load(
                 self.lazy_collection_path, map_location=self.device
             )
+            lc.eval()
             preprocess_pipes = []
             num_cpu = self.exchanger.num_cpu_workers
             split_into_batches_after = lc.split_into_batches_after
-            if (
-                split_into_batches_after is None
-                or lc.batch_by != "docs"
-                or lc.sort_chunks
+            if split_into_batches_after is None and (
+                lc.batch_by != "docs" or lc.sort_chunks
             ):
                 split_into_batches_after = next(
-                    (p[0] for p in lc.pipeline if p[0] is not None), None
+                    (s[0] for s in lc.pipeline if s[0] is not None), None
                 )
             is_before_split = split_into_batches_after is not None
 
@@ -438,29 +549,41 @@ class CPUWorker:
             self.exchanger.put_results((None, 0, None, None))
 
             for stage, (gpu_idx, batch_id, result) in read_tasks():
-                docs, task_id = active_batches.pop(batch_id)
+                docs, task_id, inputs = active_batches.pop(batch_id)
+                count = len(docs)
                 for name, pipe, *rest in lc.pipeline:
                     if hasattr(pipe, "enable_cache"):
                         pipe.enable_cache(batch_id)
                 if stage > 0:
                     gpu_pipe = stages[stage - 1]["gpu_component"]
-                    docs = gpu_pipe.postprocess(docs, result)  # type: ignore
+                    docs = (
+                        gpu_pipe.postprocess(docs, result, inputs)
+                        if getattr(gpu_pipe, "postprocess", None) is not None
+                        else result
+                    )
 
                 docs = apply_basic_pipes(docs, stages[stage]["cpu_components"])
 
                 gpu_pipe: "TrainablePipe" = stages[stage]["gpu_component"]
                 if gpu_pipe is not None:
-                    preprocessed = gpu_pipe.make_batch(docs)  # type: ignore
-                    active_batches[batch_id] = (docs, task_id)
                     if gpu_idx is None:
                         gpu_idx = batch_id % len(self.exchanger.gpu_worker_devices)
-                    collated = gpu_pipe.collate(preprocessed)
-                    collated = gpu_pipe.batch_to_device(
-                        collated,
-                        device=self.exchanger.gpu_worker_devices[gpu_idx],
-                    )
+                    device = self.exchanger.gpu_worker_devices[gpu_idx]
+                    if hasattr(gpu_pipe, "preprocess"):
+                        inputs = [gpu_pipe.preprocess(doc) for doc in docs]
+                        batch = decompress_dict(list(batch_compress_dict(inputs)))
+                        batch = gpu_pipe.collate(batch)
+                        batch = gpu_pipe.batch_to_device(batch, device=device)
+                    else:
+                        batch = gpu_pipe.prepare_batch(docs, device=device)
+                        inputs = None
+                    active_batches[batch_id] = (docs, task_id, inputs)
                     self.exchanger.put_gpu(
-                        item=(self.cpu_idx, batch_id, collated),
+                        item=(
+                            self.cpu_idx,
+                            batch_id,
+                            batch,
+                        ),
                         idx=gpu_idx,
                         stage=stage,
                     )
@@ -471,7 +594,7 @@ class CPUWorker:
                     results, count = (
                         lc.writer.write_worker(docs)
                         if lc.writer is not None
-                        else (docs, len(docs))
+                        else (docs, count)
                     )
                     self.exchanger.put_results(
                         (
@@ -529,6 +652,7 @@ class GPUWorker:
         # mp._prctl_pr_set_pdeathsig(signal.SIGINT)
         try:
             lc = load(self.lazy_collection_path, map_location=self.device)
+            lc.eval()
             stage_components = [
                 pipe
                 # move_to_device(pipe, self.device)
@@ -542,7 +666,7 @@ class GPUWorker:
             # Inform the main process that we are ready
             self.exchanger.put_results((None, 0, None, None))
 
-            with torch.no_grad():
+            with torch.no_grad(), torch.cuda.amp.autocast():
                 while True:
                     stage, task = self.exchanger.get_gpu_task(self.gpu_idx)
                     if task is None:
@@ -597,9 +721,6 @@ class GPUWorker:
         return f"<GPUWorker idx={self.gpu_idx}>"
 
 
-DEFAULT_MAX_CPU_WORKERS = 4
-
-
 def execute_multiprocessing_backend(
     lc: LazyCollection,
 ):
@@ -636,6 +757,11 @@ def execute_multiprocessing_backend(
     <div style="text-align:center">
         <img src="/assets/images/model-parallelism.png" />
     </div>
+
+    !!! warning "Caveat"
+
+        Since workers can produce their results in any order, the order of the results
+        may not be the same as the order of the input tasks.
 
     """
     try:
@@ -679,6 +805,7 @@ def execute_multiprocessing_backend(
         and num_gpu_workers > 0
     )
 
+    num_cpus = int(os.environ.get("EDSPDF_MAX_CPU_WORKERS") or cpu_count())
     num_devices = 0
     if requires_gpu:
         import torch
@@ -687,9 +814,19 @@ def execute_multiprocessing_backend(
         logging.info(f"Number of available devices: {num_devices}")
 
         if num_gpu_workers is None:
-            num_gpu_workers = num_devices
+            num_gpu_workers = min(num_devices, num_cpus // 2)
     else:
         num_gpu_workers = 0
+
+    if "torch" in sys.modules:
+        try:
+            import torch.multiprocessing
+
+            os.environ[
+                "TORCH_SHARING_STRATEGY"
+            ] = torch.multiprocessing.get_sharing_strategy()
+        except ImportError:  # pragma: no cover
+            pass
 
     if any(gpu_steps_candidates):
         if process_start_method == "fork":
@@ -705,11 +842,11 @@ def execute_multiprocessing_backend(
         logging.info(f"Switching process start method to {process_start_method}")
 
     mp = multiprocessing.get_context(process_start_method)
-    max_workers = max(min(mp.cpu_count() - num_gpu_workers, DEFAULT_MAX_CPU_WORKERS), 0)
+    max_cpu_workers = max(num_cpus - num_gpu_workers - 1, 0)
     num_cpu_workers = (
-        (num_gpu_workers or max_workers)
+        max_cpu_workers
         if num_cpu_workers is None
-        else max_workers + num_cpu_workers + 1
+        else max_cpu_workers + num_cpu_workers + 1
         if num_cpu_workers < 0
         else num_cpu_workers
     )
@@ -751,7 +888,7 @@ def execute_multiprocessing_backend(
         gpu_worker_devices=gpu_worker_devices,
     )
 
-    lc = lc.to("cpu")
+    # lc = lc.to("cpu")
 
     cpu_workers = []
     gpu_workers = []
@@ -827,7 +964,7 @@ def execute_multiprocessing_backend(
     if show_progress:
         from tqdm import tqdm
 
-        bar = tqdm(smoothing=0.1, mininterval=5.0)
+        bar = tqdm(smoothing=0.1, mininterval=1.0)
 
     def get_and_process_output():
         outputs, count, cpu_idx, output_task_id = next(outputs_iterator)
@@ -844,18 +981,10 @@ def execute_multiprocessing_backend(
 
     def process():
         try:
-            with bar:
-                for input_task_id, items in enumerate(
-                    batchify(
-                        iterable=inputs_iterator,
-                        batch_size=lc.chunk_size,
-                        drop_last=False,
-                        formula=lambda x: sum(item[1] for item in x),
-                    )
+            with bar, lc.eval():
+                for input_task_id, (batch, batch_size) in enumerate(
+                    batchify_with_counts(inputs_iterator, lc.chunk_size)
                 ):
-                    batch = [item[0] for item in items]
-                    batch_size = sum(item[1] for item in items)
-
                     while all(sum(wl.values()) >= max_workload for wl in active_chunks):
                         yield from get_and_process_output()
 
@@ -913,11 +1042,11 @@ def execute_multiprocessing_backend(
             # with the cleanup of these processes ?
             for i, worker in enumerate(gpu_workers):  # pragma: no cover
                 if worker.is_alive():
-                    logging.error(f"Killing <CPUWorker idx={i}>")
+                    logging.error(f"Killing <GPUWorker idx={i}>")
                     worker.kill()
             for i, worker in enumerate(cpu_workers):  # pragma: no cover
                 if worker.is_alive():
-                    logging.error(f"Killing <GPUWorker idx={i}>")
+                    logging.error(f"Killing <CPUWorker idx={i}>")
                     worker.kill()
 
             for queue_group in (
@@ -930,4 +1059,4 @@ def execute_multiprocessing_backend(
                         queue.cancel_join_thread()
 
     gen = process()
-    return lc.writer.write_main(gen) if lc.writer is not None else flatten(gen)
+    return flatten(gen) if lc.writer is None else lc.writer.write_main(gen)

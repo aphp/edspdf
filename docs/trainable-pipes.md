@@ -53,7 +53,7 @@ Additionally, there is a fifth method:
 Here is an example of a trainable component:
 
 ```python
-from typing import Any, Dict, Iterable, Sequence
+from typing import Any, Dict, Iterable, Sequence, List
 
 import torch
 from tqdm import tqdm
@@ -114,7 +114,12 @@ class MyComponent(TrainablePipe):
 
         return output
 
-    def postprocess(self, docs: Sequence[PDFDoc], output: Dict) -> Sequence[PDFDoc]:
+    def postprocess(
+        self,
+        docs: Sequence[PDFDoc],
+        output: Dict,
+        inputs: List[Dict[str, Any]],
+    ) -> Sequence[PDFDoc]:
         # Annotate the docs with the outputs of the forward method
         ...
         return docs

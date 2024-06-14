@@ -2,10 +2,17 @@
 
 ## Unreleased
 
+### Changed
+
+- Default to fp16 when inferring with gpu
+- Support `inputs` parameter in `TrainablePipe.postprocess(...)` method (as in edsnlp)
+- We now check that the user isn't trying to write a single file in a split fashion (when `write_in_worker is True ` or `num_rows_per_file is not None`) and raise an error if they do
+
 ### Fixed
 
 - Batches full of empty content boxes no longer crash the `huggingface-embedding` component
 - Ensure models are always loaded in non training mode
+- Improved performance of `edspdf.data` methods over a filesystem (`fs` parameter)
 
 ## v0.9.1
 

@@ -8,6 +8,7 @@ from typing import (
     Dict,
     Generic,
     Iterable,
+    List,
     Optional,
     Sequence,
     Set,
@@ -226,7 +227,7 @@ class TrainablePipe(
             if hasattr(component, "post_init"):
                 component.post_init(gold_data, exclude=exclude)
 
-    def preprocess(self, doc: PDFDoc) -> Dict[str, Any]:
+    def preprocess(self, doc: PDFDoc, **kwargs) -> Dict[str, Any]:
         """
         Preprocess the document to extract features that will be used by the
         neural network to perform its predictions.
@@ -243,7 +244,7 @@ class TrainablePipe(
             the document.
         """
         return {
-            name: component.preprocess(doc)
+            name: component.preprocess(doc, **kwargs)
             for name, component in self.named_component_children()
         }
 
@@ -288,10 +289,11 @@ class TrainablePipe(
         """
         return {
             name: (
-                value.to(device)
+                (value.to(device) if device is not None else value)
                 if hasattr(value, "to")
                 else getattr(self, name).batch_to_device(value, device=device)
                 if hasattr(self, name)
+                and hasattr(getattr(self, name), "batch_to_device")
                 else value
             )
             for name, value in batch.items()
@@ -325,7 +327,8 @@ class TrainablePipe(
         self,
         docs: Sequence[PDFDoc],
         supervision: bool = False,
-    ) -> Dict[str, Sequence[Any]]:
+        device: Optional[Union[str, torch.device]] = None,
+    ) -> BatchInput:
         """
         Convenience method to preprocess a batch of documents and collate them
         Features corresponding to the same path are grouped together in a list,
@@ -337,6 +340,8 @@ class TrainablePipe(
             Batch of documents
         supervision: bool
             Whether to extract supervision features or not
+        device: Optional[Union[str, torch.device]]
+            Device to move the tensors to
 
         Returns
         -------
@@ -346,7 +351,10 @@ class TrainablePipe(
             (self.preprocess_supervised(doc) if supervision else self.preprocess(doc))
             for doc in docs
         ]
-        return decompress_dict(list(batch_compress_dict(batch)))
+        batch = decompress_dict(list(batch_compress_dict(batch)))
+        batch = self.collate(batch)
+        batch = self.batch_to_device(batch, device=device)
+        return batch
 
     def batch_process(self, docs: Sequence[PDFDoc]) -> Sequence[PDFDoc]:
         """
@@ -364,20 +372,23 @@ class TrainablePipe(
         Sequence[PDFDoc]
             Batch of updated documents
         """
-        device = self.device
         with torch.no_grad():
-            batch = self.make_batch(docs)
-            inputs = self.collate(batch)
-            inputs = self.batch_to_device(inputs, device=device)
+            inputs = [self.preprocess(doc) for doc in docs]
+            batch = decompress_dict(list(batch_compress_dict(inputs)))
+            batch = self.collate(batch)
+            batch = self.batch_to_device(batch, device=self.device)
             if hasattr(self, "compiled"):
-                res = self.compiled(inputs)
+                res = self.compiled(batch)
             else:
-                res = self.module_forward(inputs)
-            docs = self.postprocess(docs, res)
+                res = self.module_forward(batch)
+            docs = self.postprocess(docs, res, inputs)
             return docs
 
     def postprocess(
-        self, docs: Sequence[PDFDoc], batch: BatchOutput
+        self,
+        docs: Sequence[PDFDoc],
+        batch: BatchOutput,
+        inputs: List[Dict[str, Any]],
     ) -> Sequence[PDFDoc]:
         """
         Update the documents with the predictions of the neural network, for instance
@@ -391,6 +402,8 @@ class TrainablePipe(
             Batch of documents
         batch: BatchOutput
             Batch of predictions, as returned by the forward method
+        inputs: List[Dict[str, Any]],
+            List of preprocessed features, as returned by the preprocess method
 
         Returns
         -------
@@ -447,7 +460,7 @@ class TrainablePipe(
                     overrides[name] = pipe_overrides
         tensor_dict = {
             n: p
-            for n, p in self.named_parameters()
+            for n, p in (*self.named_parameters(), *self.named_buffers())
             if object.__repr__(p) not in exclude
         }
         os.makedirs(path, exist_ok=True)

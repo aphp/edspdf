@@ -66,11 +66,11 @@ def test_write_data(
     )
     if write_mode == "parquet":
         docs.write_parquet(
-            "file://" + str(tmp_path / "parquet" / "test.parquet"),
+            "file://" + str(tmp_path / "parquet" / "test"),
             converter=box_converter,
             write_in_worker=write_in_worker,
         )
-        df = pd.read_parquet("file://" + str(tmp_path / "parquet" / "test.parquet"))
+        df = pd.read_parquet("file://" + str(tmp_path / "parquet" / "test"))
     elif write_mode == "pandas":
         if write_in_worker:
             pytest.skip()
