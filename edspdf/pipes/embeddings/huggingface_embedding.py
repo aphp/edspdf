@@ -291,7 +291,9 @@ class HuggingfaceEmbedding(TrainablePipe[EmbeddingOutput]):
         last_after_one = max(0, len(line_window_offsets_flat) - 1)
         line_window_offsets_flat = as_folded_tensor(
             # discard the last offset, since we start from 0 and add each line length
-            data=torch.as_tensor(line_window_offsets_flat[:last_after_one]),
+            data=torch.as_tensor(
+                line_window_offsets_flat[:last_after_one], dtype=torch.long
+            ),
             data_dims=("line",),
             full_names=("sample", "page", "line"),
             lengths=line_window_indices.lengths[:-1],

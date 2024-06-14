@@ -333,7 +333,16 @@ def test_function_huggingface(pdf, error_pdf, change_test_dir, dummy_dataset, tm
     docs = list(data_adapter(model))
 
     model = edspdf.load(tmp_path / "last-model")
+    assert not model.get_pipe("embedding").training
 
+    weird_doc: PDFDoc = model.get_pipe("extractor")(pdf)
+    for line in weird_doc.text_boxes:
+        line.text = ""
+    list(model.pipe([]))
+    with model.select_pipes(disable=["extractor"]):
+        list(model.pipe([weird_doc] * 4))
+    list(model.pipe([error_pdf] * 4))
+    list(model.pipe([]))
     list(model.pipe([pdf] * 2 + [error_pdf] * 2))
     output = model(PDFDoc(content=pdf))
 
