@@ -1,8 +1,9 @@
-import os
+import sys
 from itertools import chain
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Optional, TypeVar, Union
 
+import fsspec
 import pyarrow.dataset
 import pyarrow.fs
 import pyarrow.parquet
@@ -17,6 +18,7 @@ from edspdf.data.converters import (
 from edspdf.lazy_collection import LazyCollection
 from edspdf.structures import PDFDoc, registry
 from edspdf.utils.collections import dl_to_ld, flatten, ld_to_dl
+from edspdf.utils.file_system import FileSystem, normalize_fs_path
 
 
 class ParquetReader(BaseReader):
@@ -27,27 +29,15 @@ class ParquetReader(BaseReader):
         path: Union[str, Path],
         *,
         read_in_worker: bool,
-        filesystem: Optional[pyarrow.fs.FileSystem] = None,
+        filesystem: Optional[FileSystem] = None,
     ):
         super().__init__()
         # Either the filesystem has not been passed
         # or the path is a URL (e.g. s3://) => we need to infer the filesystem
-        fs_path = path
-        if filesystem is None or (isinstance(path, str) and "://" in path):
-            path = (
-                path
-                if isinstance(path, Path) or "://" in path
-                else f"file://{os.path.abspath(path)}"
-            )
-            inferred_fs, fs_path = pyarrow.fs.FileSystem.from_uri(path)
-            filesystem = filesystem or inferred_fs
-            assert inferred_fs.type_name == filesystem.type_name, (
-                f"Protocol {inferred_fs.type_name} in path does not match "
-                f"filesystem {filesystem.type_name}"
-            )
+        filesystem, path = normalize_fs_path(filesystem, path)
         self.read_in_worker = read_in_worker
         self.dataset = pyarrow.dataset.dataset(
-            fs_path, format="parquet", filesystem=filesystem
+            path, format="parquet", filesystem=filesystem
         )
 
     def read_main(self):
@@ -60,17 +50,14 @@ class ParquetReader(BaseReader):
             return (
                 (line, 1)
                 for f in fragments
-                for batch in f.to_table().to_batches(1024)
-                for line in dl_to_ld(batch.to_pydict())
+                for line in dl_to_ld(f.to_table().to_pydict())
             )
 
     def read_worker(self, tasks):
         if self.read_in_worker:
             tasks = list(
                 chain.from_iterable(
-                    dl_to_ld(batch.to_pydict())
-                    for task in tasks
-                    for batch in task.to_table().to_batches(1024)
+                    dl_to_ld(task.to_table().to_pydict()) for task in tasks
                 )
             )
         return tasks
@@ -82,47 +69,55 @@ T = TypeVar("T")
 class ParquetWriter(BaseWriter):
     def __init__(
         self,
+        *,
         path: Union[str, Path],
-        num_rows_per_file: int,
+        num_rows_per_file: Optional[int] = None,
         overwrite: bool,
         write_in_worker: bool,
         accumulate: bool = True,
-        filesystem: Optional[pyarrow.fs.FileSystem] = None,
+        filesystem: Optional[FileSystem] = None,
     ):
         super().__init__()
-        fs_path = path
-        if filesystem is None or (isinstance(path, str) and "://" in path):
-            path = (
-                path
-                if isinstance(path, Path) or "://" in path
-                else f"file://{os.path.abspath(path)}"
-            )
-            inferred_fs, fs_path = pyarrow.fs.FileSystem.from_uri(path)
-            filesystem = filesystem or inferred_fs
-            assert inferred_fs.type_name == filesystem.type_name, (
-                f"Protocol {inferred_fs.type_name} in path does not match "
-                f"filesystem {filesystem.type_name}"
-            )
-            path = fs_path
+        filesystem, path = normalize_fs_path(filesystem, path)
         # Check that filesystem has the same protocol as indicated by path
-        filesystem.create_dir(fs_path, recursive=True)
+        looks_like_dir = Path(path).suffix == ""
+        if looks_like_dir or num_rows_per_file is not None:
+            num_rows_per_file = num_rows_per_file or 8192
+            filesystem.makedirs(path, exist_ok=True)
+            save_as_dataset = True
+        else:
+            assert (
+                num_rows_per_file is None
+            ), "num_rows_per_file should not be set when writing to a single file"
+            assert (
+                write_in_worker is False
+            ), "write_in_worker cannot be set when writing to a single file"
+            save_as_dataset = False
+            num_rows_per_file = sys.maxsize
         if overwrite is False:
-            dataset = pyarrow.dataset.dataset(
-                fs_path, format="parquet", filesystem=filesystem
-            )
-            if len(list(dataset.get_fragments())):
-                raise FileExistsError(
-                    f"Directory {fs_path} already exists and is not empty. "
-                    "Use overwrite=True to overwrite."
+            if save_as_dataset:
+                dataset = pyarrow.dataset.dataset(
+                    path, format="parquet", filesystem=filesystem
                 )
-        self.filesystem = filesystem
+                if len(list(dataset.get_fragments())):
+                    raise FileExistsError(
+                        f"Directory {path} already exists and is not empty. "
+                        "Use overwrite=True to overwrite."
+                    )
+            else:
+                if filesystem.exists(path):
+                    raise FileExistsError(
+                        f"File {path} already exists. Use overwrite=True to overwrite."
+                    )
+        self.filesystem: fsspec.AbstractFileSystem = filesystem
         self.path = path
+        self.save_as_dataset = save_as_dataset
         self.write_in_worker = write_in_worker
         self.batch = []
         self.num_rows_per_file = num_rows_per_file
         self.closed = False
         self.finalized = False
-        self.accumulate = accumulate
+        self.accumulate = (not self.save_as_dataset) and accumulate
         if not self.accumulate:
             self.finalize = super().finalize
 
@@ -162,13 +157,22 @@ class ParquetWriter(BaseWriter):
             return self.write_worker([], last=True)
 
     def write_main(self, fragments: Iterable[List[Union[pyarrow.Table, Path]]]):
-        for table in flatten(fragments):
-            if not self.write_in_worker:
-                pyarrow.parquet.write_to_dataset(
-                    table=table,
-                    root_path=self.path,
-                    filesystem=self.filesystem,
-                )
+        tables = list(flatten(fragments))
+        if self.save_as_dataset:
+            for table in tables:
+                if not self.write_in_worker:
+                    pyarrow.parquet.write_to_dataset(
+                        table=table,
+                        root_path=self.path,
+                        filesystem=self.filesystem,
+                    )
+        else:
+            pyarrow.parquet.write_table(
+                table=pyarrow.concat_tables(tables),
+                where=self.path,
+                filesystem=self.filesystem,
+            )
+
         return pyarrow.dataset.dataset(
             self.path, format="parquet", filesystem=self.filesystem
         )
@@ -202,7 +206,7 @@ def write_parquet(
     path: Union[str, Path],
     *,
     write_in_worker: bool = False,
-    num_rows_per_file: int = 1024,
+    num_rows_per_file: Optional[int] = None,
     overwrite: bool = False,
     filesystem: Optional[pyarrow.fs.FileSystem] = None,
     accumulate: bool = True,
@@ -216,7 +220,7 @@ def write_parquet(
 
     return data.write(
         ParquetWriter(
-            path,
+            path=path,
             num_rows_per_file=num_rows_per_file,
             overwrite=overwrite,
             write_in_worker=write_in_worker,

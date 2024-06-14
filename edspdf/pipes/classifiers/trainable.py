@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, Iterable, Sequence, Set
+from typing import Any, Dict, Iterable, List, Sequence, Set
 
 import torch
 import torch.nn.functional as F
@@ -201,7 +201,12 @@ class TrainableClassifier(TrainablePipe[Dict[str, Any]]):
 
         return output
 
-    def postprocess(self, docs: Sequence[PDFDoc], output: Dict) -> Sequence[PDFDoc]:
+    def postprocess(
+        self,
+        docs: Sequence[PDFDoc],
+        output: Dict,
+        inputs: List[Dict[str, Any]],
+    ) -> Sequence[PDFDoc]:
         for b, label in zip(
             (b for doc in docs for b in doc.text_boxes),
             output["labels"].tolist(),
