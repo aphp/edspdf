@@ -811,6 +811,7 @@ class Pipeline:
             os.chdir(pwd)
 
         self._path = path  # type: ignore[assignment]
+        self.train(False)
         return self
 
     # override config property getter to remove "factory" key from components

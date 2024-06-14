@@ -5,6 +5,7 @@
 ### Fixed
 
 - Batches full of empty content boxes no longer crash the `huggingface-embedding` component
+- Ensure models are always loaded in non training mode
 
 ## v0.9.1
 
