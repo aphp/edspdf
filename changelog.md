@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Batches full of empty content boxes no longer crash the `huggingface-embedding` component
+
 ## v0.9.1
 
 ### Fixed
