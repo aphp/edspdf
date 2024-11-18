@@ -1,0 +1,58 @@
+Name                                                 Stmts   Miss   Cover   Missing
+-----------------------------------------------------------------------------------
+edspdf/__init__.py                                       7      0 100.00%
+edspdf/accelerators/__init__.py                          0      0 100.00%
+edspdf/accelerators/base.py                              2      0 100.00%
+edspdf/accelerators/multiprocessing.py                  13      0 100.00%
+edspdf/data/__init__.py                                  3      0 100.00%
+edspdf/data/base.py                                     39      0 100.00%
+edspdf/data/converters.py                               25      0 100.00%
+edspdf/data/files.py                                   102      2  98.04%   101-102
+edspdf/data/pandas.py                                   44      1  97.73%   102
+edspdf/data/parquet.py                                 107      1  99.07%   50
+edspdf/layers/__init__.py                                1      0 100.00%
+edspdf/layers/box_transformer.py                        55      0 100.00%
+edspdf/layers/relative_attention.py                    117      7  94.02%   158-159, 173, 178, 197, 356, 367
+edspdf/layers/sinusoidal_embedding.py                   20      0 100.00%
+edspdf/layers/vocabulary.py                             24      0 100.00%
+edspdf/lazy_collection.py                              120      3  97.50%   324-326
+edspdf/pipeline.py                                     335      1  99.70%   993
+edspdf/pipes/__init__.py                                 0      0 100.00%
+edspdf/pipes/aggregators/__init__.py                     0      0 100.00%
+edspdf/pipes/aggregators/simple.py                      51      0 100.00%
+edspdf/pipes/classifiers/__init__.py                     0      0 100.00%
+edspdf/pipes/classifiers/dummy.py                       11      0 100.00%
+edspdf/pipes/classifiers/mask.py                        19      0 100.00%
+edspdf/pipes/classifiers/random.py                      16      0 100.00%
+edspdf/pipes/classifiers/trainable.py                   78      0 100.00%
+edspdf/pipes/embeddings/__init__.py                      4      0 100.00%
+edspdf/pipes/embeddings/box_layout_embedding.py         33      0 100.00%
+edspdf/pipes/embeddings/box_layout_preprocessor.py      25      0 100.00%
+edspdf/pipes/embeddings/box_transformer.py              22      0 100.00%
+edspdf/pipes/embeddings/embedding_combiner.py           19      0 100.00%
+edspdf/pipes/embeddings/huggingface_embedding.py       114      0 100.00%
+edspdf/pipes/embeddings/simple_text_embedding.py       129      0 100.00%
+edspdf/pipes/embeddings/sub_box_cnn_pooler.py           29      0 100.00%
+edspdf/pipes/extractors/__init__.py                      0      0 100.00%
+edspdf/pipes/extractors/pdfminer.py                     88      2  97.73%   162, 223
+edspdf/processing/__init__.py                            3      0 100.00%
+edspdf/processing/multiprocessing.py                   406     17  95.81%   227-230, 249, 252-258, 417, 457, 496, 578-579, 1017
+edspdf/processing/simple.py                             51      2  96.08%   28-29
+edspdf/processing/utils.py                              55     13  76.36%   16, 67-78
+edspdf/registry.py                                      90      2  97.78%   113-114
+edspdf/structures.py                                    97      5  94.85%   187, 193, 195, 223, 251
+edspdf/trainable_pipe.py                               202      8  96.04%   77, 350-357, 381, 460
+edspdf/utils/__init__.py                                 0      0 100.00%
+edspdf/utils/alignment.py                               30      1  96.67%   20
+edspdf/utils/collections.py                            166      5  96.99%   150, 153-154, 253-254
+edspdf/utils/file_system.py                             24      1  95.83%   27
+edspdf/utils/lazy_module.py                             31      1  96.77%   93
+edspdf/utils/optimization.py                            68      3  95.59%   30, 34, 38
+edspdf/utils/package.py                                131      0 100.00%
+edspdf/utils/random.py                                  23      0 100.00%
+edspdf/utils/torch.py                                   26      0 100.00%
+edspdf/visualization/__init__.py                         2      0 100.00%
+edspdf/visualization/annotations.py                     32      1  96.88%   68
+edspdf/visualization/merge.py                           45      0 100.00%
+-----------------------------------------------------------------------------------
+TOTAL                                                 3134     76  97.57%
