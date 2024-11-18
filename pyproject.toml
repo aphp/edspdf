@@ -62,7 +62,7 @@ dependencies = [
 ]
 
 [tool.hatch.envs.default.scripts]
-tests = "pytest --cov=edspdf --cov-report=term-missing --cov-report=xml"
+tests = "coverage run -m pytest"
 
 [tool.hatch.envs.docs]
 dependencies = [
@@ -141,13 +141,10 @@ whitelist-regex = []
 color = true
 omit-covered-files = false
 
-[tool.coverage.run]
-concurrency = ["multiprocessing"]
-
 [tool.coverage.report]
-include = [
-    "edspdf/*",
-]
+precision = 2
+include = ["edspdf/*"]
+omit = ["tests/*"]
 exclude_lines = [
     "def __repr__",
     "if __name__ == .__main__.:",
@@ -162,6 +159,11 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
 ]
+
+[tool.coverage.run]
+include = ["edspdf/*"]
+concurrency = ["multiprocessing", "thread"]
+parallel = true
 
 [tool.pytest.ini_options]
 testpaths = [

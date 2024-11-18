@@ -44,9 +44,24 @@ jobs:
       - name: Test with Pytest on Python ${{ matrix.python-version }}
         run: hatch run tests
 
-      - name: Upload coverage
-        uses: codecov/codecov-action@v2
-        if: matrix.python-version == '3.10'
+      - name: Upload coverage data
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data-${{ matrix.python-version }}
+          path: .coverage.*
+          if-no-files-found: ignore
+          include-hidden-files: true
+
+  Coverage:
+    name: Coverage
+    needs: Pytest
+    uses: aphp/foldedtensor/.github/workflows/coverage.yml@main
+    with:
+      base-branch: main
+      coverage-data-pattern: coverage-data-*
+      coverage-report: coverage.txt
+      coverage-badge: coverage.svg
+      coverage-branch: coverage
 
   Documentation:
     runs-on: ubuntu-latest
