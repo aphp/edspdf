@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence
 
 import catalogue
 from confit import Config, Registry
-from confit.errors import ConfitValidationError, ErrorWrapper, patch_errors
+from confit.errors import ConfitValidationError, patch_errors
 from confit.registry import RegistryCollection
 
 import edspdf
@@ -82,9 +82,9 @@ class CurriedFactory:
                     name=obj.factory.__module__ + "." + obj.factory.__qualname__,
                 ).with_traceback(None)
                 raise obj.error from None
-            except Exception as e:  # pragma: no cover
-                obj.error = ConfitValidationError([ErrorWrapper(e, path)])
-                raise obj.error from None
+            # except Exception as e:  # pragma: no cover
+            #     obj.error = ConfitValidationError([ErrorWrapper(e, path)])
+            #     raise obj.error from None
             return obj.instantiated
         elif isinstance(obj, dict):
             instantiated = {}

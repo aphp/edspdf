@@ -43,8 +43,19 @@ class ModuleName(str):
         raise NotImplementedError("ModuleName is only meant for typing.")
 
     @classmethod
-    def __get_validators__(self):
-        yield self.validate
+    def __get_validators__(cls):
+        yield cls.validate
+
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source, handler):
+        from pydantic_core import core_schema
+
+        return core_schema.chain_schema(
+            [
+                core_schema.no_info_plain_validator_function(v)
+                for v in cls.__get_validators__()
+            ]
+        )
 
     @classmethod
     def validate(cls, value, config=None):

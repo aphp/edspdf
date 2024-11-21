@@ -304,7 +304,10 @@ def test_config_validation_error():
     with pytest.raises(ConfitValidationError) as e:
         Pipeline.from_config(Config.from_str(fail_config))
 
-    assert str(e.value) == (
+    assert str(e.value).replace(
+        "input should be 'sin' or 'learned'",
+        "unexpected value; permitted: 'sin', 'learned'",
+    ) == (
         "2 validation errors for edspdf.pipeline.Pipeline()\n"
         "-> components.components.classifier.embedding.size\n"
         "   field required\n"

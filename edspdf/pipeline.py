@@ -158,7 +158,7 @@ class Pipeline:
             ).resolve(registry=registry)
             pipe = curried_factory.instantiate(pipeline=self, path=(name,))
         except ConfitValidationError as e:
-            raise e.with_traceback(None) from None
+            raise e.with_traceback(None)
         return pipe
 
     def add_pipe(
@@ -525,7 +525,7 @@ class Pipeline:
                 name=cls.__module__ + "." + cls.__qualname__,
             )
             e.raw_errors = patch_errors(e.raw_errors, loc_prefix)
-            raise e from None
+            raise e
 
         for name in pipeline:
             if name in exclude:
@@ -552,10 +552,18 @@ class Pipeline:
 
     @classmethod
     def __get_validators__(cls):
-        """
-        Pydantic validators generator
-        """
         yield cls.validate
+
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source, handler):
+        from pydantic_core import core_schema
+
+        return core_schema.chain_schema(
+            [
+                core_schema.no_info_plain_validator_function(v)
+                for v in cls.__get_validators__()
+            ]
+        )
 
     @classmethod
     def validate(cls, v, config=None):
