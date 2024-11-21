@@ -16,7 +16,7 @@ edspdf/layers/relative_attention.py                    117      7  94.02%   158-
 edspdf/layers/sinusoidal_embedding.py                   20      0 100.00%
 edspdf/layers/vocabulary.py                             24      0 100.00%
 edspdf/lazy_collection.py                              120      3  97.50%   324-326
-edspdf/pipeline.py                                     335      1  99.70%   993
+edspdf/pipeline.py                                     338      1  99.70%   1001
 edspdf/pipes/__init__.py                                 0      0 100.00%
 edspdf/pipes/aggregators/__init__.py                     0      0 100.00%
 edspdf/pipes/aggregators/simple.py                      51      0 100.00%
@@ -40,7 +40,7 @@ edspdf/processing/multiprocessing.py                   406     17  95.81%   227-
 edspdf/processing/simple.py                             51      2  96.08%   28-29
 edspdf/processing/utils.py                              55     13  76.36%   16, 67-78
 edspdf/registry.py                                      90      2  97.78%   113-114
-edspdf/structures.py                                    97      5  94.85%   187, 193, 195, 223, 251
+edspdf/structures.py                                   101      5  95.05%   195, 201, 203, 231, 259
 edspdf/trainable_pipe.py                               202      8  96.04%   77, 350-357, 381, 460
 edspdf/utils/__init__.py                                 0      0 100.00%
 edspdf/utils/alignment.py                               30      1  96.67%   20
@@ -48,11 +48,11 @@ edspdf/utils/collections.py                            166      5  96.99%   150,
 edspdf/utils/file_system.py                             24      1  95.83%   27
 edspdf/utils/lazy_module.py                             31      1  96.77%   93
 edspdf/utils/optimization.py                            68      3  95.59%   30, 34, 38
-edspdf/utils/package.py                                131      0 100.00%
+edspdf/utils/package.py                                134      0 100.00%
 edspdf/utils/random.py                                  23      0 100.00%
 edspdf/utils/torch.py                                   26      0 100.00%
 edspdf/visualization/__init__.py                         2      0 100.00%
 edspdf/visualization/annotations.py                     32      1  96.88%   68
 edspdf/visualization/merge.py                           45      0 100.00%
 -----------------------------------------------------------------------------------
-TOTAL                                                 3134     76  97.57%
+TOTAL                                                 3144     76  97.58%
