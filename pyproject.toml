@@ -17,10 +17,10 @@ requires-python = ">3.7.6,<4.0,!=3.8.1"
 dependencies = [
     "anyascii>=0.3.2",
     "scikit-learn>=1.0.2,<2.0.0",
-    "pydantic>=1.2,<2.0.0",
+    "pydantic>=1.2",
     "catalogue>=2.0",
     "networkx>=2.6",
-    "confit>=0.5.3,<1.0.0",
+    "confit>=0.7.0",
     "fsspec<2023.1.0 ; python_version<'3.8'",
     "fsspec ; python_version>='3.8'",
     "foldedtensor>=0.3.3",

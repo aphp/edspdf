@@ -25,13 +25,21 @@ class BaseModel:
 
     @classmethod
     def __get_validators__(cls):
-        # one or more validators may be yielded which will be called in the
-        # order to validate the input, each validator will receive as an input
-        # the value returned from the previous validator
         yield cls.validate
 
     @classmethod
-    def validate(cls, v):
+    def __get_pydantic_core_schema__(cls, source, handler):
+        from pydantic_core import core_schema
+
+        return core_schema.chain_schema(
+            [
+                core_schema.no_info_plain_validator_function(v)
+                for v in cls.__get_validators__()
+            ]
+        )
+
+    @classmethod
+    def validate(cls, v, config=None):
         if isinstance(v, dict):
             v = Config(v).resolve(deep=False, registry=registry)
         if isinstance(v, dict):

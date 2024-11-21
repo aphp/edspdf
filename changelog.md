@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Support pydantic v2
+
 ## v0.9.2
 
 ### Changed
