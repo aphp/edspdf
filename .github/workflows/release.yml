@@ -16,7 +16,7 @@ on:
 jobs:
   build:
     name: Build package
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
 
@@ -32,7 +32,7 @@ jobs:
   pypi:
     name: Upload to PyPI
     needs: [ build ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       id-token: write
 
@@ -47,7 +47,7 @@ jobs:
   documentation:
     name: Build documentation
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
