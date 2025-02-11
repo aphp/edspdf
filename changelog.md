@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Handle cases like distant superscript "³    something" where the super script and the rest of the text are parsed are two lines one above the other, when they should be on the same line.
+
 ## v0.9.3
 
 - Support pydantic v2

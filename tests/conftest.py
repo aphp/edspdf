@@ -46,6 +46,12 @@ def letter_pdf():
 
 
 @fixture(scope="session")
+def distant_superscript_pdf():
+    path = TEST_DIR / "resources" / "distant-superscript.pdf"
+    return path.read_bytes()
+
+
+@fixture(scope="session")
 def error_pdf():
     path = TEST_DIR / "resources" / "error.pdf"
     return path.read_bytes()

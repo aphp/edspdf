@@ -1,5 +1,6 @@
 from itertools import cycle
 
+import edspdf
 from edspdf.pipes.aggregators.simple import SimpleAggregator
 from edspdf.pipes.extractors.pdfminer import PdfMinerExtractor
 from edspdf.structures import Page, PDFDoc, TextBox
@@ -150,3 +151,12 @@ def test_styled_pdfminer_aggregation_letter(letter_pdf):
                     ),
                 )
             )
+
+
+def test_distant_superscript(distant_superscript_pdf):
+    pipeline = edspdf.Pipeline()
+    pipeline.add_pipe("poppler-extractor")
+    pipeline.add_pipe("dummy-classifier", config={"label": "body"})
+    pipeline.add_pipe("simple-aggregator")
+    doc = pipeline(distant_superscript_pdf)
+    assert doc.aggregated_texts["body"].text == "3 test line"

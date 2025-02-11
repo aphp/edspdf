@@ -90,7 +90,7 @@ def test_write_data(
         for f in (tmp_path / "files").rglob("*.json"):
             records.extend(json.loads(f.read_text())["annotations"])
         df = pd.DataFrame(records)
-    assert len(df) == 91
+    assert len(df) == 92
 
 
 @pytest.fixture(scope="module")
@@ -161,4 +161,4 @@ def test_read_data(
         sort_chunks=True,
     )
     df = docs.to_pandas(converter=box_converter)
-    assert len(df) == 91
+    assert len(df) == 92
