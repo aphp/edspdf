@@ -48,11 +48,11 @@ edspdf/utils/collections.py                            166      5  96.99%   150,
 edspdf/utils/file_system.py                             24      1  95.83%   27
 edspdf/utils/lazy_module.py                             31      1  96.77%   93
 edspdf/utils/optimization.py                            68      3  95.59%   30, 34, 38
-edspdf/utils/package.py                                134      0 100.00%
+edspdf/utils/package.py                                208      5  97.60%   301-302, 493-494, 499
 edspdf/utils/random.py                                  23      0 100.00%
 edspdf/utils/torch.py                                   26      0 100.00%
 edspdf/visualization/__init__.py                         2      0 100.00%
 edspdf/visualization/annotations.py                     32      1  96.88%   68
 edspdf/visualization/merge.py                           45      0 100.00%
 -----------------------------------------------------------------------------------
-TOTAL                                                 3144     76  97.58%
+TOTAL                                                 3218     81  97.48%
