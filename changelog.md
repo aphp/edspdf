@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Added
+
+- Support packaging models made in setuptools based projects
+
+### Fixed
+
+- Support packaging with poetry 2.0
+
 ### Changed
 
 - Handle cases like distant superscript "³    something" where the super script and the rest of the text are parsed are two lines one above the other, when they should be on the same line.
