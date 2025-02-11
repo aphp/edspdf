@@ -59,6 +59,7 @@ dependencies = [
     "datasets>=2.10",
     "huggingface_hub>=0.8.1",
     "transformers>=4.30",
+    "edspdf-poppler",
 ]
 
 [tool.hatch.envs.default.scripts]

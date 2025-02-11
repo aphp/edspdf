@@ -156,9 +156,11 @@ class SimpleAggregator:
                     continue
                 if line.page_num != next_box.page_num:
                     text = text + "\n\n"
-                elif dy / height > self.new_paragraph_threshold:
+                elif (
+                    dy / height > self.new_paragraph_threshold and next_box.y0 > line.y1
+                ):
                     text = text + "\n\n"
-                elif dy / height > self.new_line_threshold:
+                elif dy / height > self.new_line_threshold and next_box.y0 > line.y1:
                     text = text + "\n"
                 else:
                     text = text + " "
