@@ -7,4 +7,4 @@ from . import data
 
 from . import utils  # isort:skip
 
-__version__ = "0.9.3"
+__version__ = "0.9.4"
